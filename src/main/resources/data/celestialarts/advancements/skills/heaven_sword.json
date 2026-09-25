@@ -1,0 +1,31 @@
+{
+	"display": {
+		"icon": {
+			"item": "celestialarts:scroll_heaven_sword"
+		},
+		"title": {
+			"translate": "advancements.celestialarts.skills.heaven_sword.title"
+		},
+		"description": {
+			"translate": "advancements.celestialarts.skills.heaven_sword.description"
+		},
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"granted": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"requirements": [
+		[
+			"granted"
+		]
+	],
+	"parent": "celestialarts:realm/tribulation",
+	"rewards": {
+		"experience": 150
+	}
+}

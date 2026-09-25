@@ -1,0 +1,38 @@
+{
+	"display": {
+		"icon": {
+			"item": "celestialarts:spirit_stone"
+		},
+		"title": {
+			"translate": "advancements.celestialarts.root.title"
+		},
+		"description": {
+			"translate": "advancements.celestialarts.root.description"
+		},
+		"frame": "task",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false,
+		"background": "celestialarts:textures/gui/advancement_bg.png"
+	},
+	"criteria": {
+		"has_stone": {
+			"trigger": "minecraft:inventory_changed",
+			"conditions": {
+				"items": [
+					{
+						"items": [
+							"celestialarts:spirit_stone",
+							"celestialarts:high_spirit_stone"
+						]
+					}
+				]
+			}
+		}
+	},
+	"requirements": [
+		[
+			"has_stone"
+		]
+	]
+}

@@ -7,6 +7,9 @@ import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.network.ModPackets;
 import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.skill.Skill;
+import com.ngoducduy.celestialarts.registry.ModAdvancements;
+import com.ngoducduy.celestialarts.skill.SkillRegistry;
+
 import com.ngoducduy.celestialarts.util.SkillFx;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,6 +66,8 @@ public class SkillScrollItem extends Item {
 		}
 		if (user instanceof ServerPlayerEntity sp) {
 			ModPackets.sendSync(sp, qi);
+			ModAdvancements.onSkillLearned(sp, s.getId());
+			if (qi.getLearned().size() >= SkillRegistry.all().size()) ModAdvancements.onAllSkillsLearned(sp);
 			ModPackets.sendFx(sp, FxData.follow(FxType.RUNE_ORBIT, sp.getId(), sp.getPos(), s.getElement().getPrimary(), 1.4f, 50));
 			ModPackets.sendFx(sp, FxData.follow(FxType.QI_AURA, sp.getId(), sp.getPos(), s.getElement().getPrimary(), 0.8f, 40));
 		}

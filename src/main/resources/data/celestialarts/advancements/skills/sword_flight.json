@@ -1,0 +1,31 @@
+{
+	"display": {
+		"icon": {
+			"item": "celestialarts:scroll_sword_flight"
+		},
+		"title": {
+			"translate": "advancements.celestialarts.skills.sword_flight.title"
+		},
+		"description": {
+			"translate": "advancements.celestialarts.skills.sword_flight.description"
+		},
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"granted": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"requirements": [
+		[
+			"granted"
+		]
+	],
+	"parent": "celestialarts:realm/golden_core",
+	"rewards": {
+		"experience": 150
+	}
+}

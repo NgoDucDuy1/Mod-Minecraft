@@ -470,6 +470,21 @@ def gui_skill_book():
     print("gui/skill_book.png")
 
 
+def advancement_bg():
+    """32x32 tileable dark cloud pattern used behind the advancement tab."""
+    n = T.tileable_noise(32, 32, 123, scale=2, octaves=3)
+    img = T.colorize(n, (70, 55, 100), 0.45)
+    base = Image.new("RGBA", img.size, (28, 20, 44, 255))
+    base.alpha_composite(img)
+    d = ImageDraw.Draw(base)
+    rnd = random.Random(5)
+    for _ in range(14):  # faint stars
+        x, y = rnd.uniform(0, 32), rnd.uniform(0, 32)
+        a = rnd.randint(60, 160)
+        d.ellipse([(x - 0.35) * S, (y - 0.35) * S, (x + 0.35) * S, (y + 0.35) * S], fill=(220, 210, 255, a))
+    save(base, GUI, "advancement_bg", 32, 32)
+
+
 def mod_icon():
     size = 128
     img = T.new(size, size)
@@ -513,7 +528,7 @@ def main():
     icon_wind_blade_dance(); icon_tortoise_shield(); icon_earth_shatter(); icon_fire_lotus()
     icon_taiji_formation(); icon_sword_flight(); icon_frozen_domain(); icon_thousand_swords()
     icon_purple_thunder_beam(); icon_devouring_vortex(); icon_nine_tribulations(); icon_heaven_sword()
-    gui_hud(); gui_skill_book(); mod_icon()
+    gui_hud(); gui_skill_book(); advancement_bg(); mod_icon()
 
 
 if __name__ == "__main__":

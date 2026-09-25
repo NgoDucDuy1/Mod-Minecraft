@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"  H",
+		" H ",
+		"D  "
+	],
+	"key": {
+		"H": {
+			"item": "celestialarts:high_spirit_stone"
+		},
+		"D": {
+			"item": "minecraft:diamond_sword"
+		}
+	},
+	"result": {
+		"item": "celestialarts:immortal_sword",
+		"count": 1
+	}
+}

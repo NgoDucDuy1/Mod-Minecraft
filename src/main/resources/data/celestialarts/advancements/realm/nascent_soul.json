@@ -1,0 +1,31 @@
+{
+	"display": {
+		"icon": {
+			"item": "celestialarts:nascent_pill"
+		},
+		"title": {
+			"translate": "advancements.celestialarts.realm.nascent_soul.title"
+		},
+		"description": {
+			"translate": "advancements.celestialarts.realm.nascent_soul.description"
+		},
+		"frame": "goal",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"granted": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"requirements": [
+		[
+			"granted"
+		]
+	],
+	"parent": "celestialarts:realm/golden_core",
+	"rewards": {
+		"experience": 200
+	}
+}

@@ -60,6 +60,11 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 * **Bí tịch công pháp** (16 cuộn) – chuột phải để lĩnh ngộ, **Linh thạch / Linh thạch thượng phẩm** – hồi linh lực + kinh nghiệm,
   **Trúc Cơ Đan / Nguyên Anh Đan**, **Đạo Thư** (mở màn hình kỹ năng), **Tiên Kiếm**.
 * Lệnh `/celestial info|learn|forget|realm|qi|exp|breakthrough` (cần quyền OP).
+* **Công thức chế tạo**: linh thạch (thạch anh tím + lapis), linh thạch thượng phẩm, đạo thư, đan dược, tiên kiếm và
+  7 bí tịch cảnh giới thấp (Luyện Khí / Trúc Cơ). Bí tịch cảnh giới cao chỉ tìm thấy trong **rương công trình**
+  (stronghold, mansion, bastion, ancient city, end city…) – độ hiếm tăng theo cảnh giới yêu cầu.
+* **Thành tựu** riêng (tab *Tiên Lộ*): nhặt linh thạch, lĩnh ngộ công pháp đầu tiên, từng lần đột phá cảnh giới,
+  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 16 công pháp.
 
 ### Phím mặc định
 `R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `B` – đột phá. Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
@@ -87,7 +92,7 @@ src/main/java/com/ngoducduy/celestialarts
 ├── skill/         Skill, SkillRegistry, SkillManager, SkillContext, cast/ (kỹ năng kéo dài), skills/ (16 công pháp)
 ├── entity/        7 thực thể kỹ năng (đạn, phi kiếm, gai đá, thiên kiếm)
 ├── network/       FxType, FxData, ModPackets (C2S cast/release/slot/breakthrough, S2C sync/fx/shake)
-├── registry/      ModEntities, ModItems, ModParticles, ModSounds, ModEffects, ModDamageTypes
+├── registry/      ModEntities, ModItems, ModParticles, ModSounds, ModEffects, ModDamageTypes, ModLootTables, ModAdvancements
 ├── effect/        Hiệu ứng trạng thái (Đóng băng, Linh hỏa thiêu đốt, Kiếm ý)
 ├── item/          Bí tịch, linh thạch, đan dược, đạo thư, tiên kiếm
 └── command/       /celestial

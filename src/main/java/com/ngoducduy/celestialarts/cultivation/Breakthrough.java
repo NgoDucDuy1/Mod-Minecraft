@@ -3,6 +3,7 @@ package com.ngoducduy.celestialarts.cultivation;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.network.ModPackets;
+import com.ngoducduy.celestialarts.registry.ModAdvancements;
 import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
@@ -108,6 +109,7 @@ public final class Breakthrough {
 			qi.setQi(qi.getMaxQi());
 			qi.markDirty();
 			ModPackets.sendSync(caster, qi);
+			ModAdvancements.onRealmReached(caster, next);
 
 			// Announce to the whole server – a breakthrough is a big deal.
 			Text msg = Text.translatable("message.celestialarts.breakthrough_success", caster.getDisplayName(), next.getName())

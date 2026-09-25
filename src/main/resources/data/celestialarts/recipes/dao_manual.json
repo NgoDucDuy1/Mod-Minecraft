@@ -1,0 +1,24 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PSP",
+		"PBP",
+		"PSP"
+	],
+	"key": {
+		"P": {
+			"item": "minecraft:paper"
+		},
+		"S": {
+			"item": "celestialarts:spirit_stone"
+		},
+		"B": {
+			"item": "minecraft:book"
+		}
+	},
+	"result": {
+		"item": "celestialarts:dao_manual",
+		"count": 1
+	}
+}

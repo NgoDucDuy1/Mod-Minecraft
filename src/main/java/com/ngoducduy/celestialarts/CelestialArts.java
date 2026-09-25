@@ -7,6 +7,7 @@ import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModItemGroups;
+import com.ngoducduy.celestialarts.registry.ModLootTables;
 import com.ngoducduy.celestialarts.registry.ModItems;
 import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.registry.ModSounds;
@@ -44,6 +45,7 @@ public final class CelestialArts implements ModInitializer {
 		SkillRegistry.registerAll();
 		ModItems.register();
 		ModItemGroups.register();
+		ModLootTables.register();
 		ModPackets.registerServerReceivers();
 		CultivationEvents.register();
 		CelestialCommand.register();
