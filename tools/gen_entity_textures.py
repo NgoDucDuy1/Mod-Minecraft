@@ -259,8 +259,86 @@ def heaven_sword():
     t.save("heaven_sword")
 
 
+def dragon_head(name, scale_dark, scale_light, belly, horn, eye, glow):
+    """Eastern dragon head for DragonHeadModel (64x32): scales with a bright ridge, pale
+    jaw/belly plates, ivory horns, glowing eyes and translucent fins."""
+    t = Tex(64, 32)
+
+    def scales(face, fx, fy):
+        # diamond scale pattern
+        u, v = fx * 6, fy * 5
+        d = abs((u % 1) - 0.5) + abs((v % 1) - 0.5)
+        n = hash_noise(int(u), int(v), 21)
+        c = mix(scale_dark, scale_light, 0.35 + 0.45 * n)
+        c = mix(c, scale_dark, max(0.0, d - 0.55) * 2.2)  # dark scale edges
+        if face == "top":
+            c = mix(c, glow, math.exp(-((fx - 0.5) / 0.14) ** 2) * 0.8)  # glowing dorsal ridge
+        if face == "bottom":
+            c = mix(c, belly, 0.7)
+        return with_a(c, 255)
+
+    def snout(face, fx, fy):
+        r, g, b, a = scales(face, fx, fy)
+        if face == "front":  # nostrils
+            for nx in (0.3, 0.7):
+                if math.hypot((fx - nx) * 1.4, fy - 0.45) < 0.14:
+                    return with_a((25, 15, 35), 255)
+        if face in ("left", "right") and fy > 0.75:
+            return with_a(mix(belly, (255, 255, 255), 0.2), 255)  # teeth line
+        return (r, g, b, a)
+
+    def head(face, fx, fy):
+        r, g, b, a = scales(face, fx, fy)
+        if face in ("left", "right"):
+            # eye near the front-top
+            ex = 0.72 if face == "left" else 0.28
+            d = math.hypot((fx - ex) * 1.3, (fy - 0.38) * 1.0)
+            if d < 0.16:
+                return with_a(mix(eye, (255, 255, 255), max(0.0, 1 - d / 0.08)), 255)
+            if d < 0.21:
+                return with_a((20, 12, 30), 255)
+        return (r, g, b, a)
+
+    def jaw(face, fx, fy):
+        c = mix(belly, scale_light, 0.25)
+        if face == "top":
+            c = mix(c, (255, 255, 255), 0.5 if (int(fx * 8) % 2 == 0 and fy < 0.3) else 0.0)  # teeth
+        return with_a(c, 255)
+
+    def horn_p(face, fx, fy):
+        c = mix(horn, (255, 255, 255), fy * 0.5)
+        c = mix(c, (0, 0, 0), (math.sin(fy * 18) * 0.5 + 0.5) * 0.15)
+        return with_a(c, 255)
+
+    def fin(face, fx, fy):
+        c = mix(glow, scale_light, 0.4)
+        edge = 1.0 - abs(fy - 0.5) * 2
+        rays = (math.sin(fx * 14) * 0.5 + 0.5)
+        c = mix(c, (255, 255, 255), rays * 0.35)
+        return with_a(c, int(120 + 110 * edge))
+
+    t.cuboid(0, 0, 4, 3, 5, snout)
+    t.cuboid(0, 8, 6, 5, 6, head)
+    t.cuboid(24, 8, 4, 1, 5, jaw)
+    t.cuboid(18, 0, 1, 4, 1, horn_p)
+    t.cuboid(22, 0, 1, 4, 1, horn_p)
+    t.cuboid(42, 8, 1, 3, 4, fin, shade=False)
+    t.cuboid(52, 8, 1, 3, 4, fin, shade=False)
+    t.cuboid(0, 19, 5, 5, 3, scales)
+    t.save(name)
+
+
+def wind_dragon():
+    dragon_head("wind_dragon", (60, 140, 110), (150, 235, 200), (225, 255, 240), (240, 245, 230), (120, 255, 200), (200, 255, 230))
+
+
+def thunder_dragon():
+    dragon_head("thunder_dragon", (70, 30, 130), (170, 120, 255), (225, 205, 255), (235, 225, 255), (255, 240, 255), (210, 190, 255))
+
+
 def main():
     sword_qi(); ice_shard(); fire_lotus(); spirit_sword(); flying_sword(); rock_spike(); heaven_sword()
+    wind_dragon(); thunder_dragon()
 
 
 if __name__ == "__main__":

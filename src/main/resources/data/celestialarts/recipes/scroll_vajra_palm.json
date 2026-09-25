@@ -1,0 +1,24 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"PSP",
+		"PRP",
+		"PSP"
+	],
+	"key": {
+		"P": {
+			"item": "minecraft:paper"
+		},
+		"S": {
+			"item": "celestialarts:spirit_stone"
+		},
+		"R": {
+			"item": "minecraft:gold_ingot"
+		}
+	},
+	"result": {
+		"item": "celestialarts:scroll_vajra_palm",
+		"count": 1
+	}
+}

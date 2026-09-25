@@ -13,6 +13,8 @@ public final class ModModelLayers {
 	public static final EntityModelLayer FLYING_SWORD = layer("flying_sword");
 	public static final EntityModelLayer ROCK_SPIKE = layer("rock_spike");
 	public static final EntityModelLayer HEAVEN_SWORD = layer("heaven_sword");
+	public static final EntityModelLayer WIND_DRAGON = layer("wind_dragon");
+	public static final EntityModelLayer THUNDER_DRAGON = layer("thunder_dragon");
 
 	private ModModelLayers() {
 	}
@@ -29,5 +31,7 @@ public final class ModModelLayers {
 		EntityModelLayerRegistry.registerModelLayer(FLYING_SWORD, FlyingSwordModel::getTexturedModelData);
 		EntityModelLayerRegistry.registerModelLayer(ROCK_SPIKE, RockSpikeModel::getTexturedModelData);
 		EntityModelLayerRegistry.registerModelLayer(HEAVEN_SWORD, HeavenSwordModel::getTexturedModelData);
+		EntityModelLayerRegistry.registerModelLayer(WIND_DRAGON, DragonHeadModel::getTexturedModelData);
+		EntityModelLayerRegistry.registerModelLayer(THUNDER_DRAGON, DragonHeadModel::getTexturedModelData);
 	}
 }

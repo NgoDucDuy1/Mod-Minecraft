@@ -26,7 +26,8 @@ import java.util.UUID;
 /**
  * Kiếm Khí Trảm – swing the blade and release a crescent of sword qi.
  * Three consecutive casts form a combo: horizontal, diagonal, then a larger
- * vertical cut that pierces further and grants Sword Intent.
+ * vertical cut that pierces further and grants Sword Intent. While Sword Intent lasts,
+ * every swing releases three crescents at once.
  */
 public class SwordQiSlashSkill extends Skill {
 	private static final int COMBO_WINDOW = 40;
@@ -71,16 +72,17 @@ public class SwordQiSlashSkill extends Skill {
 
 		Vec3d look = ctx.look();
 		Vec3d spawn = player.getEyePos().add(look.multiply(1.2)).add(0, -0.2, 0);
-		SwordQiEntity qi = new SwordQiEntity(ModEntities.SWORD_QI, ctx.world());
-		qi.setOwner(player);
-		qi.setRoll(roll);
-		qi.setSize(size);
-		qi.setDamage(damage);
-		qi.setPierce(step == 2 ? 6 : 3);
-		qi.setMaxAge(step == 2 ? 55 : 42);
-		qi.refreshPositionAndAngles(spawn.x, spawn.y, spawn.z, player.getYaw(), player.getPitch());
-		qi.launch(look, step == 2 ? 1.5 : 1.3);
-		ctx.world().spawnEntity(qi);
+		launchCrescent(ctx, spawn, look, roll, size, damage, step);
+
+		// Under Sword Intent every swing splits into three crescents (Tam Kiếm Hợp Nhất).
+		if (player.hasStatusEffect(ModEffects.SWORD_INTENT)) {
+			Vec3d[] basis = SkillFx.basis(look);
+			for (int side = -1; side <= 1; side += 2) {
+				double a = Math.toRadians(11.0 * side);
+				Vec3d dir = look.multiply(Math.cos(a)).add(basis[0].multiply(Math.sin(a))).normalize();
+				launchCrescent(ctx, spawn.add(basis[0].multiply(0.35 * side)), dir, roll + 25f * side, size * 0.7f, damage * 0.5f, step);
+			}
+		}
 
 		// Visuals on the caster.
 		player.swingHand(Hand.MAIN_HAND, true);
@@ -93,5 +95,19 @@ public class SwordQiSlashSkill extends Skill {
 			SkillFx.glowRing(ctx.world(), player.getPos().add(0, 0.1, 0), 1.2, getElement().getPrimary(), 20, 0.1);
 		}
 		return true;
+	}
+
+	private void launchCrescent(SkillContext ctx, Vec3d spawn, Vec3d dir, float roll, float size, float damage, int step) {
+		ServerPlayerEntity player = ctx.player();
+		SwordQiEntity qi = new SwordQiEntity(ModEntities.SWORD_QI, ctx.world());
+		qi.setOwner(player);
+		qi.setRoll(roll);
+		qi.setSize(size);
+		qi.setDamage(damage);
+		qi.setPierce(step == 2 ? 6 : 3);
+		qi.setMaxAge(step == 2 ? 55 : 42);
+		qi.refreshPositionAndAngles(spawn.x, spawn.y, spawn.z, player.getYaw(), player.getPitch());
+		qi.launch(dir, step == 2 ? 1.5 : 1.3);
+		ctx.world().spawnEntity(qi);
 	}
 }

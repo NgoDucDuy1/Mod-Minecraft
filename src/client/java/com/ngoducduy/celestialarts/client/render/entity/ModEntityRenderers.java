@@ -16,5 +16,7 @@ public final class ModEntityRenderers {
 		EntityRendererRegistry.register(ModEntities.FLYING_SWORD, FlyingSwordRenderer::new);
 		EntityRendererRegistry.register(ModEntities.ROCK_SPIKE, RockSpikeRenderer::new);
 		EntityRendererRegistry.register(ModEntities.HEAVEN_SWORD, HeavenSwordRenderer::new);
+		EntityRendererRegistry.register(ModEntities.WIND_DRAGON, WindDragonRenderer::new);
+		EntityRendererRegistry.register(ModEntities.THUNDER_DRAGON, ThunderDragonRenderer::new);
 	}
 }

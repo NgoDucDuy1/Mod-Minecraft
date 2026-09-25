@@ -17,6 +17,10 @@ import com.ngoducduy.celestialarts.skill.skills.TaijiFormationSkill;
 import com.ngoducduy.celestialarts.skill.skills.ThousandSwordsSkill;
 import com.ngoducduy.celestialarts.skill.skills.TortoiseShieldSkill;
 import com.ngoducduy.celestialarts.skill.skills.WindBladeDanceSkill;
+import com.ngoducduy.celestialarts.skill.skills.WindDragonSkill;
+import com.ngoducduy.celestialarts.skill.skills.VajraPalmSkill;
+import com.ngoducduy.celestialarts.skill.skills.GoldenBodySkill;
+import com.ngoducduy.celestialarts.skill.skills.ThunderDragonSkill;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,10 +40,12 @@ public final class SkillRegistry {
 	public static final FlameClawSkill FLAME_CLAW = register("flame_claw", new FlameClawSkill());
 	public static final IceArrowsSkill ICE_ARROWS = register("ice_arrows", new IceArrowsSkill());
 	public static final LightningStepSkill LIGHTNING_STEP = register("lightning_step", new LightningStepSkill());
+	public static final VajraPalmSkill VAJRA_PALM = register("vajra_palm", new VajraPalmSkill());
 	// Realm 2 – Trúc Cơ
 	public static final WindBladeDanceSkill WIND_BLADE_DANCE = register("wind_blade_dance", new WindBladeDanceSkill());
 	public static final TortoiseShieldSkill TORTOISE_SHIELD = register("tortoise_shield", new TortoiseShieldSkill());
 	public static final EarthShatterSkill EARTH_SHATTER = register("earth_shatter", new EarthShatterSkill());
+	public static final WindDragonSkill WIND_DRAGON = register("wind_dragon", new WindDragonSkill());
 	// Realm 3 – Kim Đan
 	public static final FireLotusSkill FIRE_LOTUS = register("fire_lotus", new FireLotusSkill());
 	public static final TaijiFormationSkill TAIJI_FORMATION = register("taiji_formation", new TaijiFormationSkill());
@@ -49,8 +55,10 @@ public final class SkillRegistry {
 	public static final ThousandSwordsSkill THOUSAND_SWORDS = register("thousand_swords", new ThousandSwordsSkill());
 	public static final PurpleThunderBeamSkill PURPLE_THUNDER_BEAM = register("purple_thunder_beam", new PurpleThunderBeamSkill());
 	public static final DevouringVortexSkill DEVOURING_VORTEX = register("devouring_vortex", new DevouringVortexSkill());
+	public static final GoldenBodySkill GOLDEN_BODY = register("golden_body", new GoldenBodySkill());
 	// Realm 5 – Hóa Thần
 	public static final NineTribulationsSkill NINE_TRIBULATIONS = register("nine_tribulations", new NineTribulationsSkill());
+	public static final ThunderDragonSkill THUNDER_DRAGON = register("thunder_dragon", new ThunderDragonSkill());
 	// Realm 6 – Độ Kiếp
 	public static final HeavenSwordSkill HEAVEN_SWORD = register("heaven_sword", new HeavenSwordSkill());
 

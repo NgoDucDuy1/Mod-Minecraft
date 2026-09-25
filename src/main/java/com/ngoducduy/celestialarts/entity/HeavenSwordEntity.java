@@ -166,6 +166,9 @@ public class HeavenSwordEntity extends Entity {
 		sw.playSound(null, this.getBlockPos(), ModSounds.HEAVEN_SWORD_IMPACT, SoundCategory.PLAYERS, 4.0f, 0.8f);
 		sw.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.0f, 0.5f);
 		ModPackets.sendCameraShake(sw, center, 48.0, 1.6f, 22);
+		if (owner instanceof net.minecraft.server.network.ServerPlayerEntity sp) {
+			com.ngoducduy.celestialarts.skill.skills.HeavenSwordSkill.seal(sp, center);
+		}
 	}
 
 	private void clientParticles(int phase) {

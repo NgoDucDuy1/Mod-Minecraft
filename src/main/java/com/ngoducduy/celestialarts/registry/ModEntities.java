@@ -4,6 +4,8 @@ import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.entity.FireLotusEntity;
 import com.ngoducduy.celestialarts.entity.FlyingSwordEntity;
 import com.ngoducduy.celestialarts.entity.HeavenSwordEntity;
+import com.ngoducduy.celestialarts.entity.ThunderDragonEntity;
+import com.ngoducduy.celestialarts.entity.WindDragonEntity;
 import com.ngoducduy.celestialarts.entity.IceShardEntity;
 import com.ngoducduy.celestialarts.entity.RockSpikeEntity;
 import com.ngoducduy.celestialarts.entity.SpiritSwordEntity;
@@ -56,6 +58,20 @@ public final class ModEntities {
 					.dimensions(EntityDimensions.fixed(1.0f, 2.5f))
 					.trackRangeBlocks(96).trackedUpdateRate(4)
 					.disableSaving().disableSummon()
+					.build());
+
+	public static final EntityType<WindDragonEntity> WIND_DRAGON = register("wind_dragon",
+			FabricEntityTypeBuilder.<WindDragonEntity>create(SpawnGroup.MISC, WindDragonEntity::new)
+					.dimensions(EntityDimensions.fixed(1.2f, 1.2f))
+					.trackRangeBlocks(96).trackedUpdateRate(1).forceTrackedVelocityUpdates(true)
+					.disableSaving().disableSummon()
+					.build());
+
+	public static final EntityType<ThunderDragonEntity> THUNDER_DRAGON = register("thunder_dragon",
+			FabricEntityTypeBuilder.<ThunderDragonEntity>create(SpawnGroup.MISC, ThunderDragonEntity::new)
+					.dimensions(EntityDimensions.fixed(0.8f, 0.8f))
+					.trackRangeBlocks(128).trackedUpdateRate(1).forceTrackedVelocityUpdates(true)
+					.fireImmune().disableSaving().disableSummon()
 					.build());
 
 	public static final EntityType<HeavenSwordEntity> HEAVEN_SWORD = register("heaven_sword",

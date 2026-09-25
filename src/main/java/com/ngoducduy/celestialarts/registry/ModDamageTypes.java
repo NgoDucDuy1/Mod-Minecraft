@@ -33,6 +33,12 @@ public final class ModDamageTypes {
 	public static void init() {
 	}
 
+	/** True for every damage type declared by this mod. */
+	public static boolean isSkillDamage(DamageSource source) {
+		return source.isOf(SWORD_QI) || source.isOf(FLAME) || source.isOf(FROST) || source.isOf(THUNDER)
+				|| source.isOf(WIND) || source.isOf(EARTH) || source.isOf(VOID_DRAIN) || source.isOf(HEAVEN);
+	}
+
 	/** Direct damage caused by an attacker (melee, area). */
 	public static DamageSource source(World world, RegistryKey<DamageType> type, @Nullable Entity attacker) {
 		return world.getDamageSources().create(type, attacker);

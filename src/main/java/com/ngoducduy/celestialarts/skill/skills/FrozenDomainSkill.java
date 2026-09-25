@@ -83,6 +83,23 @@ public class FrozenDomainSkill extends Skill {
 					}
 				}
 			}
+			if (age == 6) {
+				// Băng Tâm: inside her own domain the caster is untouched by the cold.
+				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, DURATION, 0, false, false, true));
+				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, DURATION, 0, false, false, true));
+			}
+			if (age > 6 && age % 20 == 10) {
+				// Anything that walks into the domain afterwards is caught by the cold as well.
+				for (LivingEntity target : EntityUtil.inCylinder(world, caster, center, RADIUS, 4.0)) {
+					if (target.hasStatusEffect(ModEffects.FROZEN)) continue;
+					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.FROST, caster), 3f)) {
+						target.addStatusEffect(new StatusEffectInstance(ModEffects.FROZEN, 40, 0, false, false, true), caster);
+						if (!frozen.contains(target.getId())) frozen.add(target.getId());
+						SkillFx.frostBurst(world, target.getBoundingBox().getCenter(), 12, 0.12);
+						world.playSound(null, target.getBlockPos(), ModSounds.ICE_CAST, SoundCategory.PLAYERS, 0.7f, 1.4f);
+					}
+				}
+			}
 			if (age > 6 && age % 4 == 0) {
 				double a = world.random.nextDouble() * Math.PI * 2;
 				double r = Math.sqrt(world.random.nextDouble()) * RADIUS;

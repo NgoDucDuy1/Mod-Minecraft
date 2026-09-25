@@ -2,6 +2,8 @@ package com.ngoducduy.celestialarts.mixin;
 
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
+import com.ngoducduy.celestialarts.cultivation.RealmPassives;
+import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.skill.cast.ShieldCast;
 import net.minecraft.entity.LivingEntity;
@@ -17,8 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Two small hooks:
  * <ul>
  *   <li>Frozen entities cannot jump.</li>
- *   <li>Damage taken by a player is first absorbed by an active Huyền Vũ shield,
- *       and frozen targets take extra damage.</li>
+ *   <li>Skill damage dealt by a player scales with their realm; damage taken by a player is
+ *       first absorbed by an active Huyền Vũ shield, and frozen targets take extra damage.</li>
  * </ul>
  */
 @Mixin(LivingEntity.class)
@@ -35,6 +37,12 @@ public abstract class LivingEntityMixin {
 	private float celestialarts$modifyDamage(float amount, DamageSource source) {
 		LivingEntity self = (LivingEntity) (Object) this;
 		if (self.getWorld().isClient) return amount;
+
+		// Skill damage grows with the caster's realm.
+		if (amount > 0 && source.getAttacker() instanceof ServerPlayerEntity attacker && attacker != self
+				&& ModDamageTypes.isSkillDamage(source)) {
+			amount *= RealmPassives.skillDamageMultiplier(QiHolder.get(attacker).getRealm());
+		}
 
 		if (self instanceof ServerPlayerEntity player) {
 			PlayerQi qi = QiHolder.get(player);

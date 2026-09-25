@@ -1,10 +1,14 @@
 package com.ngoducduy.celestialarts.entity;
 
+import com.ngoducduy.celestialarts.network.FxData;
+import com.ngoducduy.celestialarts.network.FxType;
+import com.ngoducduy.celestialarts.network.ModPackets;
 import com.ngoducduy.celestialarts.registry.GlowParticleEffect;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.registry.ModSounds;
+import com.ngoducduy.celestialarts.util.EntityUtil;
 import com.ngoducduy.celestialarts.util.SkillFx;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,9 +22,13 @@ import net.minecraft.world.World;
 
 /**
  * Hàn Băng Tiễn – an icicle arrow. Slight gravity, chills on hit; three stacks
- * of chill freeze the target solid.
+ * of chill freeze the target solid; an arrow striking an already frozen target shatters
+ * the ice, hurting everything nearby.
  */
 public class IceShardEntity extends SkillProjectileEntity {
+	private static final double SHATTER_RADIUS = 3.0;
+	private static final float SHATTER_DAMAGE = 9.0f;
+
 	public IceShardEntity(EntityType<? extends IceShardEntity> type, World world) {
 		super(type, world);
 		this.damage = 5.0f;
@@ -34,6 +42,21 @@ public class IceShardEntity extends SkillProjectileEntity {
 		Entity owner = this.getOwner();
 		boolean ok = target.damage(ModDamageTypes.projectile(this.getWorld(), ModDamageTypes.FROST, this, owner), damage);
 		if (ok && target instanceof LivingEntity living) {
+			if (living.hasStatusEffect(ModEffects.FROZEN) && this.getWorld() instanceof ServerWorld sw) {
+				// Băng Toái: an arrow striking a frozen body shatters the ice into a burst of shards.
+				living.removeStatusEffect(ModEffects.FROZEN);
+				Vec3d c = living.getBoundingBox().getCenter();
+				for (LivingEntity other : EntityUtil.inSphere(sw, owner == null ? this : owner, c, SHATTER_RADIUS)) {
+					other.damage(ModDamageTypes.projectile(sw, ModDamageTypes.FROST, this, owner), other == living ? SHATTER_DAMAGE : SHATTER_DAMAGE * 0.6f);
+					if (other != living) other.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false, true), owner);
+				}
+				ModPackets.sendFx(sw, FxData.at(FxType.ICE_SPIKES, living.getPos(), 0x9BE4FF, (float) SHATTER_RADIUS * 0.6f, 14));
+				ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c, 0xE8FBFF, 1.2f, 6));
+				SkillFx.frostBurst(sw, c, 50, 0.4);
+				SkillFx.shell(sw, ModParticles.ICE_CRYSTAL, c, 0.8, 30, 0.35);
+				sw.playSound(null, living.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.4f, 0.7f);
+				return true;
+			}
 			StatusEffectInstance slow = living.getStatusEffect(StatusEffects.SLOWNESS);
 			int stacks = slow == null ? 0 : slow.getAmplifier() + 1;
 			if (stacks >= 2) {

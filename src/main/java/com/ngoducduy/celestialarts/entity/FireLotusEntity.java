@@ -17,6 +17,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -183,6 +184,9 @@ public class FireLotusEntity extends SkillProjectileEntity {
 		sw.playSound(null, this.getBlockPos(), ModSounds.FIRE_EXPLOSION, SoundCategory.PLAYERS, 2.0f, 0.9f);
 		sw.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.2f, 0.7f);
 		ModPackets.sendCameraShake(sw, center, 30.0, 0.9f, 12);
+		if (owner instanceof ServerPlayerEntity sp) {
+			com.ngoducduy.celestialarts.skill.skills.FireLotusSkill.igniteSea(sp, center, radius * 0.7);
+		}
 		this.discard();
 	}
 

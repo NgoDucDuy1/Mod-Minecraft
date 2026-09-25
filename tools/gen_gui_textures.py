@@ -37,7 +37,7 @@ SKILL_ELEMENT = {
     "wind_blade_dance": "wind", "tortoise_shield": "earth", "earth_shatter": "earth", "fire_lotus": "fire",
     "taiji_formation": "dao", "sword_flight": "sword", "frozen_domain": "ice", "thousand_swords": "sword",
     "purple_thunder_beam": "lightning", "devouring_vortex": "void", "nine_tribulations": "lightning",
-    "heaven_sword": "dao",
+    "heaven_sword": "dao", "vajra_palm": "dao", "wind_dragon": "wind", "golden_body": "dao", "thunder_dragon": "lightning",
 }
 
 
@@ -511,6 +511,61 @@ def mod_icon():
     print("icon.png")
 
 
+def icon_vajra_palm():
+    col, col2 = ELEMENT["dao"]
+    img = icon_bg(col, col2)
+    # open palm: palm disc + five fingers, with a seal ring behind
+    T.ellipse_glow(img, (5, 5, 27, 27), col, glow=1.5, fill_alpha=0)
+    T.ellipse_glow(img, (11, 15, 21, 27), col2, glow=1.5)
+    for (x0, y0, x1, y1) in [(9, 16, 6, 8), (12, 14, 11, 4), (16, 14, 16, 3), (20, 14, 21, 4), (22, 17, 27, 11)]:
+        T.polyline_glow(img, [(x0, y0), (x1, y1)], col2, 2.4, glow=1.2)
+    icon_finish(img, "vajra_palm")
+
+
+def icon_wind_dragon():
+    col, col2 = ELEMENT["wind"]
+    img = icon_bg(col, col2)
+    # tornado: stacked rings shrinking downward
+    for i, (w, y) in enumerate([(12, 8), (9.5, 13), (7, 18), (4.5, 23), (2.5, 28)]):
+        T.arc_glow(img, (16 - w, y - 2.2, 16 + w, y + 2.2), 0, 360, col2 if i % 2 == 0 else col, 1.6, glow=1.2)
+    # dragon head at the rim
+    T.polygon_glow(img, [(21, 2), (30, 5), (27, 10), (20, 8)], col2, glow=1.5)
+    T.polyline_glow(img, [(22, 3), (20, 0.5)], col2, 1.2, glow=0.6)
+    T.ellipse_glow(img, (25, 5, 27, 7), (40, 90, 70), glow=0.3)
+    icon_finish(img, "wind_dragon")
+
+
+def icon_golden_body():
+    col, col2 = ELEMENT["dao"]
+    img = icon_bg(col, col2)
+    # sun disc behind a meditating silhouette
+    img.alpha_composite(T.radial(32, 32, col + (200,), col + (0,), power=1.6, radius=13))
+    T.ellipse_glow(img, (12, 5, 20, 13), (90, 60, 20), glow=1.5)                    # head
+    T.polygon_glow(img, [(9, 14), (23, 14), (27, 26), (5, 26)], (90, 60, 20), glow=1.5)  # body
+    T.ellipse_glow(img, (13, 6, 19, 12), col2, glow=0.5)
+    T.polygon_glow(img, [(10, 15), (22, 15), (25.5, 25), (6.5, 25)], col2, glow=0.5)
+    T.polyline_glow(img, [(3, 26), (29, 26)], col2, 2.0, glow=1.0)          # crossed legs line
+    for k in range(8):
+        a = k * math.pi / 4
+        T.polyline_glow(img, [(16 + math.cos(a) * 13, 16 + math.sin(a) * 13), (16 + math.cos(a) * 15.5, 16 + math.sin(a) * 15.5)], col, 1.5, glow=1.0)
+    icon_finish(img, "golden_body")
+
+
+def icon_thunder_dragon():
+    col, col2 = ELEMENT["lightning"]
+    img = icon_bg(col, col2)
+    # serpentine lightning body
+    pts = [(3, 26), (8, 20), (7, 15), (13, 12), (14, 7), (21, 6)]
+    T.polyline_glow(img, pts, col, 4.0, glow=2.5, core=False)
+    T.polyline_glow(img, pts, col2, 1.8, glow=1.2)
+    # head with horns
+    T.polygon_glow(img, [(20, 3), (29, 5), (27, 11), (20, 10)], col2, glow=1.5)
+    T.polyline_glow(img, [(22, 4), (19, 1)], col2, 1.2, glow=0.8)
+    T.polyline_glow(img, [(26, 4), (27, 1)], col2, 1.2, glow=0.8)
+    T.ellipse_glow(img, (25, 6, 27, 8), (255, 255, 255), glow=0.6)
+    icon_finish(img, "thunder_dragon")
+
+
 def main():
     for f in (ITEM, GUI, SKILLS):
         os.makedirs(f, exist_ok=True)
@@ -527,6 +582,9 @@ def main():
     icon_wind_blade_dance(); icon_tortoise_shield(); icon_earth_shatter(); icon_fire_lotus()
     icon_taiji_formation(); icon_sword_flight(); icon_frozen_domain(); icon_thousand_swords()
     icon_purple_thunder_beam(); icon_devouring_vortex(); icon_nine_tribulations(); icon_heaven_sword()
+    icon_vajra_palm(); icon_wind_dragon(); icon_golden_body(); icon_thunder_dragon()
+    item_pill("qi_pill", (80, 220, 200))
+    item_pill("heaven_pill", (255, 215, 90))
     gui_hud(); gui_skill_book(); advancement_bg(); mod_icon()
 
 

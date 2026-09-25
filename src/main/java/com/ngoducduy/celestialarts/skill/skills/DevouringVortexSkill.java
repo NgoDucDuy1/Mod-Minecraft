@@ -50,6 +50,8 @@ public class DevouringVortexSkill extends Skill {
 	}
 
 	private static final class VortexCast extends ActiveCast {
+		private float devoured;
+
 		VortexCast(ServerPlayerEntity caster, Skill skill) {
 			super(caster, skill, MAX_DURATION);
 		}
@@ -104,6 +106,7 @@ public class DevouringVortexSkill extends Skill {
 				if (age % 5 == 0 && target.getBoundingBox().getCenter().squaredDistanceTo(core) <= CORE_RADIUS * CORE_RADIUS) {
 					float dmg = 2.5f;
 					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.VOID_DRAIN, caster), dmg)) {
+						devoured += dmg;
 						caster.heal(dmg * 0.5f);
 						qi.addQi(dmg * 1.5f);
 						target.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 40, 0, false, false, true), caster);
@@ -117,7 +120,17 @@ public class DevouringVortexSkill extends Skill {
 		protected void onEnd(boolean cancelled) {
 			Vec3d core = core();
 			SkillFx.voidSmoke(world, core, 40, 0.3);
-			ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, core, 0x6A1FB0, 2.0f, 10));
+			// Hư Không Băng Hoại: the vortex collapses and spits the devoured essence back out.
+			float burst = 4.0f + Math.min(16.0f, devoured * 0.6f);
+			float size = 2.0f + Math.min(2.0f, devoured * 0.08f);
+			ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, core, 0xD24BFF, size, 12));
+			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, core.add(0, -1.2, 0), 0x6A1FB0, 2.0f + size, 14));
+			SkillFx.shell(world, GlowParticleEffect.glow(0xD24BFF, 0.6f, 14), core, 1.0, 30, 0.5);
+			for (LivingEntity target : EntityUtil.inSphere(world, caster, core, 5.0)) {
+				if (target.damage(ModDamageTypes.source(world, ModDamageTypes.VOID_DRAIN, caster), burst)) {
+					EntityUtil.knockback(target, core, 1.2, 0.5);
+				}
+			}
 			ModPackets.sendFx(caster, FxData.follow(FxType.VORTEX, caster.getId(), caster.getPos(), 0x6A1FB0, 0f, 0).withExtra(-1));
 			world.playSound(null, caster.getBlockPos(), ModSounds.VOID_DRAIN, SoundCategory.PLAYERS, 1.0f, 1.4f);
 		}

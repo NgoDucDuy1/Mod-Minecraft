@@ -8,6 +8,7 @@ import com.ngoducduy.celestialarts.cultivation.Realm;
 import com.ngoducduy.celestialarts.cultivation.RealmPassives;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
+import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModItems;
 import com.ngoducduy.celestialarts.skill.Skill;
@@ -20,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -150,8 +152,56 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.runAtTick(82, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.HEAVEN_SWORD), "heaven sword cast"));
 		ctx.runAtTick(100, () -> ctx.assertTrue(count(world, ModEntities.HEAVEN_SWORD, player.getPos(), 64) >= 1, "heaven sword descending"));
 
+		ctx.runAtTick(102, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.WIND_DRAGON), "wind dragon cast"));
+		ctx.runAtTick(104, () -> ctx.assertTrue(count(world, ModEntities.WIND_DRAGON, player.getPos(), 16) >= 1, "wind dragon entity spawned"));
+
+		ctx.runAtTick(106, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.THUNDER_DRAGON), "thunder dragon cast"));
+		ctx.runAtTick(132, () -> ctx.assertTrue(count(world, ModEntities.THUNDER_DRAGON, player.getPos(), 64) >= 1, "thunder dragon released after the charge"));
+
 		ctx.runAtTick(150, () -> {
 			for (ActiveCast cast : qi.getActiveCasts()) cast.onRelease();
+			removePlayer(ctx, player);
+			ctx.complete();
+		});
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 200)
+	public void skillDamageScalesWithRealm(TestContext ctx) {
+		// Pure function first.
+		ctx.assertTrue(Math.abs(RealmPassives.skillDamageMultiplier(Realm.QI_REFINING) - 1.0F) < 1e-5F, "qi refining multiplier is 1");
+		ctx.assertTrue(RealmPassives.skillDamageMultiplier(Realm.TRIBULATION) > RealmPassives.skillDamageMultiplier(Realm.GOLDEN_CORE), "multiplier grows with realm");
+
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.QI_REFINING);
+		ServerWorld world = ctx.getWorld();
+		IronGolemEntity low = ctx.spawnMob(EntityType.IRON_GOLEM, 3.5F, 2.0F, 0.5F);
+		IronGolemEntity high = ctx.spawnMob(EntityType.IRON_GOLEM, 5.5F, 2.0F, 0.5F);
+		low.setAiDisabled(true);
+		high.setAiDisabled(true);
+
+		ctx.runAtTick(2, () -> {
+			float before = low.getHealth();
+			low.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, player), 10.0F);
+			float lost = before - low.getHealth();
+			ctx.assertTrue(Math.abs(lost - 10.0F) < 0.01F, "qi refining skill hit deals base damage, lost " + lost);
+
+			QiHolder.get(player).setRealm(Realm.TRIBULATION);
+			float before2 = high.getHealth();
+			high.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, player), 10.0F);
+			float lost2 = before2 - high.getHealth();
+			float expected = 10.0F * RealmPassives.skillDamageMultiplier(Realm.TRIBULATION);
+			ctx.assertTrue(Math.abs(lost2 - expected) < 0.01F, "tribulation skill hit is amplified, lost " + lost2 + " expected " + expected);
+
+			// Non-skill damage from the same player is untouched.
+			high.timeUntilRegen = 0;
+			high.hurtTime = 0;
+			float before3 = high.getHealth();
+			high.damage(world.getDamageSources().playerAttack(player), 5.0F);
+			float lost3 = before3 - high.getHealth();
+			ctx.assertTrue(Math.abs(lost3 - 5.0F) < 0.01F, "plain melee damage is not scaled, lost " + lost3);
+		});
+		ctx.runAtTick(6, () -> {
+			low.discard();
+			high.discard();
 			removePlayer(ctx, player);
 			ctx.complete();
 		});
@@ -331,7 +381,8 @@ public final class CelestialGameTests implements FabricGameTest {
 		MinecraftServer server = ctx.getWorld().getServer();
 		String[] recipes = {"spirit_stone", "high_spirit_stone", "dao_manual", "foundation_pill", "nascent_pill",
 				"immortal_sword", "scroll_sword_qi_slash", "scroll_flame_claw", "scroll_ice_arrows", "scroll_lightning_step",
-				"scroll_wind_blade_dance", "scroll_tortoise_shield", "scroll_earth_shatter"};
+				"scroll_wind_blade_dance", "scroll_tortoise_shield", "scroll_earth_shatter", "scroll_vajra_palm", "scroll_wind_dragon",
+				"qi_pill", "heaven_pill"};
 		for (String r : recipes) {
 			Identifier id = CelestialArts.id(r);
 			ctx.assertTrue(server.getRecipeManager().get(id).isPresent(), "recipe present: " + id);
@@ -356,6 +407,8 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.spawnEntity(ModEntities.FLYING_SWORD, 0.5F, 3.0F, 0.5F);
 		ctx.spawnEntity(ModEntities.ROCK_SPIKE, 0.5F, 2.0F, 0.5F);
 		ctx.spawnEntity(ModEntities.HEAVEN_SWORD, 0.5F, 20.0F, 0.5F);
+		ctx.spawnEntity(ModEntities.WIND_DRAGON, 0.5F, 2.0F, 0.5F);
+		ctx.spawnEntity(ModEntities.THUNDER_DRAGON, 0.5F, 3.0F, 0.5F);
 		ctx.runAtTick(250, ctx::complete);
 	}
 }

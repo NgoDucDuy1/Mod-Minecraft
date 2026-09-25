@@ -70,6 +70,12 @@ public final class ModLootTables {
 			if (maxRealm.getLevel() >= Realm.NASCENT_SOUL.getLevel()) {
 				stones.with(ItemEntry.builder(ModItems.NASCENT_PILL).weight(1));
 			}
+			if (maxRealm.getLevel() >= Realm.FOUNDATION.getLevel()) {
+				stones.with(ItemEntry.builder(ModItems.QI_PILL).weight(2));
+			}
+			if (maxRealm.getLevel() >= Realm.TRIBULATION.getLevel()) {
+				stones.with(ItemEntry.builder(ModItems.HEAVEN_PILL).weight(1));
+			}
 			tableBuilder.pool(stones);
 
 			// Skill manuals: one roll with a chance that grows with the tier, weighted towards lower realms.

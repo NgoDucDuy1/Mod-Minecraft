@@ -33,6 +33,12 @@ public class SlashArcFx extends ClientFx {
 			default -> 0.0F;
 		};
 		this.reverse = data.extra() == 2 || (data.extra() == 0 && rand(3) > 0.5F);
+		// Free-standing slashes (no entity) face the direction given in {@code target}.
+		if (entity() == null && data.target() != null && data.target().lengthSquared() > 1.0E-6) {
+			Vec3d d = data.target().normalize();
+			this.yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+			this.pitch = (float) -Math.toDegrees(Math.asin(MathHelper.clamp(d.y, -1.0, 1.0)));
+		}
 	}
 
 	@Override

@@ -27,6 +27,10 @@ public final class ModItems {
 	public static final Item HIGH_SPIRIT_STONE = register("high_spirit_stone", new SpiritStoneItem(200f, 80, 0xFFD36B, new Item.Settings().maxCount(64).rarity(Rarity.UNCOMMON)));
 	public static final Item FOUNDATION_PILL = register("foundation_pill", new SpiritStoneItem(100f, 400, 0x7CFFB0, new Item.Settings().maxCount(16).rarity(Rarity.RARE)));
 	public static final Item NASCENT_PILL = register("nascent_pill", new SpiritStoneItem(300f, 2000, 0xD98BFF, new Item.Settings().maxCount(16).rarity(Rarity.EPIC)));
+	/** Pure qi restoration, no cultivation experience – the cheap "mana potion". */
+	public static final Item QI_PILL = register("qi_pill", new SpiritStoneItem(200f, 0, 0x50DCC8, new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)));
+	/** End-game pill: fills a Tribulation cultivator's qi and grants a large chunk of experience. */
+	public static final Item HEAVEN_PILL = register("heaven_pill", new SpiritStoneItem(620f, 6000, 0xFFD75A, new Item.Settings().maxCount(16).rarity(Rarity.EPIC)));
 
 	static {
 		// One manual per skill, registered in skill order.

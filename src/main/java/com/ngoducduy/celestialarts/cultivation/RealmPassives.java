@@ -72,6 +72,11 @@ public final class RealmPassives {
 		return (realm.getLevel() - 1) * 0.08F;
 	}
 
+	/** Every skill hit is amplified by the caster's cultivation: +6% per realm above Luyện Khí. */
+	public static float skillDamageMultiplier(Realm realm) {
+		return 1.0F + (realm.getLevel() - 1) * 0.06F;
+	}
+
 	/** Extra jumps available while airborne (Lăng Không Bộ). */
 	public static int airJumps(Realm realm) {
 		int level = realm.getLevel();

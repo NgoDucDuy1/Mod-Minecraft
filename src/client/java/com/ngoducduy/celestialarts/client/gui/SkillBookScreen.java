@@ -33,6 +33,7 @@ public class SkillBookScreen extends Screen {
 	private static final int COLS = 4;
 	private static final int ROWS = 4;
 	private static final int ICON = 32;
+	private static final int PAGE_SIZE = COLS * ROWS;
 
 	private final List<Skill> learned = new ArrayList<>();
 	@Nullable
@@ -40,6 +41,9 @@ public class SkillBookScreen extends Screen {
 	private int left;
 	private int top;
 	private ButtonWidget breakthroughButton;
+	private ButtonWidget prevPage;
+	private ButtonWidget nextPage;
+	private int page;
 
 	public SkillBookScreen() {
 		super(Text.translatable("gui.celestialarts.title"));
@@ -55,6 +59,29 @@ public class SkillBookScreen extends Screen {
 			ClientPackets.sendBreakthrough();
 			this.close();
 		}).dimensions(left + 166, top + 186, 78, 20).build());
+		this.prevPage = this.addDrawableChild(ButtonWidget.builder(Text.literal("<"), b -> setPage(page - 1))
+				.dimensions(left + 122, top + 24, 14, 12).build());
+		this.nextPage = this.addDrawableChild(ButtonWidget.builder(Text.literal(">"), b -> setPage(page + 1))
+				.dimensions(left + 142, top + 24, 14, 12).build());
+		setPage(page);
+	}
+
+	private int pageCount() {
+		return Math.max(1, (learned.size() + PAGE_SIZE - 1) / PAGE_SIZE);
+	}
+
+	private void setPage(int p) {
+		page = Math.floorMod(p, pageCount());
+		boolean multi = pageCount() > 1;
+		prevPage.visible = multi;
+		nextPage.visible = multi;
+	}
+
+	/** Skill shown in grid cell {@code i} of the current page, or null. */
+	@Nullable
+	private Skill cell(int i) {
+		int idx = page * PAGE_SIZE + i;
+		return idx < learned.size() ? learned.get(idx) : null;
 	}
 
 	private void refreshLearned() {
@@ -105,8 +132,13 @@ public class SkillBookScreen extends Screen {
 		if (learned.isEmpty()) {
 			ctx.drawTextWrapped(textRenderer, Text.translatable("gui.celestialarts.empty"), gridX(0), gridY(0), CELL * COLS, 0x9A9A9A);
 		}
-		for (int i = 0; i < learned.size() && i < COLS * ROWS; i++) {
-			Skill s = learned.get(i);
+		if (pageCount() > 1) {
+			String pg = (page + 1) + "/" + pageCount();
+			ctx.drawCenteredTextWithShadow(textRenderer, pg, left + 139, top + 14, 0xC8C8C8);
+		}
+		for (int i = 0; i < PAGE_SIZE; i++) {
+			Skill s = cell(i);
+			if (s == null) break;
 			int x = gridX(i % COLS);
 			int y = gridY(i / COLS);
 			boolean usable = s.getRealm().getLevel() <= qi.getRealm().getLevel();
@@ -176,16 +208,27 @@ public class SkillBookScreen extends Screen {
 	}
 
 	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		if (pageCount() > 1 && mouseX >= gridX(0) - 4 && mouseX < gridX(COLS) && mouseY >= gridY(0) - 4 && mouseY < gridY(ROWS)) {
+			setPage(page + (amount < 0 ? 1 : -1));
+			return true;
+		}
+		return super.mouseScrolled(mouseX, mouseY, amount);
+	}
+
+	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (super.mouseClicked(mouseX, mouseY, button)) return true;
 		PlayerQi qi = qi();
 		// Grid.
-		for (int i = 0; i < learned.size() && i < COLS * ROWS; i++) {
+		for (int i = 0; i < PAGE_SIZE; i++) {
+			Skill s = cell(i);
+			if (s == null) break;
 			int x = gridX(i % COLS);
 			int y = gridY(i / COLS);
 			if (mouseX >= x && mouseX < x + ICON && mouseY >= y && mouseY < y + ICON) {
 				if (button == 0) {
-					selected = selected == learned.get(i) ? null : learned.get(i);
+					selected = selected == s ? null : s;
 					playClick();
 					return true;
 				}

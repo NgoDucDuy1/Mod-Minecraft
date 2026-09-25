@@ -6,6 +6,10 @@ import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.util.EntityUtil;
 import com.ngoducduy.celestialarts.util.SkillFx;
+import com.ngoducduy.celestialarts.util.Targeting;
+import com.ngoducduy.celestialarts.network.ModPackets;
+import com.ngoducduy.celestialarts.network.FxType;
+import com.ngoducduy.celestialarts.network.FxData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +29,8 @@ import net.minecraft.world.World;
  * Phi Kiếm – a summoned spirit sword.
  *
  * <p>Phase ORBIT: hovers in a ring around the owner, tip pointing outward.<br>
- * Phase LAUNCH: after its delay it locks onto the nearest enemy and homes in.<br>
+ * Phase LAUNCH: after its delay it locks onto the nearest enemy and homes in (or rains on
+ * the point the owner is looking at when there is no enemy).<br>
  * Phase STUCK: after hitting it lingers a moment and dissolves into light.</p>
  */
 public class SpiritSwordEntity extends Entity {
@@ -43,8 +48,11 @@ public class SpiritSwordEntity extends Entity {
 	private double orbitRadius = 2.4;
 	private double orbitHeight = 1.4;
 	private int targetId = -1;
+	private Vec3d targetPos;
+	private boolean launched;
 	private int lifeAfterLaunch = 0;
 	private int stuckTicks = 0;
+	private static final double SHATTER_RADIUS = 2.0;
 
 	public SpiritSwordEntity(EntityType<? extends SpiritSwordEntity> type, World world) {
 		super(type, world);
@@ -129,8 +137,14 @@ public class SpiritSwordEntity extends Entity {
 				Vec3d dir = t.getBoundingBox().getCenter().subtract(this.getPos()).normalize();
 				this.setVelocity(dir.multiply(0.9));
 				this.getWorld().playSound(null, this.getBlockPos(), ModSounds.SWORD_LAUNCH, SoundCategory.PLAYERS, 0.9f, 1.0f + random.nextFloat() * 0.3f);
-			} else if (this.age > launchDelay + 60) {
-				dissolve();
+			} else if (this.age >= launchDelay + 8) {
+				// Kiếm Vũ: with nobody to hunt, the swords rain down on the spot the owner is looking at.
+				Vec3d aim = Targeting.lookPoint(own, 30);
+				targetPos = aim.add((random.nextDouble() - 0.5) * 3.0, 0, (random.nextDouble() - 0.5) * 3.0);
+				setPhase(PHASE_LAUNCH);
+				Vec3d dir = targetPos.subtract(this.getPos()).normalize();
+				this.setVelocity(dir.multiply(0.9));
+				this.getWorld().playSound(null, this.getBlockPos(), ModSounds.SWORD_LAUNCH, SoundCategory.PLAYERS, 0.8f, 1.1f + random.nextFloat() * 0.3f);
 			}
 		}
 	}
@@ -152,8 +166,19 @@ public class SpiritSwordEntity extends Entity {
 		if (t instanceof LivingEntity target && target.isAlive()) {
 			Vec3d want = target.getBoundingBox().getCenter().subtract(this.getPos()).normalize().multiply(1.25);
 			vel = vel.lerp(want, 0.22);
+		} else if (targetPos != null) {
+			Vec3d toPoint = targetPos.subtract(this.getPos());
+			if (toPoint.lengthSquared() < 1.0) {
+				this.setPosition(targetPos.x, targetPos.y, targetPos.z);
+				this.setVelocity(Vec3d.ZERO);
+				launched = true;
+				setPhase(PHASE_STUCK);
+				return;
+			}
+			vel = vel.lerp(toPoint.normalize().multiply(1.25), 0.3);
 		}
 		this.setVelocity(vel);
+		launched = true;
 
 		// Hit detection along the path.
 		Vec3d start = this.getPos();
@@ -190,7 +215,23 @@ public class SpiritSwordEntity extends Entity {
 
 	private void tickStuck() {
 		stuckTicks++;
-		if (stuckTicks > 14) dissolve();
+		if (stuckTicks > 14) {
+			if (launched) shatter();
+			dissolve();
+		}
+	}
+
+	/** Kiếm Khí Bạo: a sword that has struck bursts into a small sword-qi explosion. */
+	private void shatter() {
+		if (!(this.getWorld() instanceof ServerWorld sw)) return;
+		LivingEntity own = getOwner();
+		Vec3d c = this.getPos();
+		ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c, 0xBFF0FF, 0.9f, 6));
+		SkillFx.swordGlints(sw, c, 10, 0.35);
+		sw.playSound(null, this.getBlockPos(), ModSounds.SWORD_QI, SoundCategory.PLAYERS, 0.7f, 1.5f + random.nextFloat() * 0.2f);
+		for (LivingEntity e : EntityUtil.inSphere(sw, own == null ? this : own, c, SHATTER_RADIUS)) {
+			e.damage(ModDamageTypes.projectile(sw, ModDamageTypes.SWORD_QI, this, own), damage * 0.4f);
+		}
 	}
 
 	private void faceVelocity(Vec3d vel) {
