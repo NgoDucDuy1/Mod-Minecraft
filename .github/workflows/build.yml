@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   build:
@@ -32,9 +33,49 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build
-        run: ./gradlew build --no-daemon --stacktrace
+        id: build
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Publish build log to tracking issue
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTCOME: ${{ steps.build.outcome }}
+        run: |
+          set +e
+          TITLE="CI build log: ${GITHUB_REF_NAME}"
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
+          {
+            echo "**Result:** \`$OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo '### Compiler errors / warnings'
+            echo '```'
+            grep -E "error:|warning:|\.java:[0-9]+:|What went wrong|Could not|FAILURE|BUILD" build.log | head -n 300 | cut -c1-400
+            echo '```'
+            echo '### Log tail'
+            echo '```'
+            tail -n 120 build.log | cut -c1-400
+            echo '```'
+          } > body.md
+          # Keep well below the 65536 character limit.
+          python3 - <<'PY'
+          p='body.md'; s=open(p,encoding='utf-8',errors='replace').read()
+          if len(s) > 60000: s = s[:60000] + "\n```\n(truncated)"
+          open(p,'w',encoding='utf-8').write(s)
+          PY
+          if [ -z "$NUM" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file body.md
+          else
+            gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --body-file body.md
+            gh issue reopen "$NUM" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+          fi
 
       - name: Upload mod jar
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: celestialarts
