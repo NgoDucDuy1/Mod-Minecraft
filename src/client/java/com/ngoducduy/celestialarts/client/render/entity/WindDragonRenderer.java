@@ -41,10 +41,10 @@ public class WindDragonRenderer extends GlowEntityRenderer<WindDragonEntity> {
 
 		matrices.push();
 		// Funnel body: a translucent emissive cone of churning air (visible against any sky)...
-		VertexConsumer body = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.BEAM));
+		VertexConsumer funnel = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.BEAM));
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(age * 18.0F));
-		RenderUtil.cylinder(body, matrices.peek(), 0.35F, radius * 0.9F, height, 16, 2.0F, 1.5F, -age * 0.05F, COLOR, 0.55F * grow, 0.18F * grow);
+		RenderUtil.cylinder(funnel, matrices.peek(), 0.35F, radius * 0.9F, height, 16, 2.0F, 1.5F, -age * 0.05F, COLOR, 0.55F * grow, 0.18F * grow);
 		matrices.pop();
 		// ...wrapped in three nested layers of additive wind streaks spinning at different speeds.
 		VertexConsumer wind = vcp.getBuffer(ModRenderLayers.additive(FxTextures.WIND_BLADE));
