@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Gradle wrapper
+        # Needs services.gradle.org; do not fail the whole pipeline on runner network hiccups.
+        continue-on-error: true
         uses: gradle/actions/wrapper-validation@v3
 
       - name: Set up JDK 17
