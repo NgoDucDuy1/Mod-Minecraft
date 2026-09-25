@@ -79,7 +79,7 @@ public class SwordFlightSkill extends Skill {
 			// Kiếm Quang Xung: at speed the blade cuts through whatever it passes.
 			if (age % 4 == 0 && lastVelocity.lengthSquared() > RAM_SPEED * RAM_SPEED) {
 				for (LivingEntity target : EntityUtil.alongLine(world, caster, pos.subtract(lastVelocity.multiply(2)), pos.add(lastVelocity), 1.3)) {
-					if (target == caster || target == sword) continue;
+					if (target == caster) continue;
 					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, caster), 6.0f)) {
 						EntityUtil.knockback(target, pos, 0.5, 0.3);
 						SkillFx.swordGlints(world, target.getBoundingBox().getCenter(), 10, 0.3);

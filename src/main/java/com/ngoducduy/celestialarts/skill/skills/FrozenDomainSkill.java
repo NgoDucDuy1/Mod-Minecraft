@@ -17,6 +17,7 @@ import com.ngoducduy.celestialarts.util.EntityUtil;
 import com.ngoducduy.celestialarts.util.SkillFx;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
