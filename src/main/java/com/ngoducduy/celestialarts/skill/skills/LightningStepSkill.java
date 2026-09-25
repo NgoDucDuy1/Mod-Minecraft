@@ -59,6 +59,8 @@ public class LightningStepSkill extends Skill {
 
 		ModPackets.sendFx(ctx.world(), FxData.line(FxType.LIGHTNING_BOLT, start.add(0, 1, 0), dest.add(0, 1, 0), getElement().getPrimary(), 0.9f, 9).withExtra(1));
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, start.add(0, 1, 0), 0xE6D6FF, 0.9f, 6));
+		// Tàn ảnh: ghosts of the caster smeared along the step.
+		ModPackets.sendFx(ctx.world(), FxData.line(FxType.AFTERIMAGE, start, dest, 0xC9B8FF, 6, 14).withEntity(player.getId()));
 		SkillFx.thunderSparks(ctx.world(), start.add(0, 1, 0), 18, 0.35);
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.LIGHTNING_STEP, SoundCategory.PLAYERS, 1.0f, 1.0f);
 

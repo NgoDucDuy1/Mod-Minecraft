@@ -53,9 +53,10 @@ def gen_vignette():
         for x in range(size):
             nx = (x + 0.5) / size * 2 - 1
             ny = (y + 0.5) / size * 2 - 1
-            d = (nx * nx * 0.85 + ny * ny) ** 0.5
-            a = max(0.0, min(1.0, (d - 0.35) / 0.75))
-            px[x, y] = (255, 255, 255, int(255 * a * a))
+            d = (nx * nx * 0.8 + ny * ny) ** 0.5
+            # Gentle ramp: nothing until ~half-way out, ~90 % only in the very corners.
+            a = max(0.0, min(1.0, (d - 0.5) / 0.95))
+            px[x, y] = (255, 255, 255, int(230 * a * a))
     out_fx("vignette", img, size, size)
 
 

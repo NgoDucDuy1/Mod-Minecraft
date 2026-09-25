@@ -41,9 +41,9 @@ import org.lwjgl.opengl.GL11;
 public final class GlowPass {
 	private static final int LEVELS = 3;
 	/** Intensity of the sharp (un-blurred) glow when added back. */
-	private static final float SHARP_GAIN = 1.0F;
+	private static final float SHARP_GAIN = 0.85F;
 	/** Intensity of each blurred level, widest last. */
-	private static final float[] LEVEL_GAIN = {0.55F, 0.45F, 0.40F};
+	private static final float[] LEVEL_GAIN = {0.30F, 0.26F, 0.22F};
 
 	private static ShaderProgram blurProgram;
 	private static Framebuffer glow;

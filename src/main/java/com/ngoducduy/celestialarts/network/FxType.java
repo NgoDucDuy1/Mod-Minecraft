@@ -47,7 +47,12 @@ public enum FxType {
 	 * extra = 0 flash (bright, fades out), 1 darken (dark vignette held for the duration, fades in/out).
 	 * Strength falls off with the viewer's distance to pos over 24 blocks.
 	 */
-	SCREEN_FLASH;
+	SCREEN_FLASH,
+	/**
+	 * Afterimages of entity {@code entityId} along pos → target: its model is redrawn as tinted light
+	 * at {@code scale} evenly spaced points and fades over the duration (flash steps, dashes).
+	 */
+	AFTERIMAGE;
 
 	private static final FxType[] VALUES = values();
 

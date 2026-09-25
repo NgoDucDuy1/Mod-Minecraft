@@ -64,7 +64,10 @@ public final class ScreenOverlay {
 		float strength = MathHelper.clamp(data.scale() * falloff, 0.0F, 1.0F);
 		if (strength <= 0.01F) return;
 		if (ACTIVE.size() > 8) ACTIVE.remove(0);
-		ACTIVE.add(new Entry(Math.max(0, data.extra()), data.color(), strength, data.duration()));
+		int kind = data.extra() == 1 ? 1 : 0;
+		// Flashes are short by nature; clamp so a mis-specified one cannot white out the screen for long.
+		int duration = kind == 0 ? Math.min(data.duration(), 24) : data.duration();
+		ACTIVE.add(new Entry(kind, data.color(), strength, duration));
 	}
 
 	public static int count() {
@@ -116,10 +119,10 @@ public final class ScreenOverlay {
 		RenderSystem.defaultBlendFunc();
 		if (darkA > 0.005F) {
 			// Uniform dimming plus a heavy vignette.
-			int a = (int) (darkA * 110);
+			int a = (int) (darkA * 105);
 			ctx.fill(0, 0, w, h, (a << 24) | 0x0A0614);
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-			RenderSystem.setShaderColor(0.25F, 0.15F, 0.45F, Math.min(1.0F, darkA * 1.1F));
+			RenderSystem.setShaderColor(0.16F, 0.09F, 0.30F, Math.min(1.0F, darkA * 0.75F));
 			ctx.drawTexture(VIGNETTE, 0, 0, 0, 0, w, h, w, h);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 		}

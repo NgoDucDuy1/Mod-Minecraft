@@ -46,7 +46,7 @@ public abstract class ModRenderLayers extends RenderLayer {
 	 * scenes (formation + swords + aura) used to blow out to pure white; 0.7 keeps highlights while
 	 * leaving headroom for several overlapping layers.
 	 */
-	public static final float ADDITIVE_GAIN = 0.7F;
+	public static final float ADDITIVE_GAIN = 0.62F;
 
 	/**
 	 * Render target of every additive layer: the {@link GlowPass} buffer while the glow pass is active
