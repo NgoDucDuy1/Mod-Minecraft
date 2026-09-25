@@ -283,6 +283,8 @@ public final class CelestialAutoTest {
 	private static final List<String> FIRST_PERSON_SHOTS = List.of("sword_qi_slash", "flame_claw", "ice_arrows", "purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain", "thousand_swords", "vajra_palm", "thunder_dragon");
 	/** Skills whose main visual only appears after a wind-up: extra ticks before the third-person shot. */
 	private static final java.util.Map<String, Integer> SHOT_DELAY = java.util.Map.of("thunder_dragon", 18, "wind_dragon", 4, "golden_body", 4, "heaven_sword", 4);
+	/** Aim pitch per skill: projectiles fired straight ahead are hidden behind the player in third person, so tilt those up. */
+	private static final java.util.Map<String, Float> AIM_PITCH = java.util.Map.of("thunder_dragon", -14.0F, "fire_lotus", -10.0F, "ice_arrows", -8.0F);
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
@@ -290,7 +292,7 @@ public final class CelestialAutoTest {
 		submitAndWait(c -> {
 			// Deterministic aim: look along +Z, slightly down, so projectiles fly away from the camera.
 			c.player.setYaw(0.0F);
-			c.player.setPitch(4.0F);
+			c.player.setPitch(AIM_PITCH.getOrDefault(skill.getId().getPath(), 4.0F));
 			c.player.setHeadYaw(0.0F);
 			c.player.setBodyYaw(0.0F);
 			c.options.setPerspective(fp ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
