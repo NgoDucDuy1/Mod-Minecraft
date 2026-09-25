@@ -184,6 +184,7 @@ public class FireLotusEntity extends SkillProjectileEntity {
 		sw.playSound(null, this.getBlockPos(), ModSounds.FIRE_EXPLOSION, SoundCategory.PLAYERS, 2.0f, 0.9f);
 		sw.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.2f, 0.7f);
 		ModPackets.sendCameraShake(sw, center, 30.0, 0.9f, 12);
+		ModPackets.sendFx(sw, FxData.at(FxType.SCREEN_FLASH, center, 0xFFB35C, 0.7f, 10));
 		if (owner instanceof ServerPlayerEntity sp) {
 			com.ngoducduy.celestialarts.skill.skills.FireLotusSkill.igniteSea(sp, center, radius * 0.7);
 		}

@@ -44,6 +44,21 @@ def gen_glow_soft():
     out_fx("glow_soft", img, 64, 64)
 
 
+def gen_vignette():
+    """Screen vignette: transparent centre, opaque white edges (tinted at draw time)."""
+    size = 256
+    img = Image.new("RGBA", (size, size), (255, 255, 255, 0))
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            nx = (x + 0.5) / size * 2 - 1
+            ny = (y + 0.5) / size * 2 - 1
+            d = (nx * nx * 0.85 + ny * ny) ** 0.5
+            a = max(0.0, min(1.0, (d - 0.35) / 0.75))
+            px[x, y] = (255, 255, 255, int(255 * a * a))
+    out_fx("vignette", img, size, size)
+
+
 def gen_sparkle():
     img = T.new(64, 64)
     pts = T.star_points(32, 32, 30, 3, 4)
@@ -637,7 +652,7 @@ def main():
     gen_circle_taiji(); gen_circle_runes(); gen_circle_thunder(); gen_circle_ice()
     gen_beam(); gen_beam_core(); gen_slash(); gen_wind_blade(); gen_hex_shield()
     gen_flame_column(); gen_crack(); gen_vortex(); gen_cloud(); gen_glyph_strip()
-    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike()
+    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette()
     p_glow(); p_spark(); p_flame_wisp(); p_ember(); p_ice_crystal(); p_snowflake(); p_frost_mist()
     p_lightning_arc(); p_wind_streak(); p_void_smoke(); p_lotus_petal(); p_rune(); p_sword_glint()
     p_rock_debris(); p_golden_light()

@@ -69,6 +69,7 @@ public final class Breakthrough {
 
 			if (age == 0) {
 				ModPackets.sendFx(world, FxData.at(FxType.TRIBULATION_CLOUD, pos.add(0, 14, 0), 0x7A5CFF, 7.0f, DURATION));
+				ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, pos, 0x140A2A, 0.8f, DURATION - 10).withExtra(1));
 				ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, caster.getId(), pos, color, 1.2f, DURATION));
 				ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, pos.add(0, 0.05, 0), color, 3.5f, DURATION).withExtra(1));
 				world.playSound(null, caster.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.2f, 0.9f);
@@ -87,11 +88,13 @@ public final class Breakthrough {
 				SkillFx.thunderSparks(world, to, 30, 0.8);
 				world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 1.5f, 0.9f + world.random.nextFloat() * 0.2f);
 				ModPackets.sendCameraShake(world, pos, 32.0, 0.6f, 8);
+				ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, pos, 0xD9C7FF, 0.5f, 6));
 			}
 
 			if (age == DURATION - 15) {
 				ModPackets.sendFx(world, FxData.at(FxType.HEAVEN_PILLAR, pos, color, 2.0f, 60));
 				ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, pos.add(0, 1, 0), color, 3.0f, 20));
+				ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, pos, color, 1.0f, 18));
 				SkillFx.glowBurst(world, pos.add(0, 1, 0), color, 80, 1.2f, 0.35);
 				world.playSound(null, caster.getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1.0f, 1.4f);
 				world.playSound(null, caster.getBlockPos(), ModSounds.BREAKTHROUGH, SoundCategory.PLAYERS, 1.5f, 1.0f);

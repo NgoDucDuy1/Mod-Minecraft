@@ -1,0 +1,15 @@
+{
+	"vertex": "celestialarts:glow_blur",
+	"fragment": "celestialarts:glow_blur",
+	"attributes": [
+		"Position",
+		"UV0"
+	],
+	"samplers": [
+		{ "name": "DiffuseSampler" }
+	],
+	"uniforms": [
+		{ "name": "BlurDir", "type": "float", "count": 2, "values": [ 0.0, 0.0 ] },
+		{ "name": "Gain", "type": "float", "count": 1, "values": [ 1.0 ] }
+	]
+}

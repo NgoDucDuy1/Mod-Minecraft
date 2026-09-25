@@ -2,6 +2,7 @@ package com.ngoducduy.celestialarts.client.render.fx;
 
 import com.ngoducduy.celestialarts.client.render.fx.types.*;
 import com.ngoducduy.celestialarts.client.render.layer.ModRenderLayers;
+import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -36,6 +37,10 @@ public final class ClientFxManager {
 		ClientWorld world = client.world;
 		if (world == null) return;
 
+		if (data.type() == FxType.SCREEN_FLASH) {
+			ScreenOverlay.add(data, client);
+			return;
+		}
 		// "Stop" packet: same type + entity with extra == -1 and no duration.
 		if (data.extra() == -1 && data.duration() <= 0 && data.entityId() >= 0) {
 			for (ClientFx fx : ACTIVE) {
@@ -82,6 +87,7 @@ public final class ClientFxManager {
 			case HEAVEN_PILLAR -> new HeavenPillarFx(d, w);
 			case LOTUS_BLOOM -> new LotusBloomFx(d, w);
 			case RUNE_ORBIT -> new RuneOrbitFx(d, w);
+			case SCREEN_FLASH -> null; // handled by ScreenOverlay in spawn()
 		};
 	}
 

@@ -124,6 +124,7 @@ public class DevouringVortexSkill extends Skill {
 			float burst = 4.0f + Math.min(16.0f, devoured * 0.6f);
 			float size = 2.0f + Math.min(2.0f, devoured * 0.08f);
 			ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, core, 0xD24BFF, size, 12));
+			ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, core, 0x9A3BFF, Math.min(0.8f, 0.25f * size), 10));
 			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, core.add(0, -1.2, 0), 0x6A1FB0, 2.0f + size, 14));
 			SkillFx.shell(world, GlowParticleEffect.glow(0xD24BFF, 0.6f, 14), core, 1.0, 30, 0.5);
 			for (LivingEntity target : EntityUtil.inSphere(world, caster, core, 5.0)) {

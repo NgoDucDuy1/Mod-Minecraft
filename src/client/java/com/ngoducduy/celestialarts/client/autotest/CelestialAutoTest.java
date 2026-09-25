@@ -9,6 +9,7 @@ import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
+import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
 import com.ngoducduy.celestialarts.registry.GlowParticleEffect;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModParticles;
@@ -161,7 +162,9 @@ public final class CelestialAutoTest {
 		});
 		waitTicks(5);
 		int fxCount = submitAndWait(c -> ClientFxManager.count());
-		check(fxCount >= FxType.values().length, "all FX types alive after spawn (" + fxCount + ")");
+		int worldFxTypes = (int) java.util.Arrays.stream(FxType.values()).filter(t -> t != FxType.SCREEN_FLASH).count();
+		check(fxCount >= worldFxTypes, "all FX types alive after spawn (" + fxCount + "/" + worldFxTypes + ")");
+		check(submitAndWait(c -> ScreenOverlay.count()) >= 1, "screen overlay registered from SCREEN_FLASH fx");
 		waitTicks(15);
 		screenshot("04_fx_types");
 

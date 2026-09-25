@@ -41,7 +41,13 @@ public enum FxType {
 	/** Blooming lotus petals burst. */
 	LOTUS_BLOOM,
 	/** Glowing rune glyphs orbiting a point/entity. */
-	RUNE_ORBIT;
+	RUNE_ORBIT,
+	/**
+	 * Screen-space overlay for nearby players (not a world object). scale = strength 0..1,
+	 * extra = 0 flash (bright, fades out), 1 darken (dark vignette held for the duration, fades in/out).
+	 * Strength falls off with the viewer's distance to pos over 24 blocks.
+	 */
+	SCREEN_FLASH;
 
 	private static final FxType[] VALUES = values();
 

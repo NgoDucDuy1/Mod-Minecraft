@@ -7,6 +7,7 @@ import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import com.ngoducduy.celestialarts.client.render.FxTextures;
+import com.ngoducduy.celestialarts.client.render.post.GlowPass;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -32,7 +33,7 @@ import java.util.function.Function;
  *       no depth write, no culling. Used for petals, cloud, crack decals.</li>
  *   <li>{@link #solidGlow(Identifier)} – like translucentGlow but with depth write, for
  *       ice spikes / domes that should occlude what's behind them.</li>
- *   <li>{@link #lightning()} – vanilla untextured additive layer for bolts.</li>
+ *   <li>{@link #lightning()} – untextured additive layer for bolts (routed to the glow pass).</li>
  * </ul>
  */
 public abstract class ModRenderLayers extends RenderLayer {
@@ -47,6 +48,12 @@ public abstract class ModRenderLayers extends RenderLayer {
 	 */
 	public static final float ADDITIVE_GAIN = 0.7F;
 
+	/**
+	 * Render target of every additive layer: the {@link GlowPass} buffer while the glow pass is active
+	 * (so it gets bloomed), the main framebuffer otherwise.
+	 */
+	private static final Target GLOW_TARGET = new Target(CelestialArts.MOD_ID + "_glow_target", GlowPass::bindGlow, GlowPass::bindMain);
+
 	private static final Function<Identifier, RenderLayer> ADDITIVE = Util.memoize(texture -> {
 		MultiPhaseParameters params = MultiPhaseParameters.builder()
 				.program(BEACON_BEAM_PROGRAM)
@@ -56,6 +63,7 @@ public abstract class ModRenderLayers extends RenderLayer {
 				.lightmap(DISABLE_LIGHTMAP)
 				.overlay(DISABLE_OVERLAY_COLOR)
 				.writeMaskState(COLOR_MASK)
+				.target(GLOW_TARGET)
 				.build(false);
 		RenderLayer inner = RenderLayer.of(CelestialArts.MOD_ID + "_additive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
 				VertexFormat.DrawMode.QUADS, 256, false, true, params);
@@ -117,8 +125,18 @@ public abstract class ModRenderLayers extends RenderLayer {
 		return SOLID_GLOW.apply(texture);
 	}
 
+	/** Untextured additive quads (bolts, ribbons). Like vanilla's lightning layer but routed to the glow pass. */
+	private static final RenderLayer LIGHTNING = RenderLayer.of(CelestialArts.MOD_ID + "_lightning", VertexFormats.POSITION_COLOR,
+			VertexFormat.DrawMode.QUADS, 256, false, true, MultiPhaseParameters.builder()
+					.program(LIGHTNING_PROGRAM)
+					.writeMaskState(COLOR_MASK)
+					.transparency(LIGHTNING_TRANSPARENCY)
+					.cull(DISABLE_CULLING)
+					.target(GLOW_TARGET)
+					.build(false));
+
 	public static RenderLayer lightning() {
-		return RenderLayer.getLightning();
+		return LIGHTNING;
 	}
 
 	/**

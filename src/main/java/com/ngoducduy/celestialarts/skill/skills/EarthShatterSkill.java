@@ -56,6 +56,7 @@ public class EarthShatterSkill extends Skill {
 		SkillFx.rockDebris(ctx.world(), origin, 20, 0.6);
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 1.4f, 0.8f);
 		ModPackets.sendCameraShake(ctx.world(), origin, 24.0, 0.7f, 10);
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SCREEN_FLASH, origin, 0xC9A66B, 0.3f, 5));
 
 		// Close range stomp.
 		for (LivingEntity target : EntityUtil.inCylinder(ctx.world(), player, origin, 2.5, 2.0)) {

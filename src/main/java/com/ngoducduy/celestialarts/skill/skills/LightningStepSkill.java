@@ -69,6 +69,7 @@ public class LightningStepSkill extends Skill {
 
 		SkillFx.thunderSparks(ctx.world(), dest.add(0, 1, 0), 18, 0.35);
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, dest.add(0, 1, 0), 0xE6D6FF, 1.1f, 7));
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SCREEN_FLASH, dest, 0xE6D6FF, 0.55f, 5));
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, dest.add(0, 0.1, 0), getElement().getPrimary(), 2.2f, 8));
 
 		// The stored charge discharges into nearby foes: arcs jump from the arrival point to the

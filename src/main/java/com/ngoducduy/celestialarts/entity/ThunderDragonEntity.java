@@ -141,6 +141,7 @@ public class ThunderDragonEntity extends SkillProjectileEntity {
 		SkillFx.thunderSparks(sw, c, 40, 0.7);
 		sw.playSound(null, this.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 1.8F, 0.8F);
 		ModPackets.sendCameraShake(sw, c, 24.0, 0.6F, 8);
+		ModPackets.sendFx(sw, FxData.at(FxType.SCREEN_FLASH, c, 0xD9C7FF, 0.6F, 7));
 	}
 
 	/** Recent positions (newest first) for the client renderer. */

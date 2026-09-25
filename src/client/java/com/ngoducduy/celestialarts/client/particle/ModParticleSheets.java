@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.client.particle;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.ngoducduy.celestialarts.client.render.post.GlowPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.BufferBuilder;
@@ -20,6 +21,8 @@ public final class ModParticleSheets {
 	public static final ParticleTextureSheet ADDITIVE = new ParticleTextureSheet() {
 		@Override
 		public void begin(BufferBuilder builder, TextureManager textureManager) {
+			// Glow particles take part in the bloom pass like every other additive layer.
+			GlowPass.bindGlow();
 			RenderSystem.depthMask(false);
 			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
@@ -33,6 +36,7 @@ public final class ModParticleSheets {
 			tessellator.draw();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
+			GlowPass.bindMain();
 		}
 
 		@Override

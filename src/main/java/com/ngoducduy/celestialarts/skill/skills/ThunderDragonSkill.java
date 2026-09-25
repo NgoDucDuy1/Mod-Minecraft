@@ -77,6 +77,7 @@ public class ThunderDragonSkill extends Skill {
 			world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 2.0f, 0.7f);
 			world.playSound(null, caster.getBlockPos(), ModSounds.SWORD_LAUNCH, SoundCategory.PLAYERS, 1.0f, 0.6f);
 			ModPackets.sendCameraShake(world, spawn, 16.0, 0.5f, 6);
+			ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, spawn, 0xD9C7FF, 0.5f, 6));
 		}
 	}
 }
