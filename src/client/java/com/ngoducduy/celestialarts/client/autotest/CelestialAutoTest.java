@@ -285,6 +285,13 @@ public final class CelestialAutoTest {
 	private static final java.util.Map<String, Integer> SHOT_DELAY = java.util.Map.of("thunder_dragon", 18, "wind_dragon", 4, "golden_body", 4, "heaven_sword", 4);
 	/** Aim pitch per skill: projectiles fired straight ahead are hidden behind the player in third person, so tilt those up. */
 	private static final java.util.Map<String, Float> AIM_PITCH = java.util.Map.of("thunder_dragon", -14.0F, "fire_lotus", -10.0F, "ice_arrows", -8.0F);
+	/**
+	 * The third-person camera shares the player's yaw and pitch, so anything fired straight along the look vector
+	 * stays hidden behind the player's own head. For those skills the player turns away this many ticks after the
+	 * cast (after the projectile has been released) so the camera looks at the projectile from the side.
+	 */
+	private static final java.util.Map<String, Integer> TURN_AT = java.util.Map.of("thunder_dragon", 20, "fire_lotus", 4, "ice_arrows", 4, "sword_qi_slash", 4, "wind_dragon", 6);
+	private static final float TURN_YAW = 55.0F;
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
@@ -311,7 +318,24 @@ public final class CelestialAutoTest {
 		} else {
 			waitTicks(6);
 		}
-		waitTicks(SHOT_DELAY.getOrDefault(skill.getId().getPath(), 0));
+		int elapsed = 6;
+		int shotAt = elapsed + SHOT_DELAY.getOrDefault(skill.getId().getPath(), 0);
+		Integer turnAt = TURN_AT.get(skill.getId().getPath());
+		if (turnAt != null) {
+			int t = Math.max(elapsed, Math.min(turnAt, shotAt - 2));
+			waitTicks(t - elapsed);
+			elapsed = t;
+			submitAndWait(c -> {
+				c.player.setYaw(TURN_YAW);
+				c.player.setHeadYaw(TURN_YAW);
+				c.player.setBodyYaw(TURN_YAW);
+				c.player.prevYaw = TURN_YAW;
+				c.player.prevHeadYaw = TURN_YAW;
+				c.player.prevBodyYaw = TURN_YAW;
+				return null;
+			});
+		}
+		waitTicks(Math.max(2, shotAt - elapsed));
 		screenshot("skill_" + skill.getId().getPath(), false);
 		waitTicks(6);
 		if (skill.isChannel()) {
