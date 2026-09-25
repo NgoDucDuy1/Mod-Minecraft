@@ -52,11 +52,11 @@ public class ThunderDragonSkill extends Skill {
 			if (age == 0) {
 				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, CHARGE, 3, false, false, false));
 			}
-			if (age % 3 == 0) {
-				Vec3d hand = caster.getEyePos().add(caster.getRotationVec(1.0f).multiply(0.9)).add(0, -0.3, 0);
-				SkillFx.thunderSparks(world, hand, 6, 0.2);
-				Vec3d from = hand.add(SkillFx.randomUnit(world.random).multiply(1.5 + world.random.nextDouble() * 1.5));
-				ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, hand, PURPLE, 0.3f, 4));
+			if (age % 4 == 0) {
+				Vec3d hand = caster.getEyePos().add(caster.getRotationVec(1.0f).multiply(1.4)).add(0, -0.4, 0);
+				SkillFx.thunderSparks(world, hand, 5, 0.15);
+				Vec3d from = hand.add(SkillFx.randomUnit(world.random).multiply(1.2 + world.random.nextDouble() * 1.2));
+				ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, hand, PURPLE, 0.12f, 3));
 			}
 			if (age == CHARGE) release();
 		}
@@ -67,7 +67,7 @@ public class ThunderDragonSkill extends Skill {
 			ThunderDragonEntity dragon = new ThunderDragonEntity(ModEntities.THUNDER_DRAGON, world);
 			dragon.setOwner(caster);
 			dragon.refreshPositionAndAngles(spawn.x, spawn.y, spawn.z, caster.getYaw(), caster.getPitch());
-			dragon.launch(look, 1.05);
+			dragon.launch(look, 0.85);
 			world.spawnEntity(dragon);
 
 			caster.swingHand(Hand.MAIN_HAND, true);

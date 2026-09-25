@@ -44,7 +44,8 @@ public class WindDragonRenderer extends GlowEntityRenderer<WindDragonEntity> {
 		VertexConsumer funnel = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.BEAM));
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(age * 18.0F));
-		RenderUtil.cylinder(funnel, matrices.peek(), 0.35F, radius * 0.9F, height, 16, 2.0F, 1.5F, -age * 0.05F, COLOR, 0.55F * grow, 0.18F * grow);
+		RenderUtil.cylinder(funnel, matrices.peek(), 0.35F, radius * 0.95F, height, 16, 2.0F, 1.5F, -age * 0.05F, COLOR, 0.7F * grow, 0.4F * grow);
+		RenderUtil.cylinder(funnel, matrices.peek(), 0.2F, radius * 0.5F, height * 0.9F, 12, 1.0F, 1.0F, age * 0.07F, PALE, 0.8F * grow, 0.3F * grow);
 		matrices.pop();
 		// ...wrapped in three nested layers of additive wind streaks spinning at different speeds.
 		VertexConsumer wind = vcp.getBuffer(ModRenderLayers.additive(FxTextures.WIND_BLADE));

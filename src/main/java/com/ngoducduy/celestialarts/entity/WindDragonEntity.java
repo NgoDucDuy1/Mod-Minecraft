@@ -33,7 +33,7 @@ public class WindDragonEntity extends SkillProjectileEntity {
 	public WindDragonEntity(EntityType<? extends WindDragonEntity> type, World world) {
 		super(type, world);
 		this.damage = TICK_DAMAGE;
-		this.maxAge = 70;
+		this.maxAge = 100;
 		this.pierce = Integer.MAX_VALUE / 2;
 	}
 

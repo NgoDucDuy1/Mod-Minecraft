@@ -48,10 +48,13 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		pts.add(Vec3d.ZERO);
 		Deque<Vec3d> trail = entity.getTrail();
 		for (Vec3d p : trail) pts.add(p.subtract(now));
-		if (pts.size() < 2) {
-			// Freshly spawned: fake a short tail behind the velocity.
+		if (pts.size() < ThunderDragonEntity.TRAIL_LENGTH) {
+			// Freshly spawned: the serpent is already full length, coiled straight behind its heading.
 			Vec3d v = entity.getVelocity();
-			for (int i = 1; i <= 4; i++) pts.add(v.multiply(-i * 0.8));
+			if (v.lengthSquared() < 1.0E-4) v = Vec3d.fromPolar(entity.getPitch(), entity.getYaw()).multiply(0.8);
+			Vec3d last = pts.get(pts.size() - 1);
+			int missing = ThunderDragonEntity.TRAIL_LENGTH - pts.size();
+			for (int i = 1; i <= missing; i++) pts.add(last.add(v.multiply(-i)));
 		}
 		Vec3d camRel = cam.subtract(now);
 		VertexConsumer bolt = vcp.getBuffer(ModRenderLayers.lightning());

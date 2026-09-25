@@ -41,7 +41,7 @@ public class ThunderDragonEntity extends SkillProjectileEntity {
 	public ThunderDragonEntity(EntityType<? extends ThunderDragonEntity> type, World world) {
 		super(type, world);
 		this.damage = 13.0F;
-		this.maxAge = 60;
+		this.maxAge = 80;
 		this.pierce = 3;
 	}
 

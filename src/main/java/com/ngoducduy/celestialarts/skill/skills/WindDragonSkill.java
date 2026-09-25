@@ -37,12 +37,12 @@ public class WindDragonSkill extends Skill {
 	public boolean activate(SkillContext ctx) {
 		ServerPlayerEntity player = ctx.player();
 		Vec3d dir = ctx.flatLook();
-		Vec3d start = Targeting.snapToGround(ctx.world(), player.getPos().add(dir.multiply(2.0)).add(0, 0.2, 0), 4);
+		Vec3d start = Targeting.snapToGround(ctx.world(), player.getPos().add(dir.multiply(1.6)).add(0, 0.2, 0), 4);
 
 		WindDragonEntity dragon = new WindDragonEntity(ModEntities.WIND_DRAGON, ctx.world());
 		dragon.setOwner(player);
 		dragon.refreshPositionAndAngles(start.x, start.y + 0.1, start.z, player.getYaw(), 0);
-		dragon.launch(dir, 0.42);
+		dragon.launch(dir, 0.3);
 		ctx.world().spawnEntity(dragon);
 
 		player.swingHand(Hand.OFF_HAND, true);
