@@ -19,6 +19,9 @@
 		],
 		"client": [
 			"com.ngoducduy.celestialarts.client.CelestialArtsClient"
+		],
+		"fabric-gametest": [
+			"com.ngoducduy.celestialarts.gametest.CelestialGameTests"
 		]
 	},
 	"mixins": [

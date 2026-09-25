@@ -24,6 +24,16 @@ loom {
 		}
 	}
 
+	runs {
+		// Headless server that executes the game tests in com.ngoducduy.celestialarts.gametest.
+		gametest {
+			server()
+			name "Game Test"
+			vmArg "-Dfabric-api.gametest"
+			vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get().asFile}/junit.xml"
+			runDir "build/gametest"
+		}
+	}
 }
 
 dependencies {

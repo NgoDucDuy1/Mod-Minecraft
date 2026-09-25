@@ -39,26 +39,45 @@ jobs:
           set -o pipefail
           ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
 
+      - name: Run game tests (headless server)
+        id: gametest
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 25m ./gradlew runGametest --no-daemon 2>&1 | tee gametest.log
+
       - name: Publish build log to tracking issue
         if: always()
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
           OUTCOME: ${{ steps.build.outcome }}
+          GAMETEST_OUTCOME: ${{ steps.gametest.outcome }}
         run: |
           set +e
           TITLE="CI build log: ${GITHUB_REF_NAME}"
           NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
           {
-            echo "**Result:** \`$OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "**Build:** \`$OUTCOME\` · **Game tests:** \`$GAMETEST_OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo
             echo '### Compiler errors / warnings'
             echo '```'
             grep -E "error:|warning:|\.java:[0-9]+:|What went wrong|Could not|FAILURE|BUILD" build.log | head -n 300 | cut -c1-400
             echo '```'
-            echo '### Log tail'
+            if [ -f gametest.log ]; then
+              echo '### Game test summary'
+              echo '```'
+              grep -E "GameTest|gametest|Test .* (passed|failed)|FAILED|failed|Exception|Caused by|at com\.ngoducduy|Mixin|ERROR|WARN.*celestialarts|Couldn't|Failed to|What went wrong|BUILD" gametest.log | grep -v "^\s*at java\." | head -n 400 | cut -c1-400
+              echo '```'
+              echo '### Game test log tail'
+              echo '```'
+              tail -n 80 gametest.log | cut -c1-400
+              echo '```'
+            fi
+            echo '### Build log tail'
             echo '```'
-            tail -n 120 build.log | cut -c1-400
+            tail -n 60 build.log | cut -c1-400
             echo '```'
           } > body.md
           # Keep well below the 65536 character limit.
