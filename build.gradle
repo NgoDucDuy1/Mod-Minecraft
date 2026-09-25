@@ -33,6 +33,14 @@ loom {
 			vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get().asFile}/junit.xml"
 			runDir "build/gametest"
 		}
+		// Real client driven by CelestialAutoTest (world creation, casting, FX, screenshots), for xvfb CI.
+		autoTestClient {
+			client()
+			name "Auto Test Client"
+			vmArg "-Dcelestialarts.autotest"
+			programArgs "--width", "1280", "--height", "720"
+			runDir "build/autotest"
+		}
 	}
 }
 

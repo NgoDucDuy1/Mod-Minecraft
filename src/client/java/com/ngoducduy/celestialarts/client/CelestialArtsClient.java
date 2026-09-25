@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.client;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.client.autotest.CelestialAutoTest;
 import com.ngoducduy.celestialarts.client.gui.SkillBookScreen;
 import com.ngoducduy.celestialarts.client.gui.SkillHud;
 import com.ngoducduy.celestialarts.client.particle.ModParticleFactories;
@@ -52,5 +53,8 @@ public final class CelestialArtsClient implements ClientModInitializer {
 				if (client.player != null) client.setScreen(new SkillBookScreen());
 			});
 		};
+
+		// Headless smoke test driver, only active with -Dcelestialarts.autotest (see CI workflow).
+		CelestialAutoTest.init();
 	}
 }

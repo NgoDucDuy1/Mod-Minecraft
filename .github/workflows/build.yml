@@ -47,6 +47,26 @@ jobs:
           set -o pipefail
           timeout 25m ./gradlew runGametest --no-daemon 2>&1 | tee gametest.log
 
+      - name: Run client smoke test (real client under xvfb)
+        id: clienttest
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          set -o pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-utils >/dev/null
+          xvfb-run -a -s "-screen 0 1280x720x24" glxinfo -B 2>/dev/null | grep -E "renderer|version" || true
+          timeout 35m xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutoTestClient --no-daemon 2>&1 | tee client.log
+          grep -q "\[AutoTest\] RESULT: PASSED" client.log
+
+      - name: Upload client screenshots
+        if: always() && steps.build.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-screenshots
+          path: build/autotest/screenshots/*.png
+          if-no-files-found: ignore
+
       - name: Publish build log to tracking issue
         if: always()
         shell: bash
@@ -54,12 +74,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           OUTCOME: ${{ steps.build.outcome }}
           GAMETEST_OUTCOME: ${{ steps.gametest.outcome }}
+          CLIENT_OUTCOME: ${{ steps.clienttest.outcome }}
         run: |
           set +e
           TITLE="CI build log: ${GITHUB_REF_NAME}"
           NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
           {
-            echo "**Build:** \`$OUTCOME\` · **Game tests:** \`$GAMETEST_OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "**Build:** \`$OUTCOME\` · **Game tests:** \`$GAMETEST_OUTCOME\` · **Client test:** \`$CLIENT_OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
             echo
             echo '### Compiler errors / warnings'
             echo '```'
@@ -86,6 +107,16 @@ jobs:
               tail -n 80 gametest.log | cut -c1-400
               echo '```'
             fi
+            if [ -f client.log ]; then
+              echo '### Client auto test'
+              echo '```'
+              grep -E "AutoTest|Exception|Caused by|at com\.ngoducduy|/(WARN|ERROR)\]|What went wrong|BUILD" client.log | grep -vE "^\s*at (java|jdk|sun)\." | head -n 300 | cut -c1-400
+              echo '```'
+              echo '### Client log tail'
+              echo '```'
+              tail -n 40 client.log | cut -c1-400
+              echo '```'
+            fi
             echo '### Build log tail'
             echo '```'
             tail -n 60 build.log | cut -c1-400
@@ -99,9 +130,41 @@ jobs:
           PY
           if [ -z "$NUM" ]; then
             gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file body.md
+            NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
           else
             gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --body-file body.md
             gh issue reopen "$NUM" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+          fi
+          # Screenshots: replace previous screenshot comments with small base64 JPEG thumbnails.
+          if ls build/autotest/screenshots/*.png >/dev/null 2>&1 && [ -n "$NUM" ]; then
+            for cid in $(gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments" --paginate --jq '.[] | select(.body | startswith("<!-- autotest-screenshot -->")) | .id'); do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$cid" >/dev/null 2>&1 || true
+            done
+            python3 -m pip install --quiet pillow >/dev/null 2>&1 || true
+            python3 - <<'PY'
+          import base64, glob, io, os
+          from PIL import Image
+          wanted = ["02_in_game", "03_skill_book", "04_fx_types", "05_particles", "06_sword_flight_third_person",
+                    "skill_sword_qi_slash", "skill_fire_lotus", "skill_taiji_formation", "skill_frozen_domain",
+                    "skill_thousand_swords", "skill_purple_thunder_beam", "skill_nine_tribulations", "skill_heaven_sword", "07_final"]
+          files = {os.path.splitext(os.path.basename(f))[0]: f for f in glob.glob("build/autotest/screenshots/*.png")}
+          os.makedirs("shots", exist_ok=True)
+          n = 0
+          for name in wanted:
+              f = files.get(name)
+              if not f: continue
+              img = Image.open(f).convert("RGB")
+              img.thumbnail((640, 360))
+              buf = io.BytesIO(); img.save(buf, "JPEG", quality=55, optimize=True)
+              b64 = base64.b64encode(buf.getvalue()).decode()
+              body = "<!-- autotest-screenshot -->\n**Screenshot `%s`** (%dx%d, %d bytes JPEG, base64):\n\n```\n%s\n```\n" % (name, img.width, img.height, len(buf.getvalue()), b64)
+              if len(body) > 64000: continue
+              open("shots/%02d.md" % n, "w").write(body); n += 1
+          print("prepared", n, "screenshot comments of", len(files))
+          PY
+            for f in shots/*.md; do
+              [ -f "$f" ] && gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file "$f" >/dev/null || true
+            done
           fi
 
       - name: Upload mod jar
