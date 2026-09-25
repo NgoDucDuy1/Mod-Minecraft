@@ -16,7 +16,7 @@ public class RockDebrisParticle extends BaseParticle {
 		super(world, x, y, z, vx, vy, vz);
 		this.sprites = sprites;
 		this.setSprite(sprites);
-		this.setBaseScale(0.08F + this.random.nextFloat() * 0.08F);
+		this.setBaseScale(0.045F + this.random.nextFloat() * this.random.nextFloat() * 0.09F);
 		this.maxAge = 30 + this.random.nextInt(30);
 		this.setRGB(0xA89070);
 		this.fullBright = false;

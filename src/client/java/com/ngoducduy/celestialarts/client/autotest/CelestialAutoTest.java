@@ -191,6 +191,9 @@ public final class CelestialAutoTest {
 			ClientFxManager.clear();
 			return null;
 		});
+		// The synthetic particles above live up to ~3 s; let them die so they do not leak into the
+		// first skill screenshot.
+		waitTicks(70);
 
 		// Cast every skill through the real hotbar packets, six at a time.
 		List<Skill> skills = new ArrayList<>(SkillRegistry.all());
@@ -290,7 +293,7 @@ public final class CelestialAutoTest {
 	 * stays hidden behind the player's own head. For those skills the player turns away this many ticks after the
 	 * cast (after the projectile has been released) so the camera looks at the projectile from the side.
 	 */
-	private static final java.util.Map<String, Integer> TURN_AT = java.util.Map.of("thunder_dragon", 20, "fire_lotus", 4, "ice_arrows", 4, "sword_qi_slash", 4, "wind_dragon", 6);
+	private static final java.util.Map<String, Integer> TURN_AT = java.util.Map.of("thunder_dragon", 20, "fire_lotus", 4, "ice_arrows", 4, "sword_qi_slash", 4, "wind_dragon", 6, "vajra_palm", 3);
 	private static final float TURN_YAW = 55.0F;
 
 	private static void castSlot(int slot, Skill skill) {

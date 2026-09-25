@@ -60,28 +60,40 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		VertexConsumer bolt = vcp.getBuffer(ModRenderLayers.lightning());
 		Matrix4f m = matrices.peek().getPositionMatrix();
 		int n = pts.size();
-		for (int i = 0; i < n - 1; i++) {
-			float t0 = (float) i / (n - 1);
-			float t1 = (float) (i + 1) / (n - 1);
-			Vec3d p0 = pts.get(i);
-			Vec3d p1 = pts.get(i + 1);
-			// Jitter every segment a little each frame so the body crackles.
-			float j = 0.06F;
-			Vec3d jit = new Vec3d(RenderUtil.hash(i, entity.age * 7) - 0.5F, RenderUtil.hash(i + 31, entity.age * 7) - 0.5F, RenderUtil.hash(i + 67, entity.age * 7) - 0.5F).multiply(j * (1 + i));
-			p1 = p1.add(jit);
-			float w0 = 0.9F * (1.0F - t0) + 0.1F;
-			float w1 = 0.9F * (1.0F - t1) + 0.1F;
-			float a0 = 0.85F * (1.0F - t0);
-			float a1 = 0.85F * (1.0F - t1);
-			RenderUtil.ribbon(bolt, m, p0, p1, camRel, (w0 + w1) * 1.15F, 0x5A1FB0, a0 * 0.45F, a1 * 0.45F);
-			RenderUtil.ribbon(bolt, m, p0, p1, camRel, w0 + w1, PURPLE, a0 * 0.8F, a1 * 0.8F);
-			RenderUtil.ribbon(bolt, m, p0, p1, camRel, (w0 + w1) * 0.22F, PALE, a0 * 0.9F, a1 * 0.9F);
-			// Side arcs on some segments.
-			if (i % 3 == 1 && i < n - 2) {
-				Vec3d mid = p0.add(p1).multiply(0.5);
-				Vec3d off = new Vec3d(RenderUtil.hash(i, 5 + entity.age) - 0.5F, RenderUtil.hash(i, 9 + entity.age) - 0.5F, RenderUtil.hash(i, 13 + entity.age) - 0.5F).normalize().multiply(0.5 + 0.5 * (1 - t0));
-				RenderUtil.ribbon(bolt, m, mid, mid.add(off), camRel, 0.08F, PALE, a0 * 0.8F, 0.0F);
-			}
+		// Per-point displacement: a slow serpentine undulation plus a small per-frame crackle. Computing it
+		// once per point (instead of per segment) keeps the body continuous.
+		Vec3d heading = pts.size() > 1 ? pts.get(0).subtract(pts.get(1)) : entity.getVelocity();
+		Vec3d[] basis = com.ngoducduy.celestialarts.util.SkillFx.basis(heading.lengthSquared() < 1.0E-6 ? new Vec3d(0, 0, 1) : heading.normalize());
+		Vec3d[] body = new Vec3d[n];
+		float[] widths = new float[n];
+		float[] alphas = new float[n];
+		int frame = entity.age / 2;
+		Vec3d lift = new Vec3d(0, entity.getHeight() * 0.5, 0); // body runs through the head centre, not the feet
+		for (int i = 0; i < n; i++) {
+			float t = (float) i / (n - 1);
+			double wave = Math.sin(i * 0.55 - age * 0.45) * 0.35 * t;
+			double sway = Math.cos(i * 0.4 - age * 0.3) * 0.25 * t;
+			double jx = (RenderUtil.hash(i, frame) - 0.5F) * 0.12 * (0.3 + t);
+			double jy = (RenderUtil.hash(i + 31, frame) - 0.5F) * 0.12 * (0.3 + t);
+			double jz = (RenderUtil.hash(i + 67, frame) - 0.5F) * 0.12 * (0.3 + t);
+			body[i] = (i == 0 ? pts.get(0) : pts.get(i).add(basis[1].multiply(wave)).add(basis[0].multiply(sway)).add(jx, jy, jz)).add(lift);
+			// Thick behind the head, tapering to a whip at the tail.
+			float bulge = (float) Math.sin(Math.min(1.0, t * 4.0) * Math.PI * 0.5);
+			widths[i] = (0.28F + 0.62F * bulge) * (1.0F - t * 0.85F);
+			alphas[i] = 1.0F - t * t;
+		}
+		strip(bolt, m, body, widths, alphas, camRel, 1.6F, 0x3A0F80, 0.35F);
+		strip(bolt, m, body, widths, alphas, camRel, 1.0F, PURPLE, 0.7F);
+		strip(bolt, m, body, widths, alphas, camRel, 0.28F, PALE, 0.85F);
+		// Crackling side arcs that jump off the body.
+		for (int i = 2; i < n - 1; i += 3) {
+			float t = (float) i / (n - 1);
+			if (RenderUtil.hash(i, frame + 7) < 0.45F) continue;
+			Vec3d root = body[i];
+			Vec3d off = new Vec3d(RenderUtil.hash(i, 5 + frame) - 0.5F, RenderUtil.hash(i, 9 + frame) - 0.5F, RenderUtil.hash(i, 13 + frame) - 0.5F).normalize().multiply(0.6 + 0.7 * (1 - t));
+			Vec3d mid = root.add(off.multiply(0.5)).add((RenderUtil.hash(i, 21 + frame) - 0.5F) * 0.3, (RenderUtil.hash(i, 23 + frame) - 0.5F) * 0.3, (RenderUtil.hash(i, 25 + frame) - 0.5F) * 0.3);
+			RenderUtil.ribbon(bolt, m, root, mid, camRel, 0.1F, PALE, alphas[i] * 0.9F, alphas[i] * 0.6F);
+			RenderUtil.ribbon(bolt, m, mid, root.add(off), camRel, 0.07F, PALE, alphas[i] * 0.6F, 0.0F);
 		}
 
 		// ---- head
@@ -110,6 +122,32 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		matrices.pop();
 
 		super.render(entity, entityYaw, tickDelta, matrices, vcp, light);
+	}
+
+	/** Camera-facing continuous strip through {@code pts}; width and alpha are per point. */
+	private static void strip(VertexConsumer vc, Matrix4f m, Vec3d[] pts, float[] widths, float[] alphas, Vec3d camRel, float widthScale, int rgb, float alphaScale) {
+		int n = pts.length;
+		if (n < 2) return;
+		float r = RenderUtil.red(rgb), g = RenderUtil.green(rgb), b = RenderUtil.blue(rgb);
+		Vec3d[] side = new Vec3d[n];
+		for (int i = 0; i < n; i++) {
+			Vec3d dir = (i == 0 ? pts[1].subtract(pts[0]) : pts[i].subtract(pts[i - 1]));
+			if (i > 0 && i < n - 1) dir = dir.add(pts[i + 1].subtract(pts[i]));
+			Vec3d toCam = camRel.subtract(pts[i]);
+			Vec3d sd = dir.crossProduct(toCam);
+			if (sd.lengthSquared() < 1.0E-8) sd = new Vec3d(0, 1, 0);
+			side[i] = sd.normalize().multiply(widths[i] * widthScale * 0.5F);
+		}
+		for (int i = 0; i < n - 1; i++) {
+			Vec3d a0 = pts[i].add(side[i]), a1 = pts[i].subtract(side[i]);
+			Vec3d b0 = pts[i + 1].add(side[i + 1]), b1 = pts[i + 1].subtract(side[i + 1]);
+			float aa = alphas[i] * alphaScale, ab = alphas[i + 1] * alphaScale;
+			// Same winding as RenderUtil.ribbon (p0-s, p0+s, p1+s, p1-s) so culling behaves identically.
+			vc.vertex(m, (float) a1.x, (float) a1.y, (float) a1.z).color(r, g, b, aa).next();
+			vc.vertex(m, (float) a0.x, (float) a0.y, (float) a0.z).color(r, g, b, aa).next();
+			vc.vertex(m, (float) b0.x, (float) b0.y, (float) b0.z).color(r, g, b, ab).next();
+			vc.vertex(m, (float) b1.x, (float) b1.y, (float) b1.z).color(r, g, b, ab).next();
+		}
 	}
 
 	@Override

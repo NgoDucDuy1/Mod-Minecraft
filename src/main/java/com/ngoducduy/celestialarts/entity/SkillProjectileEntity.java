@@ -1,5 +1,6 @@
 package com.ngoducduy.celestialarts.entity;
 
+import com.ngoducduy.celestialarts.util.EntityUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -114,8 +115,10 @@ public abstract class SkillProjectileEntity extends ProjectileEntity {
 		if (hitEntities.contains(entity.getId())) return false;
 		if (!(entity instanceof LivingEntity)) return false;
 		Entity owner = this.getOwner();
-		if (owner != null && (owner.hasPassenger(entity) || entity.hasPassenger(owner))) return false;
-		return true;
+		// Never turn on the caster, their mounts, pets or team – vanilla projectiles may hit the owner
+		// once they have "left" them, which is wrong for slow or homing techniques.
+		if (owner != null) return EntityUtil.isValidTarget(owner, entity);
+		return !(entity instanceof net.minecraft.entity.decoration.ArmorStandEntity);
 	}
 
 	@Override

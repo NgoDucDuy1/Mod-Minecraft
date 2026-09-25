@@ -63,17 +63,22 @@ public class MagicCircleFx extends ClientFx {
 		matrices.translate(o.x, o.y, o.z);
 		alignY(matrices, normal);
 
-		VertexConsumer vc = consumers.getBuffer(ModRenderLayers.additive(texture));
+		boolean taiji = texture == FxTextures.CIRCLE_TAIJI;
+		// The taiji array has a dark yin half, so it is drawn with a translucent (not additive) layer;
+		// the other arrays are pure light.
+		VertexConsumer vc = consumers.getBuffer(taiji ? ModRenderLayers.translucentGlow(texture) : ModRenderLayers.additive(texture));
 		// Main disc.
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * spin));
-		RenderUtil.flatQuad(vc, matrices.peek(), size, color, alpha * pulse);
+		RenderUtil.flatQuad(vc, matrices.peek(), size, taiji ? RenderUtil.whiten(color, 0.5F) : color, alpha * (taiji ? 0.95F : pulse));
 		matrices.pop();
-		// Counter-rotating ghost copy, larger and dimmer, gives the layered array look.
+		// Counter-rotating ghost copy, larger and dimmer, gives the layered array look. For the taiji the
+		// ghost is a rune ring instead of a second (smearing) yin-yang.
+		VertexConsumer ghostVc = taiji ? consumers.getBuffer(ModRenderLayers.additive(FxTextures.CIRCLE_RUNES)) : vc;
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-t * spin * 0.6F + 45.0F));
 		matrices.translate(0, 0.02, 0);
-		RenderUtil.flatQuad(vc, matrices.peek(), size * 1.12F, RenderUtil.whiten(color, 0.3F), alpha * 0.35F);
+		RenderUtil.flatQuad(ghostVc, matrices.peek(), size * 1.12F, RenderUtil.whiten(color, 0.3F), alpha * 0.35F);
 		matrices.pop();
 
 		// Outer ring pulse + rim light wall.

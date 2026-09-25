@@ -131,11 +131,14 @@ def gen_circle_taiji():
                 d.line([(px + tx * L * 0.2, py + ty * L * 0.2), (px + tx * L, py + ty * L)], fill=col + (255,), width=3 * S)
     # Taiji symbol in the middle.
     r = c * 0.5
+    # Yin half is a real dark ink so the symbol reads even on bright ground (drawn with a
+    # translucent layer client-side, not additive).
+    yin = (28, 18, 46, 235)
     d.pieslice([c - r, c - r, c + r, c + r], 90, 270, fill=col + (255,))
-    d.pieslice([c - r, c - r, c + r, c + r], 270, 450, fill=col + (60,))
+    d.pieslice([c - r, c - r, c + r, c + r], 270, 450, fill=yin)
     d.ellipse([c - r / 2, c - r, c + r / 2, c], fill=col + (255,))
-    d.ellipse([c - r / 2, c, c + r / 2, c + r], fill=col + (60,))
-    d.ellipse([c - r / 6, c - r / 2 - r / 6, c + r / 6, c - r / 2 + r / 6], fill=col + (60,))
+    d.ellipse([c - r / 2, c, c + r / 2, c + r], fill=yin)
+    d.ellipse([c - r / 6, c - r / 2 - r / 6, c + r / 6, c - r / 2 + r / 6], fill=yin)
     d.ellipse([c - r / 6, c + r / 2 - r / 6, c + r / 6, c + r / 2 + r / 6], fill=col + (255,))
     d.ellipse([c - r, c - r, c + r, c + r], outline=col + (255,), width=3 * S)
     glow = img.filter(ImageFilter.GaussianBlur(3 * S))
