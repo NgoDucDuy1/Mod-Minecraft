@@ -59,7 +59,29 @@ public class WindBladesFx extends ClientFx {
 			float a1 = a0 + BLADE_SPAN;
 			RenderUtil.arcBand(vc, e, radius * 0.72F, radius, a0, a1, 8, color, alpha * 0.9F, alpha * 0.1F);
 			RenderUtil.arcBand(vc, e, radius * 0.88F, radius * 0.98F, a0, a0 + BLADE_SPAN * 0.7F, 6, white, alpha * 0.9F, 0.0F);
+			// Upright crescent "sail" on the outer edge: the flat arcs are almost invisible edge-on
+			// (first person, or any camera near the blade plane), the sail keeps the blade readable.
+			sail(vc, e, radius * 0.97F, 0.34F, a0, a0 + BLADE_SPAN * 0.85F, 8, color, alpha * 0.8F);
+			sail(vc, e, radius * 0.99F, 0.14F, a0, a0 + BLADE_SPAN * 0.6F, 6, white, alpha * 0.8F);
 		}
 		matrices.pop();
+	}
+
+	/** Partial cylinder wall from angle {@code a0} to {@code a1}, {@code height} tall, fading towards {@code a1}. */
+	private static void sail(VertexConsumer vc, MatrixStack.Entry e, float radius, float height, float a0, float a1, int segments, int rgb, float alpha) {
+		float h = height * 0.5F;
+		for (int i = 0; i < segments; i++) {
+			float f0 = (float) i / segments, f1 = (float) (i + 1) / segments;
+			float b0 = a0 + (a1 - a0) * f0, b1 = a0 + (a1 - a0) * f1;
+			float x0 = MathHelper.cos(b0) * radius, z0 = MathHelper.sin(b0) * radius;
+			float x1 = MathHelper.cos(b1) * radius, z1 = MathHelper.sin(b1) * radius;
+			// Thin at both tips (crescent), full in the middle; alpha falls off towards the trailing tip.
+			float k0 = MathHelper.sin(f0 * (float) Math.PI), k1 = MathHelper.sin(f1 * (float) Math.PI);
+			float al0 = alpha * (1.0F - f0 * 0.8F), al1 = alpha * (1.0F - f1 * 0.8F);
+			RenderUtil.vertex(vc, e, x0, -h * k0, z0, f0, 1.0F, rgb, al0);
+			RenderUtil.vertex(vc, e, x1, -h * k1, z1, f1, 1.0F, rgb, al1);
+			RenderUtil.vertex(vc, e, x1, h * k1, z1, f1, 0.0F, rgb, al1);
+			RenderUtil.vertex(vc, e, x0, h * k0, z0, f0, 0.0F, rgb, al0);
+		}
 	}
 }

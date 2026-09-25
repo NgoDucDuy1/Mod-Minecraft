@@ -92,6 +92,22 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.2.1 – Sửa lỗi & tinh chỉnh hiệu ứng (không thêm nội dung mới)
+* **Sửa lỗi render quan trọng**: bộ đệm hiệu ứng chỉ có một buffer dự phòng nên khi một hiệu ứng lấy 2 lớp render rồi vẽ
+  đan xen, hình học bị đẩy nhầm sang lớp/texture khác (tia Tử Tiêu vẽ bằng texture lõi, mây lôi kiếp vẽ bằng texture vòng…).
+  Nay mỗi lớp hiệu ứng có buffer riêng.
+* **Đạn kỹ năng không còn quay lại đánh chủ nhân/thú cưng/đồng đội** (Hỏa Liên, Kiếm Khí, Vạn Kiếm…) – dùng chung bộ lọc
+  `EntityUtil.isValidTarget`.
+* **Huyền Vũ Thuẫn chỉ hấp thụ đòn mà vanilla thật sự áp dụng** – không còn bị rút cạn (và kêu/nổ hạt) bởi mỗi tick bốc cháy
+  trong 10 tick miễn thương, hay khi người chơi bất tử/kháng lửa.
+* **Kỹ năng đang chạy được đóng đúng cách khi chết, đổi chiều, thoát game** (Ngự Kiếm không còn bỏ lại kiếm bay, khiên/vùng
+  không "treo").
+* Lôi Long Phá: thân rồng liền mạch (không còn đứt khúc), uốn lượn, vỏ tím dùng lớp mờ nên vẫn tím trên nền trời sáng.
+* Mây lôi kiếp có khối (vành mây hướng camera, vòm trên) + tia sét bò dưới đáy mây.
+* Thái Cực Trận đọc được âm-dương (nửa âm tối thật, không còn bị nhân đôi/mờ).
+* Phong Nhận Vũ: lưỡi gió có "cánh buồm" đứng nên nhìn thấy cả từ góc nhìn thứ nhất; Kim Cương Chưởng bớt chói khi tự thi triển;
+  mảnh đá Địa Liệt nhỏ và đa dạng hơn.
+
 ### 1.2.0 – "Siêu cập nhật"
 * **4 công pháp mới**: Kim Cương Chưởng, Phong Long Quyển, Đại Nhật Kim Thân, Lôi Long Phá – kèm 2 thực thể mới có model
   (`DragonHeadModel` dùng chung), renderer riêng, icon, bí tịch, công thức.
@@ -107,7 +123,7 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ```bash
 ./gradlew build
-# file jar nằm ở build/libs/celestialarts-1.2.0.jar
+# file jar nằm ở build/libs/celestialarts-1.2.1.jar
 ```
 
 Yêu cầu JDK 17. Chạy client dev: `./gradlew runClient`.

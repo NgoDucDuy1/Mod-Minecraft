@@ -85,8 +85,10 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		// thin core is additive lightning.
 		VertexConsumer sheath = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.GLOW));
 		MatrixStack.Entry entry = matrices.peek();
-		strip(sheath, entry, true, body, widths, alphas, camRel, 1.9F, 0x2A0A60, 0.8F);
-		strip(sheath, entry, true, body, widths, alphas, camRel, 1.2F, PURPLE, 0.9F);
+		// The soft glow texture only carries alpha in its middle third, so the textured strips are cut
+		// about three times wider than the visible body they produce.
+		strip(sheath, entry, true, body, widths, alphas, camRel, 3.6F, 0x2A0A60, 0.85F);
+		strip(sheath, entry, true, body, widths, alphas, camRel, 2.3F, PURPLE, 0.95F);
 		// Fetched only now: the immediate provider shares one fallback buffer between un-buffered layers,
 		// so a consumer obtained before the sheath was drawn would be stale.
 		VertexConsumer bolt = vcp.getBuffer(ModRenderLayers.lightning());
