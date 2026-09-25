@@ -66,6 +66,12 @@ public class BeamFx extends ClientFx {
 
 		float r = scale * env * (1.0F + 0.08F * MathHelper.sin(t * 1.7F));
 		int white = RenderUtil.whiten(color, 0.9F);
+		// A tube viewed nearly along its axis (first person, or a third-person camera behind the caster)
+		// stacks all its additive layers into one saturated disc: shrink the muzzle flash, taper the
+		// beam over a longer lead and use a narrower haze in that case.
+		Vec3d toCam = camera.getPos().subtract(from);
+		double along = toCam.lengthSquared() > 1.0e-4 ? Math.abs(toCam.normalize().dotProduct(dir)) : 1.0;
+		boolean axial = firstPerson || along > 0.8;
 
 		// Impact ring flush against the block face (drawn in world space before the beam transforms).
 		if (hit instanceof net.minecraft.util.hit.BlockHitResult bhr && hit.getType() != HitResult.Type.MISS) {
@@ -84,7 +90,7 @@ public class BeamFx extends ClientFx {
 		matrices.push();
 		matrices.translate(from.x, from.y, from.z);
 		faceCamera(matrices, camera);
-		RenderUtil.billboardQuad(glow, matrices.peek(), r * (firstPerson ? 1.2F : 3.2F), white, env * (firstPerson ? 0.3F : 0.6F));
+		RenderUtil.billboardQuad(glow, matrices.peek(), r * (axial ? 1.2F : 3.2F), white, env * (axial ? 0.25F : 0.6F));
 		matrices.pop();
 		Vec3d tip = from.add(dir.multiply(length));
 		matrices.push();
@@ -106,12 +112,6 @@ public class BeamFx extends ClientFx {
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM));
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
 		// Lead segment: the beam gathers from a thin point at the hand to full width over the first blocks.
-		// A tube viewed nearly along its axis (first person, or a third-person camera behind the caster)
-		// stacks all its additive layers into one saturated disc, so taper it over a longer lead and use
-		// a narrower haze in that case.
-		Vec3d toCam = camera.getPos().subtract(from);
-		double along = toCam.lengthSquared() > 1.0e-4 ? Math.abs(toCam.normalize().dotProduct(dir)) : 1.0;
-		boolean axial = firstPerson || along > 0.8;
 		float lead = axial ? Math.min(4.0F, length) : Math.min(1.0F, length);
 		float startK = axial ? 0.12F : 0.6F;
 		float startA = axial ? 0.2F : 0.8F;
