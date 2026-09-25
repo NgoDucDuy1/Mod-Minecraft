@@ -92,6 +92,19 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.0 – Đại tu hình ảnh: bloom thật, tàn ảnh, vết tích mặt đất, hiệu ứng màn hình
+* **Bloom (hào quang) thật sự** cho *mọi* hiệu ứng phát sáng: lớp render cộng màu, tia sét và hạt phát sáng được vẽ thêm vào một
+  framebuffer riêng (`GlowPass`), làm mờ Gaussian 3 cấp bằng core shader `celestialarts:glow_blur` rồi cộng ngược lên khung
+  hình. Ánh sáng "tràn" ra ngoài hình học như phim donghua thay vì chỉ là mảng màu sáng. Tự tắt khi bật đồ hoạ Fabulous.
+* **Hiệu ứng màn hình** (`SCREEN_FLASH`): chớp sáng cộng màu khi đòn lớn chạm đất (Thiên Kiếm, Hỏa Liên, Lôi Long, Lôi Bộ…)
+  và **màn trời tối sầm** với vignette tím suốt Cửu Thiên Lôi Kiếp / độ kiếp đột phá. Suy giảm theo khoảng cách (24 ô).
+* **Tàn ảnh** (`AFTERIMAGE`): Lôi Bộ để lại 6 bóng ma của chính người chơi (da, giáp, vật cầm) dọc đường dịch chuyển, tan dần.
+* **Vết tích mặt đất** (`GROUND_DECAL`): đất cháy đen còn than hồng sau Hỏa Liên/Hỏa Trảo/Thiên Kiếm/Lôi Kiếp/Địa Liệt,
+  mảng băng dưới Băng Vực và nơi Băng Tiễn vỡ – tồn tại 15–40 giây rồi mờ dần.
+* **Tụ khí trước chiêu lớn**: hạt linh khí hội tụ vào tay khi gồng Hỏa Liên, Lôi Long, Cửu Thiên Lôi Kiếp và khi thiền đột phá.
+* Tia Tử Tiêu nhìn dọc trục (góc nhìn thứ ba phía sau) được vuốt mảnh dần như góc nhìn thứ nhất, không còn là đĩa sáng chói.
+* Cân chỉnh lại độ sáng chung (gain lớp cộng màu 0.62, bloom 0.30/0.26/0.22) để không cháy trắng sau khi có bloom.
+
 ### 1.2.1 – Sửa lỗi & tinh chỉnh hiệu ứng (không thêm nội dung mới)
 * **Sửa lỗi render quan trọng**: bộ đệm hiệu ứng chỉ có một buffer dự phòng nên khi một hiệu ứng lấy 2 lớp render rồi vẽ
   đan xen, hình học bị đẩy nhầm sang lớp/texture khác (tia Tử Tiêu vẽ bằng texture lõi, mây lôi kiếp vẽ bằng texture vòng…).

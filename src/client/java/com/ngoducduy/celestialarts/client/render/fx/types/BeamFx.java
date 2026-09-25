@@ -106,11 +106,16 @@ public class BeamFx extends ClientFx {
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM));
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
 		// Lead segment: the beam gathers from a thin point at the hand to full width over the first blocks.
-		float lead = firstPerson ? Math.min(4.0F, length) : Math.min(1.0F, length);
-		float startK = firstPerson ? 0.12F : 0.6F;
-		float startA = firstPerson ? 0.2F : 0.8F;
-		// Narrower haze in first person: the tube is viewed almost along its axis.
-		float hazeK = firstPerson ? 1.4F : 2.4F;
+		// A tube viewed nearly along its axis (first person, or a third-person camera behind the caster)
+		// stacks all its additive layers into one saturated disc, so taper it over a longer lead and use
+		// a narrower haze in that case.
+		Vec3d toCam = camera.getPos().subtract(from);
+		double along = toCam.lengthSquared() > 1.0e-4 ? Math.abs(toCam.normalize().dotProduct(dir)) : 1.0;
+		boolean axial = firstPerson || along > 0.8;
+		float lead = axial ? Math.min(4.0F, length) : Math.min(1.0F, length);
+		float startK = axial ? 0.12F : 0.6F;
+		float startA = axial ? 0.2F : 0.8F;
+		float hazeK = axial ? 1.4F : 2.4F;
 		if (lead > 0.05F) {
 			RenderUtil.cylinder(beam, en, r * 1.05F * startK, r * 1.05F, lead, 16, 2.0F, lead / 3.0F, -t * 0.25F, color, env * 0.85F * startA, env * 0.85F);
 			RenderUtil.cylinder(glow, en, r * hazeK * startK, r * hazeK, lead, 12, 1.0F, 0.0F, color, env * 0.22F * startA, env * 0.22F);
