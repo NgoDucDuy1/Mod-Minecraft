@@ -80,9 +80,32 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 
 Yêu cầu JDK 17. Chạy client dev: `./gradlew runClient`.
 
-> **Lưu ý:** mã nguồn được viết và đối chiếu kỹ với Yarn mappings `1.20.1+build.10` và Fabric API `0.92.2`,
-> nhưng môi trường tạo mod này không có JDK nên **chưa được biên dịch tại chỗ**. Nếu gặp lỗi biên dịch khi build
-> lần đầu, hãy mở issue kèm log – thường chỉ là chỉnh nhỏ.
+### Kiểm thử tự động (GameTest) & CI
+
+Mod kèm bộ **game test chạy trên server headless** (`gametest/CelestialGameTests.java`, entrypoint
+`fabric-gametest`), chạy bằng:
+
+```bash
+./gradlew runGametest      # báo cáo JUnit tại build/junit.xml
+```
+
+Các bài test hiện có (tất cả đều **pass** trên GitHub Actions):
+
+| Test | Kiểm tra |
+|---|---|
+| `castEverySkill` | 16 công pháp đều thi triển được ở cảnh giới Độ Kiếp, không ném exception |
+| `projectileSkillsSpawnEntities` | Kiếm khí / băng tiễn / hoả liên / vạn kiếm / thiên kiếm sinh đúng entity |
+| `swordFlightMountsPlayer` | Ngự kiếm phi hành: người chơi cưỡi kiếm, bấm lần nữa thì hạ xuống |
+| `channelSkillStopsOnSecondPress` | Kỹ năng niệm (tử lôi quang trụ) chặn kỹ năng khác và dừng khi bấm lại |
+| `qiCostAndCooldownApplied` | Trừ linh lực, đặt hồi chiêu, từ chối khi thiếu linh lực / đang hồi chiêu |
+| `breakthroughAdvancesRealm` | Đột phá Luyện Khí → Trúc Cơ sau khi độ kiếp 140 tick |
+| `qiNbtRoundTrip` | Lưu / đọc NBT dữ liệu tu luyện |
+| `fxDataRoundTrip` | Gói tin FX serialize / deserialize chính xác |
+| `dataPackContentLoaded` | Công thức, advancement, entity, item của mod được đăng ký và nạp |
+| `skillEntitiesTickWithoutCrashing` | Mọi entity kỹ năng tick 100 tick không crash |
+
+Workflow `.github/workflows/build.yml` build jar, chạy game test và ghi log (lỗi biên dịch, báo cáo JUnit,
+cảnh báo server) vào issue theo dõi #1 sau mỗi lần push.
 
 ## Cấu trúc mã
 

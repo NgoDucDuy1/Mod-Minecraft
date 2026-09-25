@@ -77,6 +77,10 @@ jobs:
               echo '```'
               grep -E "GameTest|gametest|Test .* (passed|failed)|FAILED|failed|Exception|Caused by|at com\.ngoducduy|Mixin|ERROR|WARN.*celestialarts|Couldn't|Failed to|What went wrong|BUILD" gametest.log | grep -v "^\s*at java\." | head -n 400 | cut -c1-400
               echo '```'
+              echo '### Server warnings / errors (excluding server.properties + eula noise)'
+              echo '```'
+              grep -E "/(WARN|ERROR)\]" gametest.log | grep -vE "server.properties|eula.txt|Failed to load properties" | head -n 150 | cut -c1-400
+              echo '```'
               echo '### Game test log tail'
               echo '```'
               tail -n 80 gametest.log | cut -c1-400
