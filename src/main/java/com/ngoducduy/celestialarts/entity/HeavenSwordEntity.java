@@ -152,6 +152,7 @@ public class HeavenSwordEntity extends Entity {
 			}
 		}
 		ModPackets.sendFx(sw, FxData.at(FxType.HEAVEN_PILLAR, center, 0xFFE9A8, 3.0f, 50));
+		ModPackets.sendFx(sw, FxData.at(FxType.GROUND_DECAL, center.add(0, 0.03, 0), 0xFFE9A8, 7.0f, 800));
 		ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, center.add(0, 1.5, 0), 0xFFFFFF, 6.0f, 16));
 		ModPackets.sendFx(sw, FxData.at(FxType.SHOCKWAVE_RING, center.add(0, 0.15, 0), 0xFFE9A8, 14.0f, 24));
 		ModPackets.sendFx(sw, FxData.at(FxType.SHOCKWAVE_RING, center.add(0, 0.15, 0), 0xFFFFFF, 8.0f, 14));

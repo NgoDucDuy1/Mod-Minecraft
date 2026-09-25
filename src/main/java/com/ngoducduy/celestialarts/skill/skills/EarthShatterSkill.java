@@ -54,6 +54,7 @@ public class EarthShatterSkill extends Skill {
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, origin.add(0, 0.1, 0), 0xC69C5B, 3.5f, 12));
 		ModPackets.sendFx(ctx.world(), FxData.line(FxType.GROUND_CRACK, origin.add(0, 0.05, 0), origin.add(dir.multiply(SPIKES * STEP + 1)), 0xF2D9A6, 1.0f, 70));
 		SkillFx.rockDebris(ctx.world(), origin, 20, 0.6);
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.GROUND_DECAL, origin.add(0, 0.03, 0), 0xC69C5B, 2.6f, 500));
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 1.4f, 0.8f);
 		ModPackets.sendCameraShake(ctx.world(), origin, 24.0, 0.7f, 10);
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SCREEN_FLASH, origin, 0xC9A66B, 0.3f, 5));

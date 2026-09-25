@@ -52,7 +52,13 @@ public enum FxType {
 	 * Afterimages of entity {@code entityId} along pos → target: its model is redrawn as tinted light
 	 * at {@code scale} evenly spaced points and fades over the duration (flash steps, dashes).
 	 */
-	AFTERIMAGE;
+	AFTERIMAGE,
+	/**
+	 * Persistent ground mark left by an impact. scale = radius, extra = 0 scorch (dark, ember cracks
+	 * tinted with color), 1 frost patch (tinted with color). Fades in over a few ticks and out over
+	 * the last third of the duration.
+	 */
+	GROUND_DECAL;
 
 	private static final FxType[] VALUES = values();
 

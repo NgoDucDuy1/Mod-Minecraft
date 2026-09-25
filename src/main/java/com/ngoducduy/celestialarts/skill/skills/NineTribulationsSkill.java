@@ -74,6 +74,10 @@ public class NineTribulationsSkill extends Skill {
 				world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(center), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 1.5f, 0.6f);
 				SkillFx.runes(world, center.add(0, 0.3, 0), 20, AREA_RADIUS * 0.8);
 			}
+			if (age % 4 == 0) {
+				// The caster draws heavenly qi into the raised hand while the tribulation lasts.
+				SkillFx.gatherQi(world, caster.getEyePos().add(0, 0.8, 0), 0xB57BFF, 3.0, 5);
+			}
 			if (age >= DELAY && strikes < STRIKES && (age - DELAY) % INTERVAL == 0) {
 				strikes++;
 				boolean last = strikes == STRIKES;
@@ -105,6 +109,7 @@ public class NineTribulationsSkill extends Skill {
 			ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, hit, color, width, last ? 14 : 9).withExtra(last ? 3 : 2));
 			ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, hit.add(0, 0.6, 0), 0xE6D6FF, last ? 3.0f : 1.4f, 8));
 			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, hit.add(0, 0.1, 0), color, (float) radius * 1.6f, 12));
+			ModPackets.sendFx(world, FxData.at(FxType.GROUND_DECAL, hit.add(0, 0.03, 0), color, (float) radius * (last ? 1.2f : 0.9f), last ? 700 : 400));
 			SkillFx.thunderSparks(world, hit.add(0, 0.5, 0), last ? 60 : 24, last ? 0.8 : 0.45);
 			SkillFx.rockDebris(world, hit, last ? 20 : 6, 0.5);
 			world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(hit), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, last ? 3.0f : 1.8f, last ? 0.7f : 0.9f + world.random.nextFloat() * 0.3f);

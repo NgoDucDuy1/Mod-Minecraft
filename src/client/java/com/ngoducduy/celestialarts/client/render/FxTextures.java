@@ -26,6 +26,8 @@ public final class FxTextures {
 	public static final Identifier PILLAR = fx("pillar");
 	public static final Identifier ICE_SPIKE = fx("ice_spike");
 	public static final Identifier SPARKLE = fx("sparkle");
+	public static final Identifier SCORCH = fx("scorch");
+	public static final Identifier FROST_PATCH = fx("frost_patch");
 
 	private FxTextures() {
 	}

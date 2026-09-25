@@ -51,6 +51,7 @@ public class IceShardEntity extends SkillProjectileEntity {
 					if (other != living) other.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 1, false, false, true), owner);
 				}
 				ModPackets.sendFx(sw, FxData.at(FxType.ICE_SPIKES, living.getPos(), 0x9BE4FF, (float) SHATTER_RADIUS * 0.6f, 14));
+				ModPackets.sendFx(sw, FxData.at(FxType.GROUND_DECAL, living.getPos().add(0, 0.03, 0), 0x9BE4FF, (float) SHATTER_RADIUS * 0.8f, 300).withExtra(1));
 				ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c, 0xE8FBFF, 1.2f, 6));
 				SkillFx.frostBurst(sw, c, 50, 0.4);
 				SkillFx.shell(sw, ModParticles.ICE_CRYSTAL, c, 0.8, 30, 0.35);

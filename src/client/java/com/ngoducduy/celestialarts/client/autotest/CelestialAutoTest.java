@@ -156,6 +156,7 @@ public final class CelestialAutoTest {
 				double dz = 6.0 + (i / 6) * 4.0;
 				Vec3d pos = base.add(dx, 0.0, dz);
 				FxData data = FxData.at(types[i], pos, 0x9FE8FF, 1.0f, 200).withTarget(pos.add(0, 4, 0)).withExtra(8);
+				if (types[i] == FxType.AFTERIMAGE) data = data.withEntity(c.player.getId());
 				ClientFxManager.spawn(data);
 			}
 			return null;

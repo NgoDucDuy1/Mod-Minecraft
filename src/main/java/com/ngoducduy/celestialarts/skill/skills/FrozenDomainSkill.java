@@ -72,6 +72,7 @@ public class FrozenDomainSkill extends Skill {
 			if (age == 6) {
 				ModPackets.sendFx(world, FxData.at(FxType.ICE_SPIKES, center, ice, (float) RADIUS, DURATION - 6));
 				ModPackets.sendFx(world, FxData.at(FxType.FROST_DOME, center, ice, (float) RADIUS, DURATION - 6));
+				ModPackets.sendFx(world, FxData.at(FxType.GROUND_DECAL, center.add(0, 0.03, 0), ice, (float) RADIUS * 1.05f, DURATION + 300).withExtra(1));
 				world.playSound(null, caster.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.2f, 0.6f);
 				ModPackets.sendCameraShake(world, center, 24.0, 0.5f, 8);
 				SkillFx.ring(world, ModParticles.ICE_CRYSTAL, center.add(0, 0.3, 0), RADIUS * 0.9, 40, 0.05, 0.25);

@@ -55,6 +55,7 @@ public class ThunderDragonSkill extends Skill {
 			if (age % 4 == 0) {
 				Vec3d hand = caster.getEyePos().add(caster.getRotationVec(1.0f).multiply(1.4)).add(0, -0.4, 0);
 				SkillFx.thunderSparks(world, hand, 5, 0.15);
+				SkillFx.gatherQi(world, hand, 0xD9C7FF, 2.6, 7);
 				Vec3d from = hand.add(SkillFx.randomUnit(world.random).multiply(1.2 + world.random.nextDouble() * 1.2));
 				ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, hand, PURPLE, 0.12f, 3));
 			}

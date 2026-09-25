@@ -60,6 +60,8 @@ public class FireLotusSkill extends Skill {
 	public static void igniteSea(ServerPlayerEntity owner, Vec3d center, double radius) {
 		Vec3d ground = Targeting.snapToGround(owner.getServerWorld(), center.add(0, 1.0, 0), 6);
 		QiHolder.get(owner).addActiveCast(new FireSeaZone(owner, ground, radius));
+		// Scorched earth stays long after the flames die.
+		ModPackets.sendFx(owner.getServerWorld(), FxData.at(FxType.GROUND_DECAL, ground.add(0, 0.03, 0), 0xFF7A1A, (float) (radius * 1.15), 600));
 	}
 
 	private static final class FireSeaZone extends ZoneCast {
@@ -115,6 +117,10 @@ public class FireLotusSkill extends Skill {
 			if (age % 6 == 0) {
 				SkillFx.helix(world, com.ngoducduy.celestialarts.registry.GlowParticleEffect.glow(0xFF7A1A, 0.5f, 14),
 						caster.getPos(), 1.1, 2.2, 8, 1, age * 0.3);
+			}
+			if (age % 3 == 0) {
+				// Fire qi streams into the blooming lotus above the caster's palms.
+				SkillFx.gatherQi(world, caster.getEyePos().add(caster.getRotationVec(1.0f).multiply(1.2)), 0xFFB35C, 2.4, 6);
 			}
 		}
 	}

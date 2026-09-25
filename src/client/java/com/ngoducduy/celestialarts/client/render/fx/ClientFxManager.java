@@ -89,6 +89,7 @@ public final class ClientFxManager {
 			case RUNE_ORBIT -> new RuneOrbitFx(d, w);
 			case SCREEN_FLASH -> null; // handled by ScreenOverlay in spawn()
 			case AFTERIMAGE -> new AfterimageFx(d, w);
+			case GROUND_DECAL -> new GroundDecalFx(d, w);
 		};
 	}
 

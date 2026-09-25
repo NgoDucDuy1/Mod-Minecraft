@@ -81,6 +81,7 @@ public class FlameClawSkill extends Skill {
 				ModPackets.sendFx(world, FxData.line(FxType.GROUND_CRACK, a.add(0, 0.05, 0), b, 0xFF7A1A, 0.45f, EMBER_TICKS + 10));
 			}
 			ModPackets.sendFx(world, FxData.at(FxType.FLAME_PILLAR, emberCenter.add(0, -0.4, 0), 0xFF7A1A, 0.55f, EMBER_TICKS));
+			ModPackets.sendFx(world, FxData.at(FxType.GROUND_DECAL, emberCenter.add(0, 0.03, 0), 0xFF7A1A, 1.6f, 360));
 			world.playSound(null, caster.getBlockPos(), ModSounds.FIRE_EXPLOSION, SoundCategory.PLAYERS, 0.6f, 1.4f);
 		}
 

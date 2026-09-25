@@ -77,6 +77,10 @@ public final class Breakthrough {
 
 			// Slow the player down: they are sitting in meditation.
 			caster.setVelocity(Vec3d.ZERO);
+			if (age % 3 == 0) {
+				// Spiritual qi of heaven and earth pours into the dantian.
+				SkillFx.gatherQi(world, pos.add(0, 1.0, 0), color, 4.0 + 2.0 * Math.min(1.0, age / (double) DURATION), 8);
+			}
 			caster.velocityModified = true;
 
 			// Lightning strikes every 20 ticks after a short build-up.

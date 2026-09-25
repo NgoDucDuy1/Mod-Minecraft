@@ -60,6 +60,67 @@ def gen_vignette():
     out_fx("vignette", img, size, size)
 
 
+def gen_scorch():
+    """Dark burnt patch: ragged radial falloff broken up by noise, faint ember cracks in the middle."""
+    import numpy as np
+    size = 256
+    W = size * T.SS
+    d = T._dist_grid(W, W) / (W / 2)
+    n = np.asarray(T.noise_layer(size, size, 91, scale=3, octaves=4), dtype=np.float32) / 255.0
+    n2 = np.asarray(T.noise_layer(size, size, 17, scale=8, octaves=3), dtype=np.float32) / 255.0
+    edge = d * (0.75 + 0.5 * (n - 0.5))
+    a = np.clip((1.0 - edge) / 0.45, 0.0, 1.0)
+    a = a * a * (0.55 + 0.45 * n2)
+    rgb = np.zeros((W, W, 3), dtype=np.float32)
+    rgb[..., 0] = 18 + 30 * n2
+    rgb[..., 1] = 12 + 14 * n2
+    rgb[..., 2] = 10 + 8 * n2
+    arr = np.dstack([rgb, a * 235]).astype(np.uint8)
+    img = Image.fromarray(arr, "RGBA")
+    # Ember cracks near the centre (they are tinted at draw time by the skill colour).
+    rnd = random.Random(5)
+    c = W / 2
+    for i in range(7):
+        ang = rnd.uniform(0, math.pi * 2)
+        L = rnd.uniform(0.25, 0.42) * c
+        pts = T.lightning_points(c, c, c + math.cos(ang) * L, c + math.sin(ang) * L, 6, 6 * T.SS, rnd)
+        T.polyline_glow(img, pts, (255, 150, 70), 2.2 * T.SS, glow=3.0)
+    out_fx("scorch", img, size, size)
+
+
+def gen_frost_patch():
+    """Icy ground patch: pale blue-white with crystalline streaks, ragged frosted edge."""
+    import numpy as np
+    size = 256
+    W = size * T.SS
+    d = T._dist_grid(W, W) / (W / 2)
+    n = np.asarray(T.noise_layer(size, size, 33, scale=3, octaves=4), dtype=np.float32) / 255.0
+    n2 = np.asarray(T.noise_layer(size, size, 71, scale=10, octaves=2), dtype=np.float32) / 255.0
+    edge = d * (0.8 + 0.4 * (n - 0.5))
+    a = np.clip((1.0 - edge) / 0.4, 0.0, 1.0)
+    a = a * (0.45 + 0.55 * n2)
+    rgb = np.zeros((W, W, 3), dtype=np.float32)
+    rgb[..., 0] = 200 + 55 * n2
+    rgb[..., 1] = 230 + 25 * n2
+    rgb[..., 2] = 255
+    arr = np.dstack([rgb, a * 200]).astype(np.uint8)
+    img = Image.fromarray(arr, "RGBA")
+    rnd = random.Random(9)
+    c = W / 2
+    for i in range(10):
+        ang = rnd.uniform(0, math.pi * 2)
+        L = rnd.uniform(0.3, 0.5) * c
+        x1, y1 = c + math.cos(ang) * L, c + math.sin(ang) * L
+        T.polyline_glow(img, [(c, c), (x1, y1)], (235, 250, 255), 1.6 * T.SS, glow=2.5)
+        for k in range(3):
+            f = rnd.uniform(0.3, 0.8)
+            bx, by = c + (x1 - c) * f, c + (y1 - c) * f
+            ba = ang + rnd.choice([-1, 1]) * rnd.uniform(0.5, 0.9)
+            bl = L * rnd.uniform(0.15, 0.3)
+            T.polyline_glow(img, [(bx, by), (bx + math.cos(ba) * bl, by + math.sin(ba) * bl)], (235, 250, 255), 1.2 * T.SS, glow=2.0)
+    out_fx("frost_patch", img, size, size)
+
+
 def gen_sparkle():
     img = T.new(64, 64)
     pts = T.star_points(32, 32, 30, 3, 4)
@@ -653,7 +714,7 @@ def main():
     gen_circle_taiji(); gen_circle_runes(); gen_circle_thunder(); gen_circle_ice()
     gen_beam(); gen_beam_core(); gen_slash(); gen_wind_blade(); gen_hex_shield()
     gen_flame_column(); gen_crack(); gen_vortex(); gen_cloud(); gen_glyph_strip()
-    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette()
+    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette(); gen_scorch(); gen_frost_patch()
     p_glow(); p_spark(); p_flame_wisp(); p_ember(); p_ice_crystal(); p_snowflake(); p_frost_mist()
     p_lightning_arc(); p_wind_streak(); p_void_smoke(); p_lotus_petal(); p_rune(); p_sword_glint()
     p_rock_debris(); p_golden_light()

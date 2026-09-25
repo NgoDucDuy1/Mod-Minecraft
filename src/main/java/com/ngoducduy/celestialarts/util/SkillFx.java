@@ -90,6 +90,25 @@ public final class SkillFx {
 		}
 	}
 
+	/**
+	 * Particles born on a sphere of {@code radius} that drift <em>inwards</em> and meet at the centre
+	 * roughly when a glow particle's velocity has decayed (velocityMultiplier 0.9 ⇒ total travel ≈ 10×v).
+	 * This is the "gathering qi" anticipation before a big technique.
+	 */
+	public static void converge(ServerWorld world, ParticleEffect effect, Vec3d center, double radius, int count) {
+		Random r = world.random;
+		for (int i = 0; i < count; i++) {
+			Vec3d u = randomUnit(r);
+			double d = radius * (0.7 + 0.3 * r.nextDouble());
+			single(world, effect, center.add(u.multiply(d)), u.multiply(-d * 0.105));
+		}
+	}
+
+	/** Glow particles converging on a point in the given colour. */
+	public static void gatherQi(ServerWorld world, Vec3d center, int rgb, double radius, int count) {
+		converge(world, GlowParticleEffect.glow(rgb, 0.35f, 14), center, radius, count);
+	}
+
 	/** Sphere surface of particles (explosion shell). */
 	public static void shell(ServerWorld world, ParticleEffect effect, Vec3d center, double radius, int count, double speed) {
 		Random r = world.random;
