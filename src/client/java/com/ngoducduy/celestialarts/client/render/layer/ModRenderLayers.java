@@ -6,7 +6,15 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import com.ngoducduy.celestialarts.client.render.FxTextures;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.util.Identifier;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Map;
 import net.minecraft.util.Util;
 
 import java.util.function.Function;
@@ -111,5 +119,46 @@ public abstract class ModRenderLayers extends RenderLayer {
 
 	public static RenderLayer lightning() {
 		return RenderLayer.getLightning();
+	}
+
+	/**
+	 * One {@link BufferBuilder} per effect layer, for a {@link VertexConsumerProvider.Immediate}.
+	 * <p>
+	 * An immediate provider with only a fallback buffer re-begins that single buffer every time a
+	 * different layer is requested, so an effect that fetches two consumers and then draws with the
+	 * first one silently pushes those vertices into the second layer (wrong texture / blend). With a
+	 * dedicated buffer per layer the consumers stay valid until {@code draw()}.
+	 */
+	public static Map<RenderLayer, BufferBuilder> createFxBuffers() {
+		Map<RenderLayer, BufferBuilder> map = new Object2ObjectLinkedOpenHashMap<>();
+		for (Field field : FxTextures.class.getFields()) {
+			if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
+			Identifier texture;
+			try {
+				texture = (Identifier) field.get(null);
+			} catch (IllegalAccessException e) {
+				continue;
+			}
+			// Solid (depth-writing) layers first so translucent light blends over them, additive last.
+			map.put(solidGlow(texture), new BufferBuilder(256));
+		}
+		for (Field field : FxTextures.class.getFields()) {
+			if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
+			try {
+				Identifier texture = (Identifier) field.get(null);
+				map.put(translucentGlow(texture), new BufferBuilder(256));
+			} catch (IllegalAccessException ignored) {
+			}
+		}
+		for (Field field : FxTextures.class.getFields()) {
+			if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
+			try {
+				Identifier texture = (Identifier) field.get(null);
+				map.put(additive(texture), new BufferBuilder(256));
+			} catch (IllegalAccessException ignored) {
+			}
+		}
+		map.put(lightning(), new BufferBuilder(256));
+		return map;
 	}
 }

@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.client.render.fx;
 
 import com.ngoducduy.celestialarts.client.render.fx.types.*;
+import com.ngoducduy.celestialarts.client.render.layer.ModRenderLayers;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
@@ -23,7 +24,8 @@ import java.util.List;
 public final class ClientFxManager {
 	private static final int MAX_FX = 512;
 	private static final List<ClientFx> ACTIVE = new ArrayList<>();
-	private static final VertexConsumerProvider.Immediate IMMEDIATE = VertexConsumerProvider.immediate(new BufferBuilder(1 << 16));
+	// Dedicated buffer per effect layer (see ModRenderLayers.createFxBuffers) + a fallback for anything else.
+	private static final VertexConsumerProvider.Immediate IMMEDIATE = VertexConsumerProvider.immediate(ModRenderLayers.createFxBuffers(), new BufferBuilder(1 << 16));
 	private static ClientWorld lastWorld;
 
 	private ClientFxManager() {
