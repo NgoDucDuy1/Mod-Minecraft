@@ -121,6 +121,10 @@ public final class ScreenOverlay {
 			// Uniform dimming plus a heavy vignette.
 			int a = (int) (darkA * 105);
 			ctx.fill(0, 0, w, h, (a << 24) | 0x0A0614);
+			// DrawContext.fill() goes through the GUI render layer, whose end action disables blending
+			// again - re-enable it or the vignette is drawn opaque (position_tex only discards alpha 0).
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderColor(0.16F, 0.09F, 0.30F, Math.min(1.0F, darkA * 0.75F));
 			ctx.drawTexture(VIGNETTE, 0, 0, 0, 0, w, h, w, h);
@@ -129,6 +133,7 @@ public final class ScreenOverlay {
 		if (flashA > 0.005F) {
 			// Additive flash keeps the world visible underneath (DrawContext.fill would force normal blending).
 			Matrix4f m = ctx.getMatrices().peek().getPositionMatrix();
+			RenderSystem.enableBlend();
 			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 			RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE);
 			float a = Math.min(1.0F, flashA);
