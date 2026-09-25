@@ -42,7 +42,7 @@ public class SpiritSwordRenderer extends GlowEntityRenderer<SpiritSwordEntity> {
 		matrices.multiply(this.dispatcher.getRotation());
 		VertexConsumer glow = vcp.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
 		float pulse = 1.0F + 0.1F * MathHelper.sin(age * 0.6F + entity.getOrbitOffset());
-		RenderUtil.billboardQuad(glow, matrices.peek(), 0.6F * pulse * appear, COLOR, 0.35F);
+		RenderUtil.billboardQuad(glow, matrices.peek(), 0.32F * pulse * appear, COLOR, 0.28F);
 		matrices.pop();
 
 		applyProjectileRotation(matrices, lerpYaw(entity, tickDelta), lerpPitch(entity, tickDelta));
@@ -61,7 +61,7 @@ public class SpiritSwordRenderer extends GlowEntityRenderer<SpiritSwordEntity> {
 		applyModelFlip(matrices);
 		VertexConsumer body = vcp.getBuffer(RenderLayer.getEntityTranslucentEmissive(TEXTURE));
 		model.render(matrices, body, FULL_LIGHT, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 0.6F + 0.4F * appear);
-		matrices.scale(1.5F, 1.5F, 1.06F);
+		matrices.scale(1.25F, 1.25F, 1.04F);
 		VertexConsumer ghost = vcp.getBuffer(ModRenderLayers.additive(TEXTURE));
 		model.render(matrices, ghost, FULL_LIGHT, OverlayTexture.DEFAULT_UV, r(COLOR), g(COLOR), b(COLOR), 0.4F * appear);
 		matrices.pop();

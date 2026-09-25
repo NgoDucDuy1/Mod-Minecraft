@@ -1,5 +1,6 @@
 package com.ngoducduy.celestialarts.client.autotest;
 
+import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.client.ClientPackets;
 import com.ngoducduy.celestialarts.client.gui.SkillBookScreen;
 import com.ngoducduy.celestialarts.client.render.fx.ClientFxManager;
@@ -20,6 +21,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.ScreenshotRecorder;
+import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registries;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.DataConfiguration;
@@ -281,22 +284,30 @@ public final class CelestialAutoTest {
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
+		boolean fp = FIRST_PERSON_SHOTS.contains(skill.getId().getPath());
 		submitAndWait(c -> {
-			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+			// Deterministic aim: look along +Z, slightly down, so projectiles fly away from the camera.
+			c.player.setYaw(0.0F);
+			c.player.setPitch(4.0F);
+			c.player.setHeadYaw(0.0F);
+			c.player.setBodyYaw(0.0F);
+			c.options.setPerspective(fp ? Perspective.FIRST_PERSON : Perspective.THIRD_PERSON_BACK);
 			ClientPackets.sendCast(slot);
 			return null;
 		});
-		// Short skills (a slash, a dash) are over within ~15 ticks, so shoot early and without settling delay.
-		waitTicks(6);
-		screenshot("skill_" + skill.getId().getPath(), false);
-		if (FIRST_PERSON_SHOTS.contains(skill.getId().getPath())) {
+		// Fast projectiles are gone within ~20 ticks: first-person shot early, third-person shortly after.
+		if (fp) {
+			waitTicks(3);
+			screenshot("skill_" + skill.getId().getPath() + "_fp", false);
 			submitAndWait(c -> {
-				c.options.setPerspective(Perspective.FIRST_PERSON);
+				c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
 				return null;
 			});
-			waitTicks(2);
-			screenshot("skill_" + skill.getId().getPath() + "_fp", false);
+			waitTicks(3);
+		} else {
+			waitTicks(6);
 		}
+		screenshot("skill_" + skill.getId().getPath(), false);
 		waitTicks(6);
 		if (skill.isChannel()) {
 			waitTicks(20);
@@ -314,7 +325,15 @@ public final class CelestialAutoTest {
 		waitTicks(5);
 		// Let long-lived effects (formations, orbiting swords, domes) fade before the next skill so each
 		// screenshot shows one skill only. Capped so a stuck effect cannot stall the run.
-		waitFor("effects of " + skill.getId().getPath() + " to end", c -> ClientFxManager.count() == 0, Duration.ofSeconds(12), true);
+		waitFor("effects of " + skill.getId().getPath() + " to end", c -> ClientFxManager.count() == 0 && !modEntitiesPresent(c), Duration.ofSeconds(12), true);
+	}
+
+	private static boolean modEntitiesPresent(MinecraftClient c) {
+		if (c.world == null) return false;
+		for (Entity e : c.world.getEntities()) {
+			if (Registries.ENTITY_TYPE.getId(e.getType()).getNamespace().equals(CelestialArts.MOD_ID)) return true;
+		}
+		return false;
 	}
 
 	private static void command(String command) {
