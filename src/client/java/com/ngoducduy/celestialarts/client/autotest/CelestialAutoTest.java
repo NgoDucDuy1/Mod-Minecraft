@@ -277,7 +277,7 @@ public final class CelestialAutoTest {
 	}
 
 	/** Skills whose first-person view matters most (they surround or start at the camera). */
-	private static final List<String> FIRST_PERSON_SHOTS = List.of("purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain");
+	private static final List<String> FIRST_PERSON_SHOTS = List.of("sword_qi_slash", "flame_claw", "ice_arrows", "purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain", "thousand_swords");
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
@@ -312,6 +312,9 @@ public final class CelestialAutoTest {
 			return null;
 		});
 		waitTicks(5);
+		// Let long-lived effects (formations, orbiting swords, domes) fade before the next skill so each
+		// screenshot shows one skill only. Capped so a stuck effect cannot stall the run.
+		waitFor("effects of " + skill.getId().getPath() + " to end", c -> ClientFxManager.count() == 0, Duration.ofSeconds(12), true);
 	}
 
 	private static void command(String command) {
@@ -357,10 +360,20 @@ public final class CelestialAutoTest {
 	}
 
 	private static void waitFor(String what, Predicate<MinecraftClient> predicate, Duration timeout) {
+		waitFor(what, predicate, timeout, false);
+	}
+
+	private static void waitFor(String what, Predicate<MinecraftClient> predicate, Duration timeout, boolean lenient) {
 		long end = System.currentTimeMillis() + timeout.toMillis();
 		while (true) {
 			if (submitAndWait(predicate::test)) return;
-			if (System.currentTimeMillis() > end) throw new IllegalStateException("Timed out waiting for " + what);
+			if (System.currentTimeMillis() > end) {
+				if (lenient) {
+					LOG.info("[AutoTest] gave up waiting for {}", what);
+					return;
+				}
+				throw new IllegalStateException("Timed out waiting for " + what);
+			}
 			sleep(Duration.ofMillis(100));
 		}
 	}
