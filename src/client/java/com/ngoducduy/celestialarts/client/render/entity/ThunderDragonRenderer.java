@@ -105,8 +105,8 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		matrices.scale(2.4F, 2.4F, 2.4F);
 		applyModelFlip(matrices);
 		head.animate(age, 0.6F + 0.4F * MathHelper.sin(age * 0.9F));
-		VertexConsumer body = vcp.getBuffer(RenderLayer.getEntityTranslucentEmissive(TEXTURE));
-		head.render(matrices, body, FULL_LIGHT, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 0.95F);
+		VertexConsumer headVc = vcp.getBuffer(RenderLayer.getEntityTranslucentEmissive(TEXTURE));
+		head.render(matrices, headVc, FULL_LIGHT, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 0.95F);
 		matrices.scale(1.3F, 1.3F, 1.3F);
 		VertexConsumer ghost = vcp.getBuffer(ModRenderLayers.additive(TEXTURE));
 		head.render(matrices, ghost, FULL_LIGHT, OverlayTexture.DEFAULT_UV, r(PURPLE), g(PURPLE), b(PURPLE), 0.4F);
