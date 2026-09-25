@@ -65,6 +65,13 @@ jobs:
             echo '```'
             grep -E "error:|warning:|\.java:[0-9]+:|What went wrong|Could not|FAILURE|BUILD" build.log | head -n 300 | cut -c1-400
             echo '```'
+            if [ -f build/junit.xml ]; then
+              echo '### Game test report (junit.xml)'
+              echo '```xml'
+              head -c 20000 build/junit.xml
+              echo
+              echo '```'
+            fi
             if [ -f gametest.log ]; then
               echo '### Game test summary'
               echo '```'
