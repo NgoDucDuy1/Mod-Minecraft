@@ -28,7 +28,7 @@ import java.util.List;
 public class SkillBookScreen extends Screen {
 	private static final Identifier BG = CelestialArts.id("textures/gui/skill_book.png");
 	private static final int PANEL_W = 256;
-	private static final int PANEL_H = 200;
+	private static final int PANEL_H = 222;
 	private static final int CELL = 36;
 	private static final int COLS = 4;
 	private static final int ROWS = 4;
@@ -54,7 +54,7 @@ public class SkillBookScreen extends Screen {
 		this.breakthroughButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.celestialarts.breakthrough"), b -> {
 			ClientPackets.sendBreakthrough();
 			this.close();
-		}).dimensions(left + 160, top + 168, 86, 20).build());
+		}).dimensions(left + 166, top + 186, 78, 20).build());
 	}
 
 	private void refreshLearned() {
@@ -78,7 +78,7 @@ public class SkillBookScreen extends Screen {
 	}
 
 	private int gridY(int row) {
-		return top + 30 + row * CELL;
+		return top + 40 + row * CELL;
 	}
 
 	private int slotX() {
@@ -86,7 +86,7 @@ public class SkillBookScreen extends Screen {
 	}
 
 	private int slotY(int i) {
-		return top + 30 + i * 22;
+		return top + 40 + i * 22;
 	}
 
 	@Override
@@ -95,8 +95,8 @@ public class SkillBookScreen extends Screen {
 		RenderSystem.enableBlend();
 		ctx.drawTexture(BG, left, top, 0, 0, PANEL_W, PANEL_H, 256, 256);
 		ctx.drawText(textRenderer, this.title, left + 12, top + 10, 0xFFE9A8, false);
-		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.learned"), left + 12, top + 21, 0xC8C8C8, false);
-		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.slots"), slotX(), top + 21, 0xC8C8C8, false);
+		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.learned"), left + 12, top + 28, 0xC8C8C8, false);
+		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.slots"), slotX(), top + 28, 0xC8C8C8, false);
 
 		PlayerQi qi = qi();
 		Skill hovered = null;
@@ -139,11 +139,19 @@ public class SkillBookScreen extends Screen {
 		}
 
 		// Status line.
-		int sy = top + 172;
-		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.qi").append(": " + Math.round(qi.getQi()) + "/" + Math.round(qi.getMaxQi())), left + 12, sy, 0x9BE4FF, false);
-		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.exp").append(": " + qi.getExp() + "/" + qi.getExpForBreakthrough()), left + 12, sy + 11, 0xFFE9A8, false);
-		ctx.drawText(textRenderer, qi.getRealm().getName(), left + 12, sy - 11, qi.getRealm().getRgb(), false);
-		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.hint"), left + 12, top + PANEL_H - 10, 0x777777, false);
+		int sy = top + 200;
+		ctx.drawText(textRenderer, qi.getRealm().getName(), left + 13, sy - 10, qi.getRealm().getRgb(), false);
+		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.qi").append(": " + Math.round(qi.getQi()) + "/" + Math.round(qi.getMaxQi())), left + 13, sy, 0x9BE4FF, false);
+		int need = qi.getExpForBreakthrough();
+		Text expLine = need < 0
+				? Text.translatable("gui.celestialarts.exp").append(": ").append(Text.translatable("gui.celestialarts.max_realm"))
+				: Text.translatable("gui.celestialarts.exp").append(": " + qi.getExp() + "/" + need);
+		ctx.drawText(textRenderer, expLine, left + 13, sy + 10, 0xFFE9A8, false);
+		// Usage hint below the panel when the window is tall enough for it.
+		if (this.height - (top + PANEL_H) >= 16) {
+			Text hint = Text.translatable("gui.celestialarts.hint");
+			ctx.drawCenteredTextWithShadow(textRenderer, hint, this.width / 2, top + PANEL_H + 5, 0xA0A0A0);
+		}
 		breakthroughButton.active = qi.canBreakthrough();
 
 		super.render(ctx, mouseX, mouseY, delta);

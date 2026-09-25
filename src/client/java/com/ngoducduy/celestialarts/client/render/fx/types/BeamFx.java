@@ -45,9 +45,14 @@ public class BeamFx extends ClientFx {
 		double range = data.extra() > 0 ? data.extra() : 24.0;
 		Vec3d eye = e.getCameraPosVec(tickDelta).add(0, -0.2, 0);
 		Vec3d dir = e.getRotationVec(tickDelta);
-		// Hand offset so the beam does not start inside the camera in first person.
+		// Hand offset so the beam does not start inside the camera. In first person the sheath radius is
+		// larger than the camera distance, so push the origin out to the hand and taper the first blocks
+		// instead of flooding the whole viewport with additive light.
+		boolean firstPerson = camera.getFocusedEntity() == e && !camera.isThirdPerson();
 		Vec3d right = dir.crossProduct(new Vec3d(0, 1, 0)).normalize();
-		Vec3d from = eye.add(dir.multiply(0.8)).add(right.multiply(0.15));
+		Vec3d from = firstPerson
+				? eye.add(dir.multiply(1.6)).add(right.multiply(0.4)).add(0, -0.35, 0)
+				: eye.add(dir.multiply(0.8)).add(right.multiply(0.15));
 		Vec3d far = from.add(dir.multiply(range));
 		HitResult hit = world.raycast(new RaycastContext(from, far, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, e));
 		Vec3d end = hit.getType() == HitResult.Type.MISS ? far : hit.getPos();
@@ -76,7 +81,7 @@ public class BeamFx extends ClientFx {
 		matrices.push();
 		matrices.translate(from.x, from.y, from.z);
 		faceCamera(matrices, camera);
-		RenderUtil.billboardQuad(glow, matrices.peek(), r * 3.2F, white, env * 0.6F);
+		RenderUtil.billboardQuad(glow, matrices.peek(), r * (firstPerson ? 1.2F : 3.2F), white, env * (firstPerson ? 0.3F : 0.6F));
 		matrices.pop();
 		Vec3d tip = from.add(dir.multiply(length));
 		matrices.push();
@@ -92,19 +97,32 @@ public class BeamFx extends ClientFx {
 		MatrixStack.Entry en = matrices.peek();
 
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM));
-		float vRep = Math.max(1.0F, length / 3.0F);
-		// Outer energy sheath, scrolling.
-		RenderUtil.cylinder(beam, en, r * 1.05F, r * 1.05F, length, 16, 2.0F, vRep, -t * 0.25F, color, env * 0.85F, env * 0.85F);
-		// Second sheath, offset & scrolling faster, rotating around the axis.
-		matrices.push();
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 9.0F));
-		RenderUtil.cylinder(beam, matrices.peek(), r * 1.35F, r * 1.35F, length, 16, 3.0F, vRep * 0.7F, -t * 0.45F, color, env * 0.35F, env * 0.35F);
-		matrices.pop();
-		// Wide soft haze.
-		RenderUtil.cylinder(glow, en, r * 2.4F, r * 2.4F, length, 12, 1.0F, 0.0F, color, env * 0.22F, env * 0.22F);
-		// White-hot core.
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
-		RenderUtil.cylinder(core, en, r * 0.45F, r * 0.45F, length, 10, 1.0F, vRep, -t * 0.6F, white, env, env);
-
+		// Lead segment: the beam gathers from a thin point at the hand to full width over the first blocks.
+		float lead = firstPerson ? Math.min(3.0F, length) : Math.min(1.0F, length);
+		float startK = firstPerson ? 0.25F : 0.6F;
+		float startA = firstPerson ? 0.35F : 0.8F;
+		if (lead > 0.05F) {
+			RenderUtil.cylinder(beam, en, r * 1.05F * startK, r * 1.05F, lead, 16, 2.0F, lead / 3.0F, -t * 0.25F, color, env * 0.85F * startA, env * 0.85F);
+			RenderUtil.cylinder(glow, en, r * 2.4F * startK, r * 2.4F, lead, 12, 1.0F, 0.0F, color, env * 0.22F * startA, env * 0.22F);
+			RenderUtil.cylinder(core, en, r * 0.45F * startK, r * 0.45F, lead, 10, 1.0F, lead / 3.0F, -t * 0.6F, white, env * startA, env);
+		}
+		float rest = length - lead;
+		if (rest > 0.05F) {
+			matrices.translate(0.0, lead, 0.0);
+			en = matrices.peek();
+			float vRep = Math.max(1.0F, rest / 3.0F);
+			// Outer energy sheath, scrolling.
+			RenderUtil.cylinder(beam, en, r * 1.05F, r * 1.05F, rest, 16, 2.0F, vRep, -t * 0.25F, color, env * 0.85F, env * 0.85F);
+			// Second sheath, offset & scrolling faster, rotating around the axis.
+			matrices.push();
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 9.0F));
+			RenderUtil.cylinder(beam, matrices.peek(), r * 1.35F, r * 1.35F, rest, 16, 3.0F, vRep * 0.7F, -t * 0.45F, color, env * 0.35F, env * 0.35F);
+			matrices.pop();
+			// Wide soft haze.
+			RenderUtil.cylinder(glow, en, r * 2.4F, r * 2.4F, rest, 12, 1.0F, 0.0F, color, env * 0.22F, env * 0.22F);
+			// White-hot core.
+			RenderUtil.cylinder(core, en, r * 0.45F, r * 0.45F, rest, 10, 1.0F, vRep, -t * 0.6F, white, env, env);
+		}
 	}
 }

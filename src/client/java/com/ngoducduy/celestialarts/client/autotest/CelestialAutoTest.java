@@ -183,6 +183,11 @@ public final class CelestialAutoTest {
 		});
 		waitTicks(10);
 		screenshot("05_particles");
+		// Clear the synthetic effects so the skill screenshots only show what the skills produce.
+		submitAndWait(c -> {
+			ClientFxManager.clear();
+			return null;
+		});
 
 		// Cast every skill through the real hotbar packets, six at a time.
 		List<Skill> skills = new ArrayList<>(SkillRegistry.all());

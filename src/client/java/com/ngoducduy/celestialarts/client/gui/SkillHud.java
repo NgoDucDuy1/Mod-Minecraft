@@ -64,8 +64,10 @@ public final class SkillHud {
 
 		// Text: realm name (left) and qi numbers (right).
 		Text realmName = realm.getName();
-		ctx.drawText(font, realmName, x + 1, y - 10, realm.getRgb(), true);
 		String nums = Math.round(qi.getQi()) + " / " + Math.round(qi.getMaxQi());
+		// Long realm names (e.g. "Tribulation Transcendence") move up a line instead of colliding with the numbers.
+		boolean twoLines = font.getWidth(realmName) + font.getWidth(nums) + 6 > 128;
+		ctx.drawText(font, realmName, x + 1, y - (twoLines ? 20 : 10), realm.getRgb(), true);
 		ctx.drawText(font, nums, x + 127 - font.getWidth(nums), y - 10, 0xFFFFFF, true);
 		if (qi.canBreakthrough()) {
 			Text ready = Text.translatable("gui.celestialarts.breakthrough");

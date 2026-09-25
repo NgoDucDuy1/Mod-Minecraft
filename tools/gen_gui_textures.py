@@ -428,44 +428,43 @@ def gui_hud():
 
 
 def gui_skill_book():
-    """256x256 texture; the panel occupies 256x200 at the top."""
+    """256x256 texture; the panel occupies 256x222 at the top (layout mirrors SkillBookScreen)."""
     W, H = 256, 256
+    PH = 222
     img = Image.new("RGBA", (W, H))
-    d = ImageDraw.Draw(img)
     # parchment background with subtle noise
-    n = T.noise_layer(256, 200, 77, scale=6, octaves=3, ss=False)
-    paper = Image.new("RGBA", (256, 200), (58, 46, 78, 255))
+    n = T.noise_layer(256, PH, 77, scale=6, octaves=3, ss=False)
+    paper = Image.new("RGBA", (256, PH), (58, 46, 78, 255))
     tint = T.colorize(n, (95, 78, 125), 0.5)
     paper.alpha_composite(tint)
     img.paste(paper, (0, 0))
     d = ImageDraw.Draw(img)
     # outer frame
-    d.rectangle([0, 0, 255, 199], outline=(230, 195, 110, 255), width=2)
-    d.rectangle([3, 3, 252, 196], outline=(120, 95, 50, 255), width=1)
+    d.rectangle([0, 0, 255, PH - 1], outline=(230, 195, 110, 255), width=2)
+    d.rectangle([3, 3, 252, PH - 4], outline=(120, 95, 50, 255), width=1)
     # title bar
     d.rectangle([6, 6, 249, 24], fill=(30, 22, 44, 220), outline=(230, 195, 110, 255))
-    # skill grid area
-    d.rectangle([10, 28, 157, 175], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    # skill grid area (labels are drawn by the screen at y=27, grid starts at 40)
+    d.rectangle([10, 38, 157, 185], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
     for i in range(4):
         for j in range(4):
             x = 12 + i * 36
-            y = 30 + j * 36
+            y = 40 + j * 36
             d.rectangle([x, y, x + 33, y + 33], fill=(40, 32, 58, 255), outline=(90, 75, 110, 255))
     # slot list area
-    d.rectangle([172, 28, 249, 160], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    d.rectangle([172, 38, 249, 172], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
     for i in range(6):
-        y = 30 + i * 22
+        y = 40 + i * 22
         d.rounded_rectangle([176, y, 245, y + 19], radius=2, fill=(44, 36, 62, 255), outline=(110, 90, 130, 255))
-    # status/breakthrough area
-    d.rectangle([160, 164, 249, 194], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
-    d.rectangle([10, 178, 157, 194], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    # breakthrough area (right) and status area (left)
+    d.rectangle([160, 176, 249, 216], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    d.rectangle([10, 188, 157, 218], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
     # corner ornaments
     gold = (230, 195, 110, 255)
-    for (cx, cy, sx, sy) in [(6, 6, 1, 1), (249, 6, -1, 1), (6, 193, 1, -1), (249, 193, -1, -1)]:
+    for (cx, cy, sx, sy) in [(6, 6, 1, 1), (249, 6, -1, 1), (6, PH - 7, 1, -1), (249, PH - 7, -1, -1)]:
         d.line([(cx, cy), (cx + sx * 10, cy)], fill=gold, width=2)
         d.line([(cx, cy), (cx, cy + sy * 10)], fill=gold, width=2)
         d.point((cx + sx * 3, cy + sy * 3), fill=gold)
-    # decorative glyph strip along the bottom of the panel (below 200: spare region)
     T.save(img, os.path.join(GUI, "skill_book.png"))
     print("gui/skill_book.png")
 

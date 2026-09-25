@@ -176,6 +176,7 @@
 	"gui.celestialarts.locked": "Realm too low",
 	"gui.celestialarts.qi": "Qi",
 	"gui.celestialarts.exp": "Cultivation",
+	"gui.celestialarts.max_realm": "Peak (max realm)",
 	"gui.celestialarts.breakthrough": "Break through!",
 	"gui.celestialarts.channel": "Hold to channel",
 	"gui.celestialarts.toggle": "Press again to end",
