@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -177,3 +177,28 @@ jobs:
         with:
           name: celestialarts
           path: build/libs/*.jar
+
+      - name: Publish release with the mod jar
+        # Only fully verified builds (compile + server game tests + client auto test) are released.
+        if: success() && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          VERSION=$(grep -E '^mod_version=' gradle.properties | cut -d= -f2)
+          JAR=$(ls build/libs/celestialarts-*.jar | grep -v -- '-sources' | head -n1)
+          SHORT=${GITHUB_SHA::7}
+          TAG="v${VERSION}"
+          NOTES="Celestial Arts ${VERSION} · Minecraft 1.20.1 · Fabric Loader ≥0.15.11 · Fabric API 0.92.2+1.20.1
+
+          Bản build tự động từ commit ${GITHUB_SHA} (nhánh ${GITHUB_REF_NAME}).
+          Đã qua: biên dịch, game test server, client auto-test (xem issue #1).
+
+          Cài đặt: chép \`$(basename "$JAR")\` cùng Fabric API vào thư mục \`mods\`."
+          # Re-point the version tag at this commit: delete any previous release of the same version.
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --cleanup-tag -y || true
+          fi
+          gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Celestial Arts ${VERSION} (${SHORT})" --notes "$NOTES" --latest
+          echo "Released $JAR as $TAG"

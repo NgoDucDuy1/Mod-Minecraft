@@ -28,7 +28,8 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * Thái Cực Trận – inscribes a rotating Taiji formation on the ground. Inside it,
- * allies are mended and cleansed every pulse while enemies are suppressed and hurt.
+ * allies are mended, shielded and cleansed every pulse while enemies are suppressed and hurt.
+ * Pulses alternate yin (draws enemies in) and yang (throws them out).
  */
 public class TaijiFormationSkill extends Skill {
 	private static final int DURATION = 260;
@@ -73,8 +74,13 @@ public class TaijiFormationSkill extends Skill {
 		}
 
 		private void pulse() {
-			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, center.add(0, 0.12, 0), 0xFFFFFF, (float) RADIUS, 14));
-			world.playSound(null, caster.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 0.6f, 1.6f);
+			// Yin and yang alternate: yin draws enemies toward the eye of the formation,
+			// yang throws them out again. Allies are untouched by the motion.
+			boolean yin = (age / 30) % 2 == 0;
+			int color = yin ? 0x9AB8FF : 0xFFE9A8;
+			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, center.add(0, 0.12, 0), color, (float) RADIUS, 14).withExtra(yin ? 1 : 0));
+			world.playSound(null, caster.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 0.6f, yin ? 1.2f : 1.7f);
+			SkillFx.glowRing(world, center.add(0, 0.3, 0), yin ? RADIUS : 0.8, color, 32, yin ? -0.22 : 0.22);
 
 			Box box = new Box(center.x - RADIUS, center.y - 1, center.z - RADIUS, center.x + RADIUS, center.y + 4, center.z + RADIUS);
 			for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, box, le -> le.isAlive())) {
@@ -86,13 +92,18 @@ public class TaijiFormationSkill extends Skill {
 					e.removeStatusEffect(StatusEffects.POISON);
 					e.removeStatusEffect(StatusEffects.WITHER);
 					e.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 40, 0, false, false, true));
+					if (!e.hasStatusEffect(StatusEffects.ABSORPTION)) {
+						e.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 200, 0, false, false, true));
+					}
 					SkillFx.burst(world, GlowParticleEffect.glow(0xFFF3C4, 0.5f, 16), e.getBoundingBox().getCenter(), 6, 0.4, 0.03);
 				} else if (EntityUtil.isValidTarget(caster, e)) {
 					if (e.damage(ModDamageTypes.source(world, ModDamageTypes.HEAVEN, caster), 4.0f)) {
 						e.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 40, 1, false, false, true), caster);
 						e.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 40, 0, false, false, true), caster);
-						SkillFx.burst(world, GlowParticleEffect.glow(0xFFFFFF, 0.6f, 12), e.getBoundingBox().getCenter(), 8, 0.4, 0.06);
+						SkillFx.burst(world, GlowParticleEffect.glow(color, 0.6f, 12), e.getBoundingBox().getCenter(), 8, 0.4, 0.06);
 					}
+					if (yin) EntityUtil.pull(e, center.add(0, 0.5, 0), 0.45);
+					else EntityUtil.knockback(e, center, 0.9, 0.3);
 				}
 			}
 		}

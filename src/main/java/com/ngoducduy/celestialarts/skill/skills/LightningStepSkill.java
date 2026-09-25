@@ -22,10 +22,13 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * Lôi Ảnh Bộ – the cultivator becomes a bolt of lightning, blinking forward and
- * shocking everything on the path. Leaves a crackling afterimage trail.
+ * shocking everything on the path. On arrival the leftover charge chains between the
+ * closest enemies, each arc weaker than the last.
  */
 public class LightningStepSkill extends Skill {
 	private static final double DISTANCE = 9.0;
+	private static final int CHAIN_HOPS = 3;
+	private static final double CHAIN_RANGE = 6.0;
 
 	public LightningStepSkill() {
 		super(Settings.of(Element.LIGHTNING, SkillType.MOVEMENT, Realm.QI_REFINING, 10f, 60));
@@ -67,6 +70,35 @@ public class LightningStepSkill extends Skill {
 		SkillFx.thunderSparks(ctx.world(), dest.add(0, 1, 0), 18, 0.35);
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, dest.add(0, 1, 0), 0xE6D6FF, 1.1f, 7));
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, dest.add(0, 0.1, 0), getElement().getPrimary(), 2.2f, 8));
+
+		// The stored charge discharges into nearby foes: arcs jump from the arrival point to the
+		// closest target, then from that target to the next, weakening with each hop.
+		Vec3d from = dest.add(0, 1.2, 0);
+		java.util.Set<LivingEntity> struck = new java.util.HashSet<>();
+		float dmg = 5f;
+		for (int hop = 0; hop < CHAIN_HOPS; hop++) {
+			LivingEntity next = null;
+			double best = CHAIN_RANGE * CHAIN_RANGE;
+			for (LivingEntity e : EntityUtil.inSphere(ctx.world(), player, from, CHAIN_RANGE)) {
+				if (struck.contains(e)) continue;
+				double d = e.getBoundingBox().getCenter().squaredDistanceTo(from);
+				if (d < best) {
+					best = d;
+					next = e;
+				}
+			}
+			if (next == null) break;
+			struck.add(next);
+			Vec3d hit = next.getBoundingBox().getCenter();
+			ModPackets.sendFx(ctx.world(), FxData.line(FxType.LIGHTNING_BOLT, from, hit, 0xE6D6FF, 0.55f, 7).withExtra(1));
+			if (next.damage(ModDamageTypes.source(ctx.world(), ModDamageTypes.THUNDER, player), dmg)) {
+				next.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 25, 3, false, false, true), player);
+				SkillFx.thunderSparks(ctx.world(), hit, 8, 0.25);
+			}
+			ctx.world().playSound(null, next.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 0.5f, 1.5f + hop * 0.15f);
+			from = hit;
+			dmg *= 0.7f;
+		}
 		return true;
 	}
 }

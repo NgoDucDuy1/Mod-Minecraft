@@ -5,6 +5,7 @@ import com.ngoducduy.celestialarts.cultivation.Breakthrough;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
+import com.ngoducduy.celestialarts.cultivation.RealmPassives;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.registry.ModEntities;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -219,6 +221,49 @@ public final class CelestialGameTests implements FabricGameTest {
 		qi.setCooldown(skill.getId(), 5);
 		for (int i = 0; i < 5; i++) qi.tickCooldowns();
 		ctx.assertTrue(!qi.isOnCooldown(skill.getId()), "cooldown expired after ticking");
+		ctx.complete();
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE)
+	public void realmPassivesScaleWithRealm(TestContext ctx) {
+		ServerPlayerEntity player = FakePlayer.get(ctx.getWorld());
+		Vec3d pos = ctx.getAbsolute(new Vec3d(0.5, 2.0, 0.5));
+		player.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0F, 0.0F);
+		PlayerQi qi = QiHolder.get(player);
+		qi.interruptAllCasts();
+
+		qi.setRealm(Realm.QI_REFINING);
+		RealmPassives.apply(player);
+		ctx.assertTrue(Math.abs(player.getMaxHealth() - 20.0F) < 0.01F, "no bonus at Qi Refining, was " + player.getMaxHealth());
+
+		qi.setRealm(Realm.GOLDEN_CORE);
+		RealmPassives.apply(player);
+		ctx.assertTrue(Math.abs(player.getMaxHealth() - 28.0F) < 0.01F, "+8 health at Golden Core, was " + player.getMaxHealth());
+		RealmPassives.apply(player);
+		ctx.assertTrue(Math.abs(player.getMaxHealth() - 28.0F) < 0.01F, "modifiers do not stack on re-apply, was " + player.getMaxHealth());
+
+		DamageSource fall = ctx.getWorld().getDamageSources().fall();
+		DamageSource fire = ctx.getWorld().getDamageSources().onFire();
+		DamageSource drown = ctx.getWorld().getDamageSources().drown();
+		ctx.assertTrue(RealmPassives.ignoresDamage(player, fall), "Golden Core ignores fall damage");
+		ctx.assertTrue(!RealmPassives.ignoresDamage(player, fire), "Golden Core still burns");
+		ctx.assertTrue(!RealmPassives.ignoresDamage(player, drown), "Golden Core still drowns");
+		qi.setRealm(Realm.SPIRIT_TRANSFORMATION);
+		ctx.assertTrue(RealmPassives.ignoresDamage(player, fire) && RealmPassives.ignoresDamage(player, drown), "Spirit Transformation ignores fire and drowning");
+
+		qi.setRealm(Realm.QI_REFINING);
+		RealmPassives.apply(player);
+		ctx.assertTrue(Math.abs(player.getMaxHealth() - 20.0F) < 0.01F, "modifiers removed when realm drops, was " + player.getMaxHealth());
+		qi.setQi(qi.getMaxQi());
+		ctx.assertTrue(!RealmPassives.airJump(player), "no air jump at Qi Refining");
+
+		qi.setRealm(Realm.FOUNDATION);
+		qi.setQi(qi.getMaxQi());
+		float before = qi.getQi();
+		ctx.assertTrue(RealmPassives.airJump(player), "air jump at Foundation");
+		ctx.assertTrue(Math.abs((before - qi.getQi()) - RealmPassives.AIR_JUMP_QI) < 0.001F, "air jump costs qi, delta " + (before - qi.getQi()));
+		qi.setQi(1.0F);
+		ctx.assertTrue(!RealmPassives.airJump(player), "air jump refused without qi");
 		ctx.complete();
 	}
 

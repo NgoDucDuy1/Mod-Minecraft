@@ -36,6 +36,7 @@ public final class CelestialArtsClient implements ClientModInitializer {
 			ClientFxManager.tick(client);
 			CameraShake.tick(client);
 			ModKeybinds.tick(client);
+			ClientMovement.tick(client);
 			if (client.player != null && !client.isPaused()) {
 				// Client-side cooldown prediction; the server re-syncs authoritative values.
 				QiHolder.get(client.player).tickCooldowns();

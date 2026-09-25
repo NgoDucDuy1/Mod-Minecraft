@@ -2,6 +2,9 @@ package com.ngoducduy.celestialarts.mixin;
 
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
+import com.ngoducduy.celestialarts.cultivation.RealmPassives;
+import net.minecraft.entity.damage.DamageSource;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +24,15 @@ public abstract class PlayerEntityMixin implements QiHolder {
 	@Override
 	public PlayerQi celestialarts$getQi() {
 		return celestialarts$qi;
+	}
+
+	/** The cultivator's body shrugs off falls, drowning and fire depending on realm (see RealmPassives). */
+	@Inject(method = "damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
+	private void celestialarts$bodyImmunity(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+		PlayerEntity self = (PlayerEntity) (Object) this;
+		if (!self.getWorld().isClient && RealmPassives.ignoresDamage(self, source)) {
+			cir.setReturnValue(false);
+		}
 	}
 
 	@Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))

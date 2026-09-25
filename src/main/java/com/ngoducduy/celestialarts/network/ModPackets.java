@@ -29,6 +29,8 @@ public final class ModPackets {
 	public static final Identifier SET_SLOT = CelestialArts.id("set_slot");
 	/** C2S: player asks to break through to the next realm. */
 	public static final Identifier BREAKTHROUGH = CelestialArts.id("breakthrough");
+	/** C2S: player performed an air jump (Lăng Không Bộ); server validates realm and charges qi. */
+	public static final Identifier AIR_JUMP = CelestialArts.id("air_jump");
 
 	/** S2C: full cultivation state snapshot. [nbt] */
 	public static final Identifier SYNC_QI = CelestialArts.id("sync_qi");
@@ -66,6 +68,8 @@ public final class ModPackets {
 		});
 		ServerPlayNetworking.registerGlobalReceiver(BREAKTHROUGH, (server, player, handler, buf, responseSender) ->
 				server.execute(() -> com.ngoducduy.celestialarts.cultivation.Breakthrough.tryBreakthrough(player)));
+		ServerPlayNetworking.registerGlobalReceiver(AIR_JUMP, (server, player, handler, buf, responseSender) ->
+				server.execute(() -> com.ngoducduy.celestialarts.cultivation.RealmPassives.airJump(player)));
 	}
 
 	// ------------------------------------------------------------- senders
@@ -74,15 +78,21 @@ public final class ModPackets {
 		if (player.networkHandler == null) return;
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeNbt(qi.writeNbt(new NbtCompound()));
-		ServerPlayNetworking.send(player, SYNC_QI, buf);
+		send(player, SYNC_QI, buf);
 	}
 
 	/** Broadcasts an effect to every player near its origin. */
+	/** Sends only to real connections; fake players (gametests, automation mods) have no network handler. */
+	private static void send(ServerPlayerEntity player, Identifier channel, PacketByteBuf buf) {
+		if (player.networkHandler == null) return;
+		ServerPlayNetworking.send(player, channel, buf);
+	}
+
 	public static void sendFx(ServerWorld world, FxData fx) {
 		PacketByteBuf buf = PacketByteBufs.create();
 		fx.write(buf);
 		for (ServerPlayerEntity p : PlayerLookup.around(world, fx.pos(), FX_RANGE)) {
-			ServerPlayNetworking.send(p, SPAWN_FX, buf);
+			send(p, SPAWN_FX, buf);
 		}
 	}
 
@@ -91,10 +101,10 @@ public final class ModPackets {
 		PacketByteBuf buf = PacketByteBufs.create();
 		fx.write(buf);
 		for (ServerPlayerEntity p : PlayerLookup.tracking(entity)) {
-			ServerPlayNetworking.send(p, SPAWN_FX, buf);
+			send(p, SPAWN_FX, buf);
 		}
 		if (entity instanceof ServerPlayerEntity self) {
-			ServerPlayNetworking.send(self, SPAWN_FX, buf);
+			send(self, SPAWN_FX, buf);
 		}
 	}
 
@@ -106,7 +116,7 @@ public final class ModPackets {
 			PacketByteBuf buf = PacketByteBufs.create();
 			buf.writeFloat(strength * falloff);
 			buf.writeVarInt(ticks);
-			ServerPlayNetworking.send(p, CAMERA_SHAKE, buf);
+			send(p, CAMERA_SHAKE, buf);
 		}
 	}
 }

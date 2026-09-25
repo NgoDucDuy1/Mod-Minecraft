@@ -110,6 +110,7 @@ public final class Breakthrough {
 			qi.markDirty();
 			ModPackets.sendSync(caster, qi);
 			ModAdvancements.onRealmReached(caster, next);
+			RealmPassives.apply(caster);
 
 			// Announce to the whole server – a breakthrough is a big deal.
 			Text msg = Text.translatable("message.celestialarts.breakthrough_success", caster.getDisplayName(), next.getName())
@@ -124,6 +125,18 @@ public final class Breakthrough {
 					caster.sendMessage(Text.translatable("message.celestialarts.skill_unlocked", s.getName()).formatted(Formatting.AQUA), false);
 				}
 			}
+			// Body tempering gained with this realm.
+			caster.sendMessage(Text.translatable("message.celestialarts.body_tempered",
+					RealmPassives.bonusHealth(next) / 2, Math.round(RealmPassives.bonusSpeed(next) * 100), (int) RealmPassives.bonusAttack(next)).formatted(Formatting.GREEN), false);
+			String passive = switch (next.getLevel()) {
+				case 2 -> "message.celestialarts.passive_air_jump";
+				case 3 -> "message.celestialarts.passive_no_fall";
+				case 4 -> "message.celestialarts.passive_hover";
+				case 5 -> "message.celestialarts.passive_fire";
+				case 6 -> "message.celestialarts.passive_double_air_jump";
+				default -> null;
+			};
+			if (passive != null) caster.sendMessage(Text.translatable(passive).formatted(Formatting.GREEN), false);
 		}
 	}
 

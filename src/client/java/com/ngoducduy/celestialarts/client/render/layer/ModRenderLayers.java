@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.client.render.layer;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
@@ -31,6 +32,13 @@ public abstract class ModRenderLayers extends RenderLayer {
 		super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
 	}
 
+	/**
+	 * Global gain applied to every additive draw. Additive light stacks without bound, so dense
+	 * scenes (formation + swords + aura) used to blow out to pure white; 0.7 keeps highlights while
+	 * leaving headroom for several overlapping layers.
+	 */
+	public static final float ADDITIVE_GAIN = 0.7F;
+
 	private static final Function<Identifier, RenderLayer> ADDITIVE = Util.memoize(texture -> {
 		MultiPhaseParameters params = MultiPhaseParameters.builder()
 				.program(BEACON_BEAM_PROGRAM)
@@ -41,9 +49,25 @@ public abstract class ModRenderLayers extends RenderLayer {
 				.overlay(DISABLE_OVERLAY_COLOR)
 				.writeMaskState(COLOR_MASK)
 				.build(false);
-		return RenderLayer.of(CelestialArts.MOD_ID + "_additive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+		RenderLayer inner = RenderLayer.of(CelestialArts.MOD_ID + "_additive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
 				VertexFormat.DrawMode.QUADS, 256, false, true, params);
+		return new GainLayer(CelestialArts.MOD_ID + "_additive_soft", inner, ADDITIVE_GAIN);
 	});
+
+	/** Wraps a layer and multiplies the shader colour while it is active (the core shaders honour ColorModulator). */
+	private static final class GainLayer extends RenderLayer {
+		GainLayer(String name, RenderLayer inner, float gain) {
+			super(name, inner.getVertexFormat(), inner.getDrawMode(), inner.getExpectedBufferSize(), inner.hasCrumbling(), true,
+					() -> {
+						inner.startDrawing();
+						RenderSystem.setShaderColor(gain, gain, gain, 1.0F);
+					},
+					() -> {
+						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+						inner.endDrawing();
+					});
+		}
+	}
 
 	private static final Function<Identifier, RenderLayer> TRANSLUCENT_GLOW = Util.memoize(texture -> {
 		MultiPhaseParameters params = MultiPhaseParameters.builder()

@@ -25,18 +25,32 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 * **Đột phá** (phím `B` hoặc nút trong sách): khi đủ kinh nghiệm sẽ diễn ra *thiên kiếp* – mây kiếp
   tụ trên đầu, 3 – 9 tia lôi giáng xuống, kết thúc bằng trận pháp và cột sáng thăng cảnh.
 
+### Thể phách theo cảnh giới (bị động)
+Mỗi lần đột phá, thân thể tu sĩ được tôi luyện (áp dụng bằng attribute modifier, không cộng dồn):
+
+| Cảnh giới | Máu | Sát thương | Tốc độ | Độ dẻo giáp | Kháng đẩy lùi | Thần thông bị động |
+|---|---|---|---|---|---|---|
+| Luyện Khí | – | – | – | – | – | – |
+| Trúc Cơ | +2 ♥ | +1 | +6 % | +1 | 0.08 | **Lăng Không Bộ** – nhấn nhảy lần nữa giữa không trung (6 linh lực) |
+| Kim Đan | +4 ♥ | +2 | +12 % | +2 | 0.16 | Miễn sát thương rơi |
+| Nguyên Anh | +6 ♥ | +3 | +18 % | +3 | 0.24 | **Ngự Không** – giữ Shift giữa không trung để lơ lửng hạ chậm; không chết đuối |
+| Hóa Thần | +8 ♥ | +4 | +24 % | +4 | 0.32 | Miễn sát thương lửa / dung nham |
+| Độ Kiếp | +10 ♥ | +5 | +30 % | +5 | 0.40 | Lăng Không Bộ dùng được 2 lần |
+
+Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và các hạt linh khí xoáy vào đan điền.
+
 ### 16 công pháp
 | Công pháp | Hệ | Loại | Cảnh giới | Mô tả hiệu ứng |
 |---|---|---|---|---|
 | Kiếm Khí Trảm | Kiếm | Đạn | Luyện Khí | Vung kiếm tạo vòng cung slash, phóng lưỡi kiếm khí có model riêng bay xa và xuyên địch |
-| Liệt Diễm Trảo | Hỏa | Cận chiến | Luyện Khí | Ba vệt trảo lửa xé không khí, đốt cháy kẻ địch phía trước |
+| Liệt Diễm Trảo | Hỏa | Cận chiến | Luyện Khí | Ba vệt trảo lửa xé không khí, đốt cháy kẻ địch; trảo cuối cào xuống đất để lại 3 rãnh lửa cháy 3 giây |
 | Băng Tiễn | Băng | Đạn | Luyện Khí | 5 mũi băng tinh bay hình quạt, làm chậm & đóng băng mục tiêu |
-| Lôi Bộ | Lôi | Di chuyển | Luyện Khí | Hóa tia chớp dịch chuyển tức thời, để lại vệt lôi quang & sốc điện |
+| Lôi Bộ | Lôi | Di chuyển | Luyện Khí | Hóa tia chớp dịch chuyển tức thời, để lại vệt lôi quang; khi đáp xuống điện dư **lan dây chuyền** qua tối đa 3 kẻ địch |
 | Phong Nhận Vũ | Phong | Tăng cường | Trúc Cơ | Nhiều lưỡi gió quay quanh người, chém mọi kẻ tới gần |
 | Huyền Vũ Thuẫn | Thổ | Tăng cường | Trúc Cơ | Mai rùa lục giác bao quanh, hấp thụ sát thương, vỡ khi hết độ bền |
-| Địa Liệt | Thổ | Diện rộng | Trúc Cơ | Đập đất – sóng chấn động lan ra, mặt đất nứt phát sáng, gai đá trồi lên hất tung |
+| Địa Liệt | Thổ | Diện rộng | Trúc Cơ | Đập đất – sóng chấn động lan ra, mặt đất nứt phát sáng, gai đá trồi lên hất tung, cuối vết nứt **phun trào** thành quạt 5 gai; người dùng được da đá (Kháng I) |
 | Hỏa Liên | Hỏa | Đạn | Kim Đan | Đóa sen lửa bay chậm, nở bung khi trúng: cột lửa, cánh sen văng, cháy diện rộng |
-| Thái Cực Trận | Đạo | Trận pháp | Kim Đan | Trận đồ âm dương – bát quái xoay dưới chân, hồi máu đồng minh, đẩy lùi & làm chậm địch |
+| Thái Cực Trận | Đạo | Trận pháp | Kim Đan | Trận đồ âm dương – bát quái xoay dưới chân, hồi máu + hấp thụ cho đồng minh; nhịp **âm** hút địch vào tâm, nhịp **dương** đẩy văng ra |
 | Ngự Kiếm Phi Hành | Kiếm | Di chuyển | Kim Đan | Triệu phi kiếm đứng lên bay tự do (điều khiển như thuyền bay, không bị kick fly) |
 | Băng Phong Lĩnh Vực | Băng | Diện rộng | Kim Đan | Vòm băng, gai băng trồi lên, tuyết rơi; mọi kẻ địch trong vùng bị đóng băng |
 | Vạn Kiếm Quy Tông | Kiếm | Triệu hồi | Nguyên Anh | Hàng chục linh kiếm hiện quanh người rồi lần lượt lao xuống mục tiêu |
@@ -75,7 +89,7 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 
 ```bash
 ./gradlew build
-# file jar nằm ở build/libs/celestialarts-1.0.0.jar
+# file jar nằm ở build/libs/celestialarts-1.1.0.jar
 ```
 
 Yêu cầu JDK 17. Chạy client dev: `./gradlew runClient`.
@@ -98,6 +112,7 @@ Các bài test hiện có (tất cả đều **pass** trên GitHub Actions):
 | `swordFlightMountsPlayer` | Ngự kiếm phi hành: người chơi cưỡi kiếm, bấm lần nữa thì hạ xuống |
 | `channelSkillStopsOnSecondPress` | Kỹ năng niệm (tử lôi quang trụ) chặn kỹ năng khác và dừng khi bấm lại |
 | `qiCostAndCooldownApplied` | Trừ linh lực, đặt hồi chiêu, từ chối khi thiếu linh lực / đang hồi chiêu |
+| `realmPassivesScaleWithRealm` | Thể phách theo cảnh giới: +máu đúng mức, không cộng dồn, miễn rơi/lửa/đuối đúng cảnh giới, Lăng Không Bộ trừ linh lực |
 | `breakthroughAdvancesRealm` | Đột phá Luyện Khí → Trúc Cơ sau khi độ kiếp 140 tick |
 | `qiNbtRoundTrip` | Lưu / đọc NBT dữ liệu tu luyện |
 | `fxDataRoundTrip` | Gói tin FX serialize / deserialize chính xác |

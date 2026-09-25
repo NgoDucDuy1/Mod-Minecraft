@@ -201,5 +201,11 @@
 	"advancements.celestialarts.skills.nine_tribulations.title": "Bringer of Thunder",
 	"advancements.celestialarts.skills.nine_tribulations.description": "Learn to call down the nine tribulation thunders",
 	"advancements.celestialarts.skills.heaven_sword.title": "The Heaven's Blade",
-	"advancements.celestialarts.skills.heaven_sword.description": "Learn the ultimate art: the Heaven Sword"
+	"advancements.celestialarts.skills.heaven_sword.description": "Learn the ultimate art: the Heaven Sword",
+	"message.celestialarts.body_tempered": "Body tempered: +%s hearts, +%s%% speed, +%s attack",
+	"message.celestialarts.passive_air_jump": "Learned Sky Step – press jump again in mid-air (costs a little qi)",
+	"message.celestialarts.passive_no_fall": "Your body no longer takes fall damage",
+	"message.celestialarts.passive_hover": "Learned Void Treading – hold sneak in mid-air to drift down slowly. You can no longer drown",
+	"message.celestialarts.passive_fire": "Flames can no longer harm your body",
+	"message.celestialarts.passive_double_air_jump": "Sky Step can now be used twice in mid-air"
 }

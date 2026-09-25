@@ -201,5 +201,11 @@
 	"advancements.celestialarts.skills.nine_tribulations.title": "Cửu Thiên Lôi Chủ",
 	"advancements.celestialarts.skills.nine_tribulations.description": "Học được Cửu Thiên Lôi Kiếp",
 	"advancements.celestialarts.skills.heaven_sword.title": "Thiên Kiếm Xuất Thế",
-	"advancements.celestialarts.skills.heaven_sword.description": "Lĩnh ngộ tuyệt kỹ Thiên Kiếm"
+	"advancements.celestialarts.skills.heaven_sword.description": "Lĩnh ngộ tuyệt kỹ Thiên Kiếm",
+	"message.celestialarts.body_tempered": "Thể phách cường hóa: +%s tim, +%s%% tốc độ, +%s sát thương",
+	"message.celestialarts.passive_air_jump": "Lĩnh ngộ Lăng Không Bộ – nhấn nhảy lần nữa giữa không trung (tốn chút linh lực)",
+	"message.celestialarts.passive_no_fall": "Thân thể không còn bị thương khi rơi",
+	"message.celestialarts.passive_hover": "Lĩnh ngộ Ngự Không – giữ Shift giữa không trung để chậm rãi hạ xuống. Không còn chết đuối",
+	"message.celestialarts.passive_fire": "Liệt hỏa không thể làm tổn thương thân thể",
+	"message.celestialarts.passive_double_air_jump": "Lăng Không Bộ nay có thể dùng hai lần giữa không trung"
 }

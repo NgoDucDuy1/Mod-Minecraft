@@ -7,6 +7,7 @@ import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.network.ModPackets;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEntities;
+import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.skill.Element;
 import com.ngoducduy.celestialarts.skill.Skill;
@@ -17,6 +18,8 @@ import com.ngoducduy.celestialarts.util.EntityUtil;
 import com.ngoducduy.celestialarts.util.SkillFx;
 import com.ngoducduy.celestialarts.util.Targeting;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
@@ -24,11 +27,13 @@ import net.minecraft.util.math.Vec3d;
 
 /**
  * Đại Địa Liệt – the cultivator slams the ground; a fissure races forward and a
- * line of stone spikes erupts one after another, launching enemies skyward.
+ * line of stone spikes erupts one after another, launching enemies skyward. The fissure
+ * ends in a fan-shaped eruption, and the caster's skin hardens to stone for a few seconds.
  */
 public class EarthShatterSkill extends Skill {
 	private static final int SPIKES = 7;
 	private static final double STEP = 1.9;
+	private static final int FAN = 5;
 
 	public EarthShatterSkill() {
 		super(Settings.of(Element.EARTH, SkillType.AREA, Realm.FOUNDATION, 28f, 240));
@@ -59,6 +64,10 @@ public class EarthShatterSkill extends Skill {
 			}
 		}
 
+		// Drawing on the earth hardens the caster's skin for a moment.
+		player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 80, 0, false, false, true));
+		SkillFx.shell(ctx.world(), ModParticles.ROCK_DEBRIS, origin.add(0, 1, 0), 0.9, 14, 0.02);
+
 		ctx.qi().addActiveCast(new FissureCast(player, this, origin, dir));
 		return true;
 	}
@@ -86,6 +95,28 @@ public class EarthShatterSkill extends Skill {
 				float height = 1.8f + spawned * 0.18f;
 				RockSpikeEntity.spawn(world, caster, ground, height, 8f + spawned * 0.5f, ModEntities.ROCK_SPIKE);
 				ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, ground.add(0, 0.1, 0), 0xC69C5B, 1.6f, 8));
+				if (spawned == SPIKES) erupt(ground);
+			}
+		}
+
+		/** The fissure ends in an eruption: a fan of spikes and a burst of debris. */
+		private void erupt(Vec3d end) {
+			Vec3d[] basis = SkillFx.basis(dir);
+			for (int i = 0; i < FAN; i++) {
+				double angle = Math.toRadians(-50 + i * (100.0 / (FAN - 1)));
+				Vec3d d = dir.multiply(Math.cos(angle)).add(basis[0].multiply(Math.sin(angle)));
+				Vec3d p = end.add(d.multiply(2.2));
+				Vec3d ground = Targeting.snapToGround(world, p.add(0, 1, 0), 6);
+				RockSpikeEntity.spawn(world, caster, ground, 2.6f, 9f, ModEntities.ROCK_SPIKE);
+			}
+			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, end.add(0, 0.1, 0), 0xF2D9A6, 4.0f, 12));
+			SkillFx.rockDebris(world, end.add(0, 0.5, 0), 36, 0.9);
+			world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(end), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 1.2f, 0.7f);
+			ModPackets.sendCameraShake(world, end, 20.0, 0.5f, 8);
+			for (LivingEntity target : EntityUtil.inCylinder(world, caster, end, 3.2, 2.5)) {
+				if (target.damage(ModDamageTypes.source(world, ModDamageTypes.EARTH, caster), 7f)) {
+					EntityUtil.knockback(target, end, 0.5, 0.75);
+				}
 			}
 		}
 	}

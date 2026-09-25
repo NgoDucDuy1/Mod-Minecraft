@@ -25,6 +25,7 @@ public final class CultivationEvents {
 			for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
 				SkillManager.tickPlayer(player);
 				PlayerQi qi = QiHolder.get(player);
+				RealmPassives.tick(player, qi);
 				if (qi.getMeditateTicks() > 0) {
 					Breakthrough.hintIfReady(player, qi);
 					// Meditation slowly grows cultivation.
@@ -45,11 +46,15 @@ public final class CultivationEvents {
 			}
 		});
 
-		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) ->
-				ModPackets.sendSync(newPlayer, QiHolder.get(newPlayer)));
+		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+			RealmPassives.apply(newPlayer);
+			ModPackets.sendSync(newPlayer, QiHolder.get(newPlayer));
+		});
 
-		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
-				ModPackets.sendSync(handler.player, QiHolder.get(handler.player)));
+		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			RealmPassives.apply(handler.player);
+			ModPackets.sendSync(handler.player, QiHolder.get(handler.player));
+		});
 
 		// Killing creatures grants cultivation experience (tu vi).
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
