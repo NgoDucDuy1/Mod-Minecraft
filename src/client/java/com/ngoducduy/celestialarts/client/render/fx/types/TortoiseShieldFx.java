@@ -41,7 +41,8 @@ public class TortoiseShieldFx extends ClientFx {
 		Vec3d o = origin(tickDelta);
 		int white = RenderUtil.whiten(color, 0.6F);
 		// Seen from inside (the caster in first person) the shell would cover the whole view: fade it.
-		if (camera.getPos().distanceTo(o) < radius) alpha *= 0.3F;
+		boolean inside = camera.getPos().distanceTo(o) < radius;
+		if (inside) alpha *= 0.15F;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer hex = consumers.getBuffer(ModRenderLayers.additive(FxTextures.HEX_SHIELD));
@@ -50,18 +51,20 @@ public class TortoiseShieldFx extends ClientFx {
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 1.2F));
 		RenderUtil.sphere(hex, matrices.peek(), radius, 12, 24, 6.0F, 3.0F, 0.0F, color, alpha * 0.55F, false);
 		matrices.pop();
-		// Inner layer, counter rotating, tilted for a moiré-free shimmer.
-		matrices.push();
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(25.0F));
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-t * 0.9F));
-		RenderUtil.sphere(hex, matrices.peek(), radius * 0.93F, 10, 20, 5.0F, 2.5F, 0.0F, white, alpha * 0.25F, false);
-		matrices.pop();
-		// Soft volume glow.
-		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
-		matrices.push();
-		faceCamera(matrices, camera);
-		RenderUtil.billboardQuad(glow, matrices.peek(), radius * 1.5F, color, alpha * 0.18F);
-		matrices.pop();
+		if (!inside) {
+			// Inner layer, counter rotating, tilted for a moiré-free shimmer.
+			matrices.push();
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(25.0F));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-t * 0.9F));
+			RenderUtil.sphere(hex, matrices.peek(), radius * 0.93F, 10, 20, 5.0F, 2.5F, 0.0F, white, alpha * 0.25F, false);
+			matrices.pop();
+			// Soft volume glow.
+			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
+			matrices.push();
+			faceCamera(matrices, camera);
+			RenderUtil.billboardQuad(glow, matrices.peek(), radius * 1.5F, color, alpha * 0.18F);
+			matrices.pop();
+		}
 		// Equatorial ring sweeping up and down.
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additive(FxTextures.RING));
 		float sweep = MathHelper.sin(t * 0.25F);

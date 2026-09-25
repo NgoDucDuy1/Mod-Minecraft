@@ -286,16 +286,18 @@ public final class CelestialAutoTest {
 			ClientPackets.sendCast(slot);
 			return null;
 		});
-		waitTicks(12);
-		screenshot("skill_" + skill.getId().getPath());
+		// Short skills (a slash, a dash) are over within ~15 ticks, so shoot early and without settling delay.
+		waitTicks(6);
+		screenshot("skill_" + skill.getId().getPath(), false);
 		if (FIRST_PERSON_SHOTS.contains(skill.getId().getPath())) {
 			submitAndWait(c -> {
 				c.options.setPerspective(Perspective.FIRST_PERSON);
 				return null;
 			});
 			waitTicks(2);
-			screenshot("skill_" + skill.getId().getPath() + "_fp");
+			screenshot("skill_" + skill.getId().getPath() + "_fp", false);
 		}
+		waitTicks(6);
 		if (skill.isChannel()) {
 			waitTicks(20);
 			submitAndWait(c -> {
@@ -331,7 +333,11 @@ public final class CelestialAutoTest {
 	}
 
 	private static void screenshot(String name) {
-		sleep(Duration.ofMillis(500));
+		screenshot(name, true);
+	}
+
+	private static void screenshot(String name, boolean settle) {
+		if (settle) sleep(Duration.ofMillis(500));
 		submitAndWait(c -> {
 			ScreenshotRecorder.saveScreenshot(c.runDirectory, name + ".png", c.getFramebuffer(), message -> {
 			});

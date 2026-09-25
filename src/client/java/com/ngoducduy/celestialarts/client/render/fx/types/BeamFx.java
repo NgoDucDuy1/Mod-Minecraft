@@ -50,12 +50,15 @@ public class BeamFx extends ClientFx {
 		// instead of flooding the whole viewport with additive light.
 		boolean firstPerson = camera.getFocusedEntity() == e && !camera.isThirdPerson();
 		Vec3d right = dir.crossProduct(new Vec3d(0, 1, 0)).normalize();
-		Vec3d from = firstPerson
-				? eye.add(dir.multiply(1.6)).add(right.multiply(0.4)).add(0, -0.35, 0)
-				: eye.add(dir.multiply(0.8)).add(right.multiply(0.15));
-		Vec3d far = from.add(dir.multiply(range));
-		HitResult hit = world.raycast(new RaycastContext(from, far, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, e));
+		// The aim line always starts at the eyes so the beam lands where the crosshair points.
+		Vec3d aimFrom = eye.add(dir.multiply(0.8)).add(right.multiply(0.15));
+		Vec3d far = aimFrom.add(dir.multiply(range));
+		HitResult hit = world.raycast(new RaycastContext(aimFrom, far, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, e));
 		Vec3d end = hit.getType() == HitResult.Type.MISS ? far : hit.getPos();
+		// In first person the beam is fired from the hand (bottom right of the view) and converges on the
+		// aim point, like a hand-cast beam; looking straight down a parallel tube would flood the viewport.
+		Vec3d from = firstPerson ? eye.add(dir.multiply(0.9)).add(right.multiply(0.45)).add(0, -0.42, 0) : aimFrom;
+		if (firstPerson) dir = end.subtract(from).normalize();
 		float length = (float) end.distanceTo(from);
 		// Beam extends quickly on cast.
 		length *= RenderUtil.easeOutQuint(Math.min(1.0F, t / 3.0F));
@@ -103,12 +106,14 @@ public class BeamFx extends ClientFx {
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM));
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
 		// Lead segment: the beam gathers from a thin point at the hand to full width over the first blocks.
-		float lead = firstPerson ? Math.min(3.0F, length) : Math.min(1.0F, length);
-		float startK = firstPerson ? 0.25F : 0.6F;
-		float startA = firstPerson ? 0.35F : 0.8F;
+		float lead = firstPerson ? Math.min(4.0F, length) : Math.min(1.0F, length);
+		float startK = firstPerson ? 0.12F : 0.6F;
+		float startA = firstPerson ? 0.2F : 0.8F;
+		// Narrower haze in first person: the tube is viewed almost along its axis.
+		float hazeK = firstPerson ? 1.4F : 2.4F;
 		if (lead > 0.05F) {
 			RenderUtil.cylinder(beam, en, r * 1.05F * startK, r * 1.05F, lead, 16, 2.0F, lead / 3.0F, -t * 0.25F, color, env * 0.85F * startA, env * 0.85F);
-			RenderUtil.cylinder(glow, en, r * 2.4F * startK, r * 2.4F, lead, 12, 1.0F, 0.0F, color, env * 0.22F * startA, env * 0.22F);
+			RenderUtil.cylinder(glow, en, r * hazeK * startK, r * hazeK, lead, 12, 1.0F, 0.0F, color, env * 0.22F * startA, env * 0.22F);
 			RenderUtil.cylinder(core, en, r * 0.45F * startK, r * 0.45F, lead, 10, 1.0F, lead / 3.0F, -t * 0.6F, white, env * startA, env);
 		}
 		float rest = length - lead;
@@ -124,7 +129,7 @@ public class BeamFx extends ClientFx {
 			RenderUtil.cylinder(beam, matrices.peek(), r * 1.35F, r * 1.35F, rest, 16, 3.0F, vRep * 0.7F, -t * 0.45F, color, env * 0.35F, env * 0.35F);
 			matrices.pop();
 			// Wide soft haze.
-			RenderUtil.cylinder(glow, en, r * 2.4F, r * 2.4F, rest, 12, 1.0F, 0.0F, color, env * 0.22F, env * 0.22F);
+			RenderUtil.cylinder(glow, en, r * hazeK, r * hazeK, rest, 12, 1.0F, 0.0F, color, env * 0.22F, env * 0.22F);
 			// White-hot core.
 			RenderUtil.cylinder(core, en, r * 0.45F, r * 0.45F, rest, 10, 1.0F, vRep, -t * 0.6F, white, env, env);
 		}
