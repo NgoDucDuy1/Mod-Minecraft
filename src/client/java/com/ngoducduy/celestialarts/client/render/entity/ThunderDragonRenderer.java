@@ -73,8 +73,9 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			float w1 = 0.9F * (1.0F - t1) + 0.1F;
 			float a0 = 0.85F * (1.0F - t0);
 			float a1 = 0.85F * (1.0F - t1);
-			RenderUtil.ribbon(bolt, m, p0, p1, camRel, w0 + w1, PURPLE, a0 * 0.6F, a1 * 0.6F);
-			RenderUtil.ribbon(bolt, m, p0, p1, camRel, (w0 + w1) * 0.35F, PALE, a0, a1);
+			RenderUtil.ribbon(bolt, m, p0, p1, camRel, (w0 + w1) * 1.15F, 0x5A1FB0, a0 * 0.45F, a1 * 0.45F);
+			RenderUtil.ribbon(bolt, m, p0, p1, camRel, w0 + w1, PURPLE, a0 * 0.8F, a1 * 0.8F);
+			RenderUtil.ribbon(bolt, m, p0, p1, camRel, (w0 + w1) * 0.22F, PALE, a0 * 0.9F, a1 * 0.9F);
 			// Side arcs on some segments.
 			if (i % 3 == 1 && i < n - 2) {
 				Vec3d mid = p0.add(p1).multiply(0.5);
