@@ -92,7 +92,7 @@ public final class Breakthrough {
 			if (age == DURATION - 15) {
 				ModPackets.sendFx(world, FxData.at(FxType.HEAVEN_PILLAR, pos, color, 2.0f, 60));
 				ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, pos.add(0, 1, 0), color, 3.0f, 20));
-				SkillFx.glowBurst(world, pos.add(0, 1, 0), color, 80, 1.2, 0.35);
+				SkillFx.glowBurst(world, pos.add(0, 1, 0), color, 80, 1.2f, 0.35);
 				world.playSound(null, caster.getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1.0f, 1.4f);
 				world.playSound(null, caster.getBlockPos(), ModSounds.BREAKTHROUGH, SoundCategory.PLAYERS, 1.5f, 1.0f);
 			}

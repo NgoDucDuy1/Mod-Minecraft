@@ -237,11 +237,11 @@ public class FlyingSwordEntity extends Entity {
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (!this.hasPassenger(passenger)) return;
 		// Stand slightly back from the centre of the blade.
 		Vec3d back = Vec3d.fromPolar(0, this.getYaw()).multiply(-0.15);
-		passenger.setPosition(this.getX() + back.x, this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() + back.z);
+		positionUpdater.accept(passenger, this.getX() + back.x, this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() + back.z);
 		if (passenger instanceof PlayerEntity) {
 			passenger.fallDistance = 0;
 		}
