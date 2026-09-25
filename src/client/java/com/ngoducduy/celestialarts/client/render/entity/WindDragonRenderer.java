@@ -40,7 +40,13 @@ public class WindDragonRenderer extends GlowEntityRenderer<WindDragonEntity> {
 		float height = WindDragonEntity.FUNNEL_HEIGHT * (0.6F + 0.4F * grow);
 
 		matrices.push();
-		// Funnel: three nested cones spinning at different speeds.
+		// Funnel body: a translucent emissive cone of churning air (visible against any sky)...
+		VertexConsumer body = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.BEAM));
+		matrices.push();
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(age * 18.0F));
+		RenderUtil.cylinder(body, matrices.peek(), 0.35F, radius * 0.9F, height, 16, 2.0F, 1.5F, -age * 0.05F, COLOR, 0.55F * grow, 0.18F * grow);
+		matrices.pop();
+		// ...wrapped in three nested layers of additive wind streaks spinning at different speeds.
 		VertexConsumer wind = vcp.getBuffer(ModRenderLayers.additive(FxTextures.WIND_BLADE));
 		for (int layer = 0; layer < 3; layer++) {
 			matrices.push();
@@ -49,16 +55,16 @@ public class WindDragonRenderer extends GlowEntityRenderer<WindDragonEntity> {
 			float rb = 0.25F + layer * 0.12F;
 			float rt = radius * (0.75F + layer * 0.14F);
 			float h = height * (0.85F + layer * 0.08F);
-			float a = (layer == 0 ? 0.45F : 0.22F) * grow;
+			float a = (layer == 0 ? 0.9F : 0.5F) * grow;
 			RenderUtil.cylinder(wind, matrices.peek(), rb, rt, h, 14, 3.0F, 2.0F, -age * 0.08F, layer == 0 ? PALE : COLOR, a, a * 0.15F);
 			matrices.pop();
 		}
 		// Dust skirt at the base.
-		VertexConsumer glow = vcp.getBuffer(ModRenderLayers.additive(FxTextures.RING));
+		VertexConsumer glow = vcp.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
 		matrices.push();
 		matrices.translate(0.0, 0.05, 0.0);
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-age * 12.0F));
-		RenderUtil.annulus(glow, matrices.peek(), radius * 0.4F, radius * 1.4F, 20, 1.0F, 0.0F, COLOR, 0.35F * grow, 0.0F);
+		RenderUtil.annulus(glow, matrices.peek(), radius * 0.4F, radius * 1.4F, 20, 1.0F, 0.0F, COLOR, 0.6F * grow, 0.0F);
 		matrices.pop();
 
 		// Dragon head circling the upper rim, looking along its circular path.

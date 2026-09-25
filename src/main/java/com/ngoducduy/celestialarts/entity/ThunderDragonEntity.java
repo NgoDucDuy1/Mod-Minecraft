@@ -29,7 +29,7 @@ import java.util.Deque;
  * The client keeps a short position history so the body can be drawn as a crackling ribbon.
  */
 public class ThunderDragonEntity extends SkillProjectileEntity {
-	public static final int TRAIL_LENGTH = 14;
+	public static final int TRAIL_LENGTH = 18;
 	private static final double HOMING_RANGE = 14.0;
 	private static final float FORK_DAMAGE = 5.0F;
 	private static final float BURST_DAMAGE = 10.0F;

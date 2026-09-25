@@ -45,7 +45,7 @@ public class WindDragonEntity extends SkillProjectileEntity {
 		if (world.isClient) return;
 
 		// Follow the terrain: sink to the ground when floating, climb when the floor rises.
-		Vec3d probe = this.getPos().add(0, 1.0, 0);
+		Vec3d probe = this.getPos().add(0, 0.2, 0);
 		Vec3d snapped = Targeting.snapToGround(world, probe, 5);
 		double dy = snapped.y + 0.1 - this.getY();
 		if (snapped != probe && Math.abs(dy) > 0.05) {

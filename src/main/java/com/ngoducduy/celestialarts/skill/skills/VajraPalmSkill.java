@@ -45,7 +45,7 @@ public class VajraPalmSkill extends Skill {
 
 		player.swingHand(Hand.OFF_HAND, true);
 		// Golden seal standing upright in front of the palm, a burst of light and a gust.
-		ModPackets.sendFx(ctx.world(), FxData.at(FxType.MAGIC_CIRCLE, palm, GOLD, 1.3f, 9).withExtra(1).withTarget(look));
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.MAGIC_CIRCLE, palm, GOLD, 1.3f, 14).withExtra(1).withTarget(look));
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, palm, 0xFFFFFF, 0.9f, 6));
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, palm.add(look.multiply(0.6)), GOLD, 2.4f, 7).withTarget(look));
 		SkillFx.cone(ctx.world(), ModParticles.GOLDEN_LIGHT, palm, look, 30, 16, 0.5);

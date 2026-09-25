@@ -151,7 +151,7 @@ jobs:
                     "skill_thousand_swords", "skill_purple_thunder_beam", "skill_purple_thunder_beam_fp", "skill_tortoise_shield_fp",
                     "skill_nine_tribulations", "skill_heaven_sword", "skill_earth_shatter", "skill_devouring_vortex",
                     "skill_sword_qi_slash_fp", "skill_flame_claw_fp", "skill_ice_arrows_fp", "skill_thousand_swords_fp", "skill_wind_blade_dance_fp",
-                    "skill_vajra_palm_fp", "skill_vajra_palm", "skill_wind_dragon", "skill_golden_body", "skill_thunder_dragon", "07_final"]
+                    "skill_vajra_palm_fp", "skill_vajra_palm", "skill_wind_dragon", "skill_golden_body", "skill_thunder_dragon_fp", "skill_thunder_dragon", "07_final"]
           files = {os.path.splitext(os.path.basename(f))[0]: f for f in glob.glob("build/autotest/screenshots/*.png")}
           os.makedirs("shots", exist_ok=True)
           n = 0

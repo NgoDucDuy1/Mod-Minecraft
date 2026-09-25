@@ -66,8 +66,8 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			float j = 0.06F;
 			Vec3d jit = new Vec3d(RenderUtil.hash(i, entity.age * 7) - 0.5F, RenderUtil.hash(i + 31, entity.age * 7) - 0.5F, RenderUtil.hash(i + 67, entity.age * 7) - 0.5F).multiply(j * (1 + i));
 			p1 = p1.add(jit);
-			float w0 = 0.55F * (1.0F - t0) + 0.08F;
-			float w1 = 0.55F * (1.0F - t1) + 0.08F;
+			float w0 = 0.9F * (1.0F - t0) + 0.1F;
+			float w1 = 0.9F * (1.0F - t1) + 0.1F;
 			float a0 = 0.85F * (1.0F - t0);
 			float a1 = 0.85F * (1.0F - t1);
 			RenderUtil.ribbon(bolt, m, p0, p1, camRel, w0 + w1, PURPLE, a0 * 0.6F, a1 * 0.6F);
@@ -86,7 +86,7 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		applyProjectileRotation(matrices, lerpYaw(entity, tickDelta), lerpPitch(entity, tickDelta));
 		// Model faces -Z; projectile convention travels along +Z.
 		matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
-		matrices.scale(1.7F, 1.7F, 1.7F);
+		matrices.scale(2.4F, 2.4F, 2.4F);
 		applyModelFlip(matrices);
 		head.animate(age, 0.6F + 0.4F * MathHelper.sin(age * 0.9F));
 		VertexConsumer body = vcp.getBuffer(RenderLayer.getEntityTranslucentEmissive(TEXTURE));
@@ -101,7 +101,7 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		matrices.translate(0.0, entity.getHeight() * 0.5, 0.0);
 		matrices.multiply(this.dispatcher.getRotation());
 		VertexConsumer glow = vcp.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
-		RenderUtil.billboardQuad(glow, matrices.peek(), 0.9F + 0.1F * MathHelper.sin(age * 1.3F), PURPLE, 0.55F);
+		RenderUtil.billboardQuad(glow, matrices.peek(), 1.3F + 0.15F * MathHelper.sin(age * 1.3F), PURPLE, 0.6F);
 		RenderUtil.billboardQuad(glow, matrices.peek(), 0.45F, PALE, 0.7F);
 		matrices.pop();
 
