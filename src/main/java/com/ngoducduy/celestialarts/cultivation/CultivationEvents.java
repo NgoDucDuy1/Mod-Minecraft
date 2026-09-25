@@ -39,6 +39,9 @@ public final class CultivationEvents {
 		ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
 			PlayerQi from = QiHolder.get(oldPlayer);
 			PlayerQi to = QiHolder.get(newPlayer);
+			// The old player entity is never ticked again, so running casts (shields, zones, the
+			// flying sword...) must be closed here or their cleanup would never happen.
+			from.interruptAllCasts();
 			to.copyFrom(from);
 			if (!alive) {
 				// Death drains the Qi pool but keeps everything else.
@@ -50,6 +53,8 @@ public final class CultivationEvents {
 			RealmPassives.apply(newPlayer);
 			ModPackets.sendSync(newPlayer, QiHolder.get(newPlayer));
 		});
+
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> QiHolder.get(handler.player).interruptAllCasts());
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
 			RealmPassives.apply(handler.player);
