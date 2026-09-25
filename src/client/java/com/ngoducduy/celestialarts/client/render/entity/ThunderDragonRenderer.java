@@ -57,7 +57,6 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			for (int i = 1; i <= missing; i++) pts.add(last.add(v.multiply(-i)));
 		}
 		Vec3d camRel = cam.subtract(now);
-		VertexConsumer bolt = vcp.getBuffer(ModRenderLayers.lightning());
 		Matrix4f m = matrices.peek().getPositionMatrix();
 		int n = pts.size();
 		// Per-point displacement: a slow serpentine undulation plus a small per-frame crackle. Computing it
@@ -88,6 +87,9 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 		MatrixStack.Entry entry = matrices.peek();
 		strip(sheath, entry, true, body, widths, alphas, camRel, 1.9F, 0x2A0A60, 0.8F);
 		strip(sheath, entry, true, body, widths, alphas, camRel, 1.2F, PURPLE, 0.9F);
+		// Fetched only now: the immediate provider shares one fallback buffer between un-buffered layers,
+		// so a consumer obtained before the sheath was drawn would be stale.
+		VertexConsumer bolt = vcp.getBuffer(ModRenderLayers.lightning());
 		strip(bolt, entry, false, body, widths, alphas, camRel, 0.55F, PURPLE, 0.5F);
 		strip(bolt, entry, false, body, widths, alphas, camRel, 0.2F, PALE, 0.8F);
 		// Crackling side arcs that jump off the body.
