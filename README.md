@@ -104,8 +104,14 @@ Các bài test hiện có (tất cả đều **pass** trên GitHub Actions):
 | `dataPackContentLoaded` | Công thức, advancement, entity, item của mod được đăng ký và nạp |
 | `skillEntitiesTickWithoutCrashing` | Mọi entity kỹ năng tick 100 tick không crash |
 
-Workflow `.github/workflows/build.yml` build jar, chạy game test và ghi log (lỗi biên dịch, báo cáo JUnit,
-cảnh báo server) vào issue theo dõi #1 sau mỗi lần push.
+Ngoài ra còn có **client auto-test** (`client/autotest/CelestialAutoTest.java`, bật bằng
+`-Dcelestialarts.autotest`, task `./gradlew runAutoTestClient`): mở client thật (trong CI chạy dưới xvfb),
+audit mixin, tạo thế giới superflat, học toàn bộ công pháp qua `/celestial`, thi triển cả 16 công pháp qua gói tin
+thật, spawn đủ 18 loại FX + 15 loại particle, mở Đạo Thư, kiểm tra ngự kiếm cưỡi/hạ, chụp ~25 ảnh màn hình rồi thoát.
+
+Workflow `.github/workflows/build.yml` build jar, chạy game test server + client auto-test và ghi log (lỗi biên
+dịch, báo cáo JUnit, cảnh báo, ảnh chụp thu nhỏ) vào issue theo dõi #1 sau mỗi lần push; ảnh gốc nằm trong
+artifact `client-screenshots`.
 
 ## Cấu trúc mã
 

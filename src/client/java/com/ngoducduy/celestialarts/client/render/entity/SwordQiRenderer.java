@@ -42,6 +42,8 @@ public class SwordQiRenderer extends GlowEntityRenderer<SwordQiEntity> {
 		matrices.multiply(this.dispatcher.getRotation());
 		VertexConsumer glow = vcp.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
 		RenderUtil.billboardQuad(glow, matrices.peek(), 0.9F * size, COLOR, 0.35F);
+		// Wider soft halo so the thin crescent stays readable from behind the caster.
+		RenderUtil.billboardQuad(glow, matrices.peek(), 1.5F * size, COLOR, 0.18F);
 		matrices.pop();
 		applyProjectileRotation(matrices, yaw, pitch);
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(entity.getRoll()));
@@ -62,7 +64,7 @@ public class SwordQiRenderer extends GlowEntityRenderer<SwordQiEntity> {
 		VertexConsumer blade = vcp.getBuffer(RenderLayer.getEntityTranslucentEmissive(TEXTURE));
 		model.render(matrices, blade, FULL_LIGHT, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		// Additive ghost for bloom.
-		matrices.scale(1.22F, 1.6F, 1.12F);
+		matrices.scale(1.22F, 2.4F, 1.12F);
 		VertexConsumer ghost = vcp.getBuffer(ModRenderLayers.additive(TEXTURE));
 		model.render(matrices, ghost, FULL_LIGHT, OverlayTexture.DEFAULT_UV, r(COLOR), g(COLOR), b(COLOR), 0.45F);
 		matrices.pop();
