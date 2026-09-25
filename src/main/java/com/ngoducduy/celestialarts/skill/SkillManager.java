@@ -37,6 +37,14 @@ public final class SkillManager {
 			player.sendMessage(Text.translatable("message.celestialarts.realm_too_low", skill.getRealm().getName()).formatted(Formatting.RED), true);
 			return false;
 		}
+		// Pressing the key of a running skill again releases it (channels stop, toggles such as
+		// sword flight land). This must be checked before cooldown / riding gates, otherwise a
+		// toggled skill could never be switched off.
+		ActiveCast existing = qi.getActiveCast(id);
+		if (existing != null) {
+			existing.onRelease();
+			return true;
+		}
 		if (qi.isOnCooldown(id)) {
 			player.sendMessage(Text.translatable("message.celestialarts.on_cooldown", skill.getName(),
 					String.format("%.1f", qi.getCooldown(id) / 20.0)).formatted(Formatting.GRAY), true);
@@ -46,21 +54,10 @@ public final class SkillManager {
 			player.sendMessage(Text.translatable("message.celestialarts.cannot_while_riding").formatted(Formatting.RED), true);
 			return false;
 		}
-		// A running channel blocks other skills; pressing the same key again releases it.
+		// A running channel blocks every other skill.
 		if (qi.isChanneling()) {
-			ActiveCast running = qi.getActiveCast(id);
-			if (running != null && running.isChannel()) {
-				running.onRelease();
-				return true;
-			}
 			player.sendMessage(Text.translatable("message.celestialarts.channeling").formatted(Formatting.RED), true);
 			return false;
-		}
-		// Toggle skills (e.g. sword flight) end when the key is pressed again.
-		ActiveCast existing = qi.getActiveCast(id);
-		if (existing != null) {
-			existing.onRelease();
-			return true;
 		}
 		if (!qi.hasQi(skill.getQiCost()) && !player.isCreative()) {
 			player.sendMessage(Text.translatable("message.celestialarts.not_enough_qi").formatted(Formatting.RED), true);

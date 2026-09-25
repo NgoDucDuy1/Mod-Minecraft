@@ -13,6 +13,7 @@ import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillManager;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
 import com.ngoducduy.celestialarts.skill.cast.ActiveCast;
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -168,6 +169,57 @@ public final class CelestialGameTests implements FabricGameTest {
 			removePlayer(ctx, player);
 			ctx.complete();
 		});
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 300)
+	public void channelSkillStopsOnSecondPress(TestContext ctx) {
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.TRIBULATION);
+		PlayerQi qi = QiHolder.get(player);
+		ctx.runAtEveryTick(() -> tickIfDetached(ctx, player));
+		Skill beam = SkillRegistry.PURPLE_THUNDER_BEAM;
+		ctx.runAtTick(2, () -> ctx.assertTrue(SkillManager.cast(player, qi, beam), "beam cast"));
+		ctx.runAtTick(6, () -> {
+			ctx.assertTrue(qi.hasActiveCast(beam.getId()), "beam is an active cast");
+			ctx.assertTrue(qi.isChanneling(), "player is channeling");
+			// Other skills are blocked while channeling.
+			ctx.assertTrue(!SkillManager.cast(player, qi, SkillRegistry.FLAME_CLAW), "other skills blocked while channeling");
+		});
+		ctx.runAtTick(30, () -> ctx.assertTrue(SkillManager.cast(player, qi, beam), "second press accepted"));
+		ctx.runAtTick(34, () -> {
+			ctx.assertTrue(!qi.isChanneling(), "channel stopped after second press");
+			removePlayer(ctx, player);
+			ctx.complete();
+		});
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 200)
+	public void qiCostAndCooldownApplied(TestContext ctx) {
+		// FakePlayer is a survival ServerPlayerEntity outside the player list, so costs are not skipped.
+		ServerPlayerEntity player = FakePlayer.get(ctx.getWorld());
+		Vec3d pos = ctx.getAbsolute(new Vec3d(0.5, 2.0, 0.5));
+		player.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0F, 0.0F);
+		PlayerQi qi = QiHolder.get(player);
+		qi.setRealm(Realm.QI_REFINING);
+		qi.setQi(qi.getMaxQi());
+		qi.interruptAllCasts();
+		Skill skill = SkillRegistry.SWORD_QI_SLASH;
+		qi.learn(skill.getId());
+		qi.setCooldown(skill.getId(), 0);
+		float before = qi.getQi();
+		ctx.assertTrue(!player.isCreative(), "fake player is not creative");
+		ctx.assertTrue(SkillManager.cast(player, qi, skill), "cast accepted");
+		ctx.assertTrue(Math.abs((before - qi.getQi()) - skill.getQiCost()) < 0.001F, "qi cost consumed, delta " + (before - qi.getQi()));
+		ctx.assertTrue(qi.getCooldown(skill.getId()) == skill.getCooldownTicks(), "cooldown applied");
+		ctx.assertTrue(!SkillManager.cast(player, qi, skill), "second cast rejected while on cooldown");
+		// Not enough qi: refuse.
+		qi.setCooldown(skill.getId(), 0);
+		qi.setQi(skill.getQiCost() - 1.0F);
+		ctx.assertTrue(!SkillManager.cast(player, qi, skill), "cast rejected without enough qi");
+		// Cooldowns tick down.
+		qi.setCooldown(skill.getId(), 5);
+		for (int i = 0; i < 5; i++) qi.tickCooldowns();
+		ctx.assertTrue(!qi.isOnCooldown(skill.getId()), "cooldown expired after ticking");
+		ctx.complete();
 	}
 
 	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 400)
