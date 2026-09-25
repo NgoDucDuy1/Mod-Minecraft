@@ -280,7 +280,9 @@ public final class CelestialAutoTest {
 	}
 
 	/** Skills whose first-person view matters most (they surround or start at the camera). */
-	private static final List<String> FIRST_PERSON_SHOTS = List.of("sword_qi_slash", "flame_claw", "ice_arrows", "purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain", "thousand_swords");
+	private static final List<String> FIRST_PERSON_SHOTS = List.of("sword_qi_slash", "flame_claw", "ice_arrows", "purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain", "thousand_swords", "vajra_palm");
+	/** Skills whose main visual only appears after a wind-up: extra ticks before the third-person shot. */
+	private static final java.util.Map<String, Integer> SHOT_DELAY = java.util.Map.of("thunder_dragon", 22, "wind_dragon", 10, "golden_body", 4, "heaven_sword", 4);
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
@@ -307,6 +309,7 @@ public final class CelestialAutoTest {
 		} else {
 			waitTicks(6);
 		}
+		waitTicks(SHOT_DELAY.getOrDefault(skill.getId().getPath(), 0));
 		screenshot("skill_" + skill.getId().getPath(), false);
 		waitTicks(6);
 		if (skill.isChannel()) {
