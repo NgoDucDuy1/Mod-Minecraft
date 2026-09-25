@@ -41,13 +41,14 @@ public class VajraPalmSkill extends Skill {
 		ServerPlayerEntity player = ctx.player();
 		Vec3d look = ctx.look();
 		Vec3d origin = player.getEyePos().add(0, -0.25, 0);
-		Vec3d palm = origin.add(look.multiply(1.4));
+		// Seal a little further out so it does not fill the caster's whole screen in first person.
+		Vec3d palm = origin.add(look.multiply(1.9));
 
 		player.swingHand(Hand.OFF_HAND, true);
 		// Golden seal standing upright in front of the palm, a burst of light and a gust.
-		ModPackets.sendFx(ctx.world(), FxData.at(FxType.MAGIC_CIRCLE, palm, GOLD, 1.3f, 14).withExtra(1).withTarget(look));
-		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, palm, 0xFFFFFF, 0.9f, 6));
-		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, palm.add(look.multiply(0.6)), GOLD, 2.4f, 7).withTarget(look));
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.MAGIC_CIRCLE, palm, GOLD, 1.1f, 14).withExtra(1).withTarget(look));
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.ENERGY_BURST, palm, 0xFFE9B8, 0.6f, 6));
+		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, palm.add(look.multiply(0.6)), GOLD, 2.2f, 7).withTarget(look));
 		SkillFx.cone(ctx.world(), ModParticles.GOLDEN_LIGHT, palm, look, 30, 16, 0.5);
 		SkillFx.windGust(ctx.world(), palm, look, 12, 0.6);
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 0.8f, 1.6f);

@@ -82,9 +82,13 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			widths[i] = (0.28F + 0.62F * bulge) * (1.0F - t * 0.85F);
 			alphas[i] = 1.0F - t * t;
 		}
-		strip(bolt, m, body, widths, alphas, camRel, 1.6F, 0x3A0F80, 0.35F);
-		strip(bolt, m, body, widths, alphas, camRel, 1.0F, PURPLE, 0.7F);
-		strip(bolt, m, body, widths, alphas, camRel, 0.28F, PALE, 0.85F);
+		// The sheath is alpha-blended (not additive) so it stays purple against a bright sky; only the
+		// thin core is additive lightning.
+		VertexConsumer sheath = vcp.getBuffer(ModRenderLayers.translucentGlow(FxTextures.GLOW));
+		strip(sheath, matrices.peek(), body, widths, alphas, camRel, 1.9F, 0x2A0A60, 0.8F);
+		strip(sheath, matrices.peek(), body, widths, alphas, camRel, 1.2F, PURPLE, 0.9F);
+		strip(bolt, null, body, widths, alphas, camRel, 0.55F, PURPLE, 0.5F);
+		strip(bolt, null, body, widths, alphas, camRel, 0.2F, PALE, 0.8F);
 		// Crackling side arcs that jump off the body.
 		for (int i = 2; i < n - 1; i += 3) {
 			float t = (float) i / (n - 1);
@@ -92,8 +96,8 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			Vec3d root = body[i];
 			Vec3d off = new Vec3d(RenderUtil.hash(i, 5 + frame) - 0.5F, RenderUtil.hash(i, 9 + frame) - 0.5F, RenderUtil.hash(i, 13 + frame) - 0.5F).normalize().multiply(0.6 + 0.7 * (1 - t));
 			Vec3d mid = root.add(off.multiply(0.5)).add((RenderUtil.hash(i, 21 + frame) - 0.5F) * 0.3, (RenderUtil.hash(i, 23 + frame) - 0.5F) * 0.3, (RenderUtil.hash(i, 25 + frame) - 0.5F) * 0.3);
-			RenderUtil.ribbon(bolt, m, root, mid, camRel, 0.1F, PALE, alphas[i] * 0.9F, alphas[i] * 0.6F);
-			RenderUtil.ribbon(bolt, m, mid, root.add(off), camRel, 0.07F, PALE, alphas[i] * 0.6F, 0.0F);
+			RenderUtil.ribbon(bolt, m, root, mid, camRel, 0.06F, PALE, alphas[i] * 0.8F, alphas[i] * 0.5F);
+			RenderUtil.ribbon(bolt, m, mid, root.add(off), camRel, 0.04F, PALE, alphas[i] * 0.5F, 0.0F);
 		}
 
 		// ---- head
@@ -125,9 +129,10 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 	}
 
 	/** Camera-facing continuous strip through {@code pts}; width and alpha are per point. */
-	private static void strip(VertexConsumer vc, Matrix4f m, Vec3d[] pts, float[] widths, float[] alphas, Vec3d camRel, float widthScale, int rgb, float alphaScale) {
+	private static void strip(VertexConsumer vc, MatrixStack.Entry e, Vec3d[] pts, float[] widths, float[] alphas, Vec3d camRel, float widthScale, int rgb, float alphaScale) {
 		int n = pts.length;
 		if (n < 2) return;
+		Matrix4f m = e == null ? null : e.getPositionMatrix();
 		float r = RenderUtil.red(rgb), g = RenderUtil.green(rgb), b = RenderUtil.blue(rgb);
 		Vec3d[] side = new Vec3d[n];
 		for (int i = 0; i < n; i++) {
@@ -143,10 +148,18 @@ public class ThunderDragonRenderer extends GlowEntityRenderer<ThunderDragonEntit
 			Vec3d b0 = pts[i + 1].add(side[i + 1]), b1 = pts[i + 1].subtract(side[i + 1]);
 			float aa = alphas[i] * alphaScale, ab = alphas[i + 1] * alphaScale;
 			// Same winding as RenderUtil.ribbon (p0-s, p0+s, p1+s, p1-s) so culling behaves identically.
-			vc.vertex(m, (float) a1.x, (float) a1.y, (float) a1.z).color(r, g, b, aa).next();
-			vc.vertex(m, (float) a0.x, (float) a0.y, (float) a0.z).color(r, g, b, aa).next();
-			vc.vertex(m, (float) b0.x, (float) b0.y, (float) b0.z).color(r, g, b, ab).next();
-			vc.vertex(m, (float) b1.x, (float) b1.y, (float) b1.z).color(r, g, b, ab).next();
+			if (e != null) {
+				// Textured (soft glow sampled across the width -> feathered edges).
+				RenderUtil.vertex(vc, e, (float) a1.x, (float) a1.y, (float) a1.z, 0.5F, 0.0F, rgb, aa);
+				RenderUtil.vertex(vc, e, (float) a0.x, (float) a0.y, (float) a0.z, 0.5F, 1.0F, rgb, aa);
+				RenderUtil.vertex(vc, e, (float) b0.x, (float) b0.y, (float) b0.z, 0.5F, 1.0F, rgb, ab);
+				RenderUtil.vertex(vc, e, (float) b1.x, (float) b1.y, (float) b1.z, 0.5F, 0.0F, rgb, ab);
+			} else {
+				vc.vertex(m, (float) a1.x, (float) a1.y, (float) a1.z).color(r, g, b, aa).next();
+				vc.vertex(m, (float) a0.x, (float) a0.y, (float) a0.z).color(r, g, b, aa).next();
+				vc.vertex(m, (float) b0.x, (float) b0.y, (float) b0.z).color(r, g, b, ab).next();
+				vc.vertex(m, (float) b1.x, (float) b1.y, (float) b1.z).color(r, g, b, ab).next();
+			}
 		}
 	}
 
