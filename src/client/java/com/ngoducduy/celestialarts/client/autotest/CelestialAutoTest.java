@@ -276,14 +276,26 @@ public final class CelestialAutoTest {
 		}
 	}
 
+	/** Skills whose first-person view matters most (they surround or start at the camera). */
+	private static final List<String> FIRST_PERSON_SHOTS = List.of("purple_thunder_beam", "tortoise_shield", "wind_blade_dance", "frozen_domain");
+
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
 		submitAndWait(c -> {
+			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
 			ClientPackets.sendCast(slot);
 			return null;
 		});
 		waitTicks(12);
 		screenshot("skill_" + skill.getId().getPath());
+		if (FIRST_PERSON_SHOTS.contains(skill.getId().getPath())) {
+			submitAndWait(c -> {
+				c.options.setPerspective(Perspective.FIRST_PERSON);
+				return null;
+			});
+			waitTicks(2);
+			screenshot("skill_" + skill.getId().getPath() + "_fp");
+		}
 		if (skill.isChannel()) {
 			waitTicks(20);
 			submitAndWait(c -> {

@@ -40,6 +40,8 @@ public class TortoiseShieldFx extends ClientFx {
 		float radius = (base + 0.35F) * scale * (0.4F + 0.6F * in) * (1.0F + 0.02F * MathHelper.sin(t * 0.5F));
 		Vec3d o = origin(tickDelta);
 		int white = RenderUtil.whiten(color, 0.6F);
+		// Seen from inside (the caster in first person) the shell would cover the whole view: fade it.
+		if (camera.getPos().distanceTo(o) < radius) alpha *= 0.3F;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer hex = consumers.getBuffer(ModRenderLayers.additive(FxTextures.HEX_SHIELD));

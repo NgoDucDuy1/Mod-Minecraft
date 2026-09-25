@@ -148,7 +148,8 @@ jobs:
           from PIL import Image
           wanted = ["02_in_game", "03_skill_book", "04_fx_types", "05_particles", "06_sword_flight_third_person",
                     "skill_sword_qi_slash", "skill_fire_lotus", "skill_taiji_formation", "skill_frozen_domain",
-                    "skill_thousand_swords", "skill_purple_thunder_beam", "skill_nine_tribulations", "skill_heaven_sword", "07_final"]
+                    "skill_thousand_swords", "skill_purple_thunder_beam", "skill_purple_thunder_beam_fp", "skill_tortoise_shield_fp",
+                    "skill_nine_tribulations", "skill_heaven_sword", "skill_earth_shatter", "skill_devouring_vortex", "07_final"]
           files = {os.path.splitext(os.path.basename(f))[0]: f for f in glob.glob("build/autotest/screenshots/*.png")}
           os.makedirs("shots", exist_ok=True)
           n = 0

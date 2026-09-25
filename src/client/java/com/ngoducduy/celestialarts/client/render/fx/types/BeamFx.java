@@ -88,8 +88,12 @@ public class BeamFx extends ClientFx {
 		matrices.translate(tip.x, tip.y, tip.z);
 		faceCamera(matrices, camera);
 		float pulse = 1.0F + 0.15F * MathHelper.sin(t * 2.3F);
-		RenderUtil.billboardQuad(glow, matrices.peek(), r * 5.0F * pulse, white, env * 0.8F);
-		RenderUtil.billboardQuad(glow, matrices.peek(), r * 8.0F * pulse, color, env * 0.35F);
+		// A beam that hits nothing just dissipates: only a faint tip, no impact flare (a full flare at max
+		// range sits exactly on the crosshair in first person and blinds the caster).
+		boolean missed = hit.getType() == HitResult.Type.MISS;
+		float tipK = missed ? 0.35F : 1.0F;
+		RenderUtil.billboardQuad(glow, matrices.peek(), r * 5.0F * pulse * tipK, white, env * (missed ? 0.3F : 0.8F));
+		RenderUtil.billboardQuad(glow, matrices.peek(), r * 8.0F * pulse * tipK, color, env * (missed ? 0.15F : 0.35F));
 		matrices.pop();
 
 		matrices.translate(from.x, from.y, from.z);
