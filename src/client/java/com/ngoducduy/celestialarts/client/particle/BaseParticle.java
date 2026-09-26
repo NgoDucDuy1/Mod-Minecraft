@@ -61,14 +61,16 @@ public abstract class BaseParticle extends SpriteBillboardParticle {
 		this.alpha = baseAlpha * envelope();
 	}
 
-	/** Particles closer than this to the camera fade out instead of filling the screen as a blob. */
+	/** Particles closer than this to the camera always fade out instead of filling the screen as a blob. */
 	protected static final double NEAR_FADE = 3.5;
 
 	/**
 	 * Own-body particles (the golden light around a channelling caster, sword glints, embers) end up
 	 * centimetres from a first-person camera, where a 0.3-block sprite covers a quarter of the
 	 * screen – and, being additive, grows a bloom halo several times its size. They fade to nothing
-	 * inside {@link #NEAR_FADE} blocks; the remaining alpha handling is untouched.
+	 * near the camera; the fade window scales with the sprite's size so a large mote is already
+	 * gone at the distance where it would still look big (a 0.3-block sprite fades over 1.3–5 blocks,
+	 * a tiny spark over 0.5–3.5 blocks). The remaining alpha handling is untouched.
 	 */
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
@@ -77,14 +79,17 @@ public abstract class BaseParticle extends SpriteBillboardParticle {
 		double dy = MathHelper.lerp(tickDelta, this.prevPosY, this.y) - cam.y;
 		double dz = MathHelper.lerp(tickDelta, this.prevPosZ, this.z) - cam.z;
 		double d2 = dx * dx + dy * dy + dz * dz;
-		if (d2 >= NEAR_FADE * NEAR_FADE) {
+		double width = this.getSize(tickDelta) * 2.0;
+		double start = Math.max(0.5, width * 4.0);
+		double end = start + Math.max(NEAR_FADE - 0.5, width * 12.0);
+		if (d2 >= end * end) {
 			super.buildGeometry(vertexConsumer, camera, tickDelta);
 			return;
 		}
-		float near = (float) MathHelper.clamp((Math.sqrt(d2) - 0.5) / (NEAR_FADE - 0.5), 0.0, 1.0);
+		float near = (float) MathHelper.clamp((Math.sqrt(d2) - start) / (end - start), 0.0, 1.0);
 		if (near <= 0.01F) return;
 		float saved = this.alpha;
-		this.alpha = saved * near;
+		this.alpha = saved * near * near;
 		super.buildGeometry(vertexConsumer, camera, tickDelta);
 		this.alpha = saved;
 	}
