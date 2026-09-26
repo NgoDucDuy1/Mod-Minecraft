@@ -92,6 +92,15 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.1 – Sửa lỗi crash khi chạy jar phát hành (mixin client không tìm thấy target)
+* Jar 1.3.0 tải về chạy ngoài môi trường dev bị lỗi `CameraMixin ... could not find any targets matching 'update'`
+  (và tương tự cho `ParticleManagerMixin`, `BipedEntityModelMixin`). Nguyên nhân: với `splitEnvironmentSourceSets()`
+  Loom sinh refmap riêng cho source set `client` (`client-celestialarts-refmap.json`), nhưng `celestialarts.client.mixins.json`
+  nằm ở `src/main/resources` nên bị gắn refmap của `main` – không có entry cho các mixin client. Đã chuyển file cấu hình
+  sang `src/client/resources`.
+* CI có thêm bước `tools/check_jar.py` kiểm tra **jar thật sau remap**: mọi mixin config phải có refmap, mọi lớp mixin phải
+  có entry trong refmap và target phải là tên intermediary – lỗi kiểu này sẽ chặn build ngay thay vì lọt ra bản phát hành.
+
 ### 1.3.0 – Đại tu hình ảnh: bloom thật, tàn ảnh, vết tích mặt đất, hiệu ứng màn hình
 * **Bloom (hào quang) thật sự** cho *mọi* hiệu ứng phát sáng: lớp render cộng màu, tia sét và hạt phát sáng được vẽ thêm vào một
   framebuffer riêng (`GlowPass`), làm mờ Gaussian 3 cấp bằng core shader `celestialarts:glow_blur` rồi cộng ngược lên khung

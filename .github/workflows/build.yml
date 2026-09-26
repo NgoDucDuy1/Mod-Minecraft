@@ -41,6 +41,15 @@ jobs:
           set -o pipefail
           ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
 
+      - name: Check production jar (refmaps / remapping)
+        id: jarcheck
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          JAR=$(ls build/libs/celestialarts-*.jar | grep -v -- '-sources' | head -n1)
+          echo "Checking $JAR"
+          python3 tools/check_jar.py "$JAR"
+
       - name: Run game tests (headless server)
         id: gametest
         if: steps.build.outcome == 'success'
