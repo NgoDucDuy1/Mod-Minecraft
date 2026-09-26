@@ -18,20 +18,30 @@ import net.minecraft.util.math.Vec3d;
 /**
  * Persistent ground mark (scorch / frost) left behind by an impact. Drawn with normal alpha blending
  * (it must be able to darken the ground), with a brief additive ember/ice glow that dies out much
- * sooner than the mark itself. {@code scale} = radius, {@code extra} = 0 scorch, 1 frost.
+ * sooner than the mark itself. {@code scale} = radius, {@code extra} = 0 scorch, 1 frost,
+ * 2 the palm print of Thiên Đạo Chi Thủ (always flat on the ground; {@code target} is then the
+ * horizontal direction the fingers point, the glow lingers for a minute and the print is drawn
+ * without distance fog because it is 300 blocks across).
  */
 public class GroundDecalFx extends ClientFx {
 	private final boolean frost;
+	private final boolean palm;
 	private final float rotation;
 	private final Vec3d normal;
 
 	public GroundDecalFx(FxData data, ClientWorld world) {
 		super(data, world);
 		this.frost = data.extra() == 1;
-		this.rotation = rand(1) * 360.0F;
+		this.palm = data.extra() == 2;
 		Vec3d t = data.target();
 		double l = t.lengthSquared();
-		this.normal = (l > 0.9 && l < 1.1 && !t.equals(data.pos())) ? t.normalize() : new Vec3d(0, 1, 0);
+		if (palm) {
+			this.rotation = l < 1.0E-6 ? 0.0F : (float) Math.toDegrees(Math.atan2(t.x, t.z));
+			this.normal = new Vec3d(0, 1, 0);
+		} else {
+			this.rotation = rand(1) * 360.0F;
+			this.normal = (l > 0.9 && l < 1.1 && !t.equals(data.pos())) ? t.normalize() : new Vec3d(0, 1, 0);
+		}
 	}
 
 	@Override
@@ -48,6 +58,10 @@ public class GroundDecalFx extends ClientFx {
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotation));
 		MatrixStack.Entry e = matrices.peek();
 
+		if (palm) {
+			renderPalm(consumers, e, t, alpha);
+			return;
+		}
 		Identifier tex = frost ? FxTextures.FROST_PATCH : FxTextures.SCORCH;
 		// The mark itself: frost is tinted by the skill colour, scorch keeps its own dark pigment
 		// (white tint) and the texture's ember cracks pick up the colour through the glow below.
@@ -60,6 +74,18 @@ public class GroundDecalFx extends ClientFx {
 			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(tex));
 			float pulse = 0.8F + 0.2F * MathHelper.sin(t * 0.5F);
 			RenderUtil.flatQuad(glow, e, scale, color, alpha * glowLife * glowLife * (frost ? 0.5F : 0.9F) * pulse);
+		}
+	}
+
+	/** Palm print: dark pressed earth with molten golden seams that cool down over a minute. */
+	private void renderPalm(VertexConsumerProvider consumers, MatrixStack.Entry e, float t, float alpha) {
+		VertexConsumer mark = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.PALM_PRINT));
+		RenderUtil.flatQuad(mark, e, scale, 0xFFFFFF, alpha * 0.95F);
+		float glowLife = MathHelper.clamp(1.0F - t / 1200.0F, 0.0F, 1.0F);
+		if (glowLife > 0.0F) {
+			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.PALM_PRINT));
+			float pulse = 0.85F + 0.15F * MathHelper.sin(t * 0.15F);
+			RenderUtil.flatQuad(glow, e, scale, color, alpha * (0.25F + 0.75F * glowLife * glowLife) * pulse);
 		}
 	}
 }

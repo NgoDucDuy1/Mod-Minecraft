@@ -15,6 +15,8 @@ public final class ModModelLayers {
 	public static final EntityModelLayer HEAVEN_SWORD = layer("heaven_sword");
 	public static final EntityModelLayer WIND_DRAGON = layer("wind_dragon");
 	public static final EntityModelLayer THUNDER_DRAGON = layer("thunder_dragon");
+	/** The colossal palm of Thiên Đạo Chi Thủ (drawn by the client FX system, not an entity). */
+	public static final EntityModelLayer HEAVEN_HAND = layer("heaven_hand");
 
 	private ModModelLayers() {
 	}
@@ -33,5 +35,6 @@ public final class ModModelLayers {
 		EntityModelLayerRegistry.registerModelLayer(HEAVEN_SWORD, HeavenSwordModel::getTexturedModelData);
 		EntityModelLayerRegistry.registerModelLayer(WIND_DRAGON, DragonHeadModel::getTexturedModelData);
 		EntityModelLayerRegistry.registerModelLayer(THUNDER_DRAGON, DragonHeadModel::getTexturedModelData);
+		EntityModelLayerRegistry.registerModelLayer(HEAVEN_HAND, HeavenHandModel::getTexturedModelData);
 	}
 }

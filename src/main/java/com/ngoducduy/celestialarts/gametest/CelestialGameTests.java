@@ -15,6 +15,7 @@ import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillManager;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
 import com.ngoducduy.celestialarts.skill.cast.ActiveCast;
+import com.ngoducduy.celestialarts.skill.skills.HeavenHandSkill;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.Entity;
@@ -108,6 +109,9 @@ public final class CelestialGameTests implements FabricGameTest {
 			ctx.runAtTick(castTick + CAST_SPACING - 4, () -> {
 				ActiveCast cast = qi.getActiveCast(skill.getId());
 				if (cast != null) cast.onRelease();
+				// Thiên Đạo Chi Thủ cannot be released and would crush every mob of the other tests in
+				// this batch within 220 blocks – it has its own test in a separate batch.
+				if (cast != null && skill == SkillRegistry.HEAVEN_HAND) cast.cancel();
 				if (player.hasVehicle()) player.stopRiding();
 			});
 		}
@@ -387,6 +391,50 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.complete();
 	}
 
+	/**
+	 * Thiên Đạo Chi Thủ runs in its own batch: its 220-block domain would otherwise reach every other
+	 * test's mobs. Checks the full timeline on a 400-health zombie: pinned + crushed during the descent,
+	 * other skills locked out while channelling, extra damage from the slam/shock ring, clean finish.
+	 */
+	@GameTest(templateName = EMPTY_STRUCTURE, batchId = "heaven_hand", tickLimit = 420)
+	public void heavenHandSuppressesAndSlams(TestContext ctx) {
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.TRIBULATION);
+		PlayerQi qi = QiHolder.get(player);
+		ZombieEntity zombie = ctx.spawnMob(EntityType.ZOMBIE, 0.5F, 2.0F, 4.5F);
+		zombie.setAiDisabled(true);
+		zombie.getAttributeInstance(net.minecraft.entity.attribute.EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(400.0);
+		zombie.setHealth(400.0F);
+		ctx.runAtEveryTick(() -> tickIfDetached(ctx, player));
+		float[] beforeSlam = new float[1];
+
+		ctx.runAtTick(2, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.HEAVEN_HAND), "heaven hand cast accepted"));
+		ctx.runAtTick(100, () -> {
+			ctx.assertTrue(qi.isChanneling(), "caster is channelling during the ritual");
+			ctx.assertTrue(!SkillManager.cast(player, qi, SkillRegistry.SWORD_QI_SLASH), "other skills are locked out while borrowing the heavens");
+			ctx.assertTrue(player.isAlive(), "caster alive");
+		});
+		ctx.runAtTick(170, () -> {
+			ctx.assertTrue(zombie.hasStatusEffect(com.ngoducduy.celestialarts.registry.ModEffects.SUPPRESSED), "victim is Trấn Áp (suppressed) during the descent");
+			ctx.assertTrue(zombie.getHealth() < 400.0F, "victim is crushed for damage during the descent");
+			zombie.setVelocity(0.0, 0.6, 0.0);
+			zombie.velocityModified = true;
+		});
+		ctx.runAtTick(172, () -> ctx.assertTrue(zombie.getVelocity().y <= 0.05, "suppression forces the victim back down"));
+		ctx.runAtTick(HeavenHandSkill.T_SLAM - 1 + 2, () -> beforeSlam[0] = zombie.getHealth());
+		ctx.runAtTick(HeavenHandSkill.T_SLAM + 30, () -> {
+			ctx.assertTrue(zombie.isAlive(), "400-health victim survives the slam at the edge of the core");
+			ctx.assertTrue(beforeSlam[0] - zombie.getHealth() >= HeavenHandSkill.RING_DAMAGE_MIN - 0.01F, "slam / shock ring dealt extra damage: " + (beforeSlam[0] - zombie.getHealth()));
+		});
+		ctx.runAtTick(HeavenHandSkill.T_END + 12, () -> {
+			ActiveCast cast = qi.getActiveCast(SkillRegistry.HEAVEN_HAND.getId());
+			ctx.assertTrue(cast == null || cast.isFinished(), "cast finished on schedule");
+			ctx.assertTrue(!qi.isChanneling(), "no longer channelling");
+			ctx.assertTrue(player.isAlive(), "caster survived the ritual");
+			removePlayer(ctx, player);
+			ctx.complete();
+		});
+	}
+
 	@GameTest(templateName = EMPTY_STRUCTURE)
 	public void fxDataRoundTrip(TestContext ctx) {
 		FxData original = FxData.follow(FxType.BEAM, 17, new Vec3d(1.5, 64.25, -3.75), 0xB57BFF, 0.55F, 120)
@@ -417,7 +465,7 @@ public final class CelestialGameTests implements FabricGameTest {
 		}
 		String[] advancements = {"root", "learn_first_skill", "learn_all_skills", "realm/foundation", "realm/golden_core",
 				"realm/nascent_soul", "realm/spirit_transformation", "realm/tribulation", "skills/sword_flight",
-				"skills/nine_tribulations", "skills/heaven_sword"};
+				"skills/nine_tribulations", "skills/heaven_sword", "skills/heaven_hand"};
 		for (String a : advancements) {
 			Identifier id = CelestialArts.id(a);
 			ctx.assertTrue(server.getAdvancementLoader().get(id) != null, "advancement present: " + id);

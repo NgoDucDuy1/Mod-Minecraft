@@ -946,7 +946,66 @@ def s_dragon_flyby():
     return out
 
 
+def s_heaven_hand_summon():
+    """Thiên Đạo Chi Thủ opening: a temple gong two octaves down, a slow harmonic swell rising out of
+    it, air pressure building and a shimmer of scripture – 4.5 s, ends as the hand appears."""
+    d = 4.5
+    tt = t(d)
+    gng = gong(72, d, swell=0.25)
+    swell = tonal_swell(110, d, 8, 0.008, 150, 2400) * env(d, 1.6, 1.6, 0.8, 1.0)
+    air = sweep(noise(d), 120, 1800, q=1.2, shape=0.8) * (tt / d) ** 1.6
+    shimmer = crackle(d, 18, 3000, 9000, 0.02) * env(d, 1.0, 1.5, 0.6, 1.0)
+    rum = brown(d) * env(d, 2.0, 1.5, 1.0, 0.8)
+    x = mix((gng, 1.0), (saturate(swell, 1.4), 0.45), (air, 0.6), (shimmer, 0.25), (rum, 1.4))
+    return [norm(fade(reverb(x, 1.4, 0.7, 0.3), 0.01, 0.6))]
+
+
+def s_heaven_hand_pressure():
+    """The descending palm pressing on the world: a 2.4 s sub throb with a slow tremolo, groaning
+    earth (resonant low noise) and a faint high whine of strained air."""
+    d = 2.4
+    tt = t(d)
+    sub = sine(38, d) * (0.7 + 0.3 * np.sin(2 * np.pi * 2.3 * tt)) * env(d, 0.4, 0.8, 0.8, 0.8)
+    groan = resonant(brown(d), 140, 6.0) * env(d, 0.5, 0.8, 0.7, 0.8)
+    creak = resonant(noise(d), 480, 18.0) * env(d, 0.6, 0.6, 0.5, 0.9)
+    whine = lowpass(osc_from_freq(1900 + 90 * np.sin(2 * np.pi * 0.5 * tt)), 4000) * env(d, 0.8, 0.8, 0.4, 0.8)
+    x = mix((saturate(sub, 1.6), 1.0), (groan, 1.2), (creak, 0.35), (whine, 0.05))
+    return [norm(fade(x, 0.1, 0.3))]
+
+
+def s_heaven_hand_slam():
+    """The palm strikes the earth: colossal impact, sub drop, shock front, a 60 Hz gong body,
+    rock debris and a very long decaying rumble – 5.5 s."""
+    d = 5.5
+    hit = impact(d, 105, 18, 85, crack=1.5, weight=2.6)
+    drop = saturate(glide(80, 20, 1.6, 0.4) * expdecay(1.6, 0.6), 2.0)
+    shock = sweep(noise(d), 9000, 90, q=0.9, shape=0.35, mode="low") * expdecay(d, 0.7)
+    body = gong(58, 4.0, swell=0.0) * expdecay(4.0, 1.4)
+    debris = crackle(d, 55, 300, 3000, 0.008) * expdecay(d, 1.6, delay=0.15)
+    rum = brown(d) * expdecay(d, 2.2, delay=0.03)
+    x = mix((hit, 1.0), (at(drop, 0.0, d), 0.9), (shock, 1.0), (at(body, 0.02, d), 0.5), (debris, 0.6), (rum, 2.4))
+    x = glue(reverb(x, 1.6, 0.7, 0.3))
+    return [norm(fade(x, 0.002, 0.9))]
+
+
+def s_heaven_hand_rumble():
+    """What a distant viewer hears seconds after the slam: no click, just the ground – a swelling
+    brown roar under 200 Hz with a 28 Hz sub, dying over 4 s."""
+    d = 4.2
+    tt = t(d)
+    swell = env(d, 0.25, 1.0, 0.8, 2.4)
+    rum = lowpass(brown(d, hp=12.0), 220) * swell
+    sub = sine(28, d) * (0.8 + 0.2 * np.sin(2 * np.pi * 1.7 * tt)) * swell
+    grit = lowpass(noise(d), 600) * swell * 0.3
+    x = mix((rum, 2.0), (saturate(sub, 1.5), 0.9), (grit, 0.5))
+    return [norm(fade(x, 0.15, 1.0))]
+
+
 SOUNDS = {
+    "skill/heaven_hand_summon": s_heaven_hand_summon,
+    "skill/heaven_hand_pressure": s_heaven_hand_pressure,
+    "skill/heaven_hand_slam": s_heaven_hand_slam,
+    "skill/heaven_hand_rumble": s_heaven_hand_rumble,
     "skill/hit_slash": s_hit_slash,
     "skill/hit_blunt": s_hit_blunt,
     "skill/hit_fire": s_hit_fire,
@@ -1009,11 +1068,12 @@ def trim_silence(x, floor_db=-46.0, keep=0.05):
 # that hits punch, casts sit underneath and loops stay in the background at equal in-game volume.
 KIND_TARGET = {"big": -10.5, "impact": -12.5, "cast": -15.5, "soft": -18.5, "loop": -21.0}
 EVENT_KIND = {
-    "big": {"fire_explosion", "heaven_sword_impact", "breakthrough", "thunder_strike", "earth_quake", "void_collapse", "sub_drop"},
+    "big": {"fire_explosion", "heaven_sword_impact", "breakthrough", "thunder_strike", "earth_quake", "void_collapse", "sub_drop",
+            "heaven_hand_slam", "heaven_hand_rumble"},
     "impact": {"sword_qi", "sword_launch", "ice_shatter", "shield_hit", "palm_strike", "lightning_step", "wind_slash", "fire_whoosh",
                "dragon_roar", "dragon_flyby", "hit_slash", "hit_blunt", "hit_fire", "hit_ice", "hit_shock", "golden_body"},
     "cast": {"ice_cast", "thunder_charge", "shield_up", "formation", "qi_gather", "freeze_field", "heaven_sword_fall", "void_drain",
-             "cast_qi", "riser", "learn_skill", "spirit_stone"},
+             "cast_qi", "riser", "learn_skill", "spirit_stone", "heaven_hand_summon", "heaven_hand_pressure"},
     "soft": {"sword_hum"},
     "loop": {"beam_loop", "sword_flight"},
 }

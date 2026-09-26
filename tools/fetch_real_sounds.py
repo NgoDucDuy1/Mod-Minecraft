@@ -429,6 +429,58 @@ def r_heaven_sword_fall(L):
     return [g.norm(g.fade(g.highpass(x, 30, 2), 0.05, 0.02), 0.9)]
 
 
+def r_heaven_hand_summon(L):
+    """Formation opening: two real gongs (deep boss gong + Paiste) pitched down, a real wind gust
+    swelling underneath, synth harmonic swell and rumble."""
+    d = 4.5
+    tt = g.t(d)
+    gong1 = pitch(clip(L("gong_boss"), dur=4.2, fade_out=1.2), 0.7)
+    gong2 = pitch(clip(L("gong_paiste"), dur=3.6, fade_out=1.0), 0.85)
+    wind = g.at(clip(L("wind_gust"), dur=3.0, fade_in=0.4, fade_out=0.6), 0, 3.0) * g.ramp(3.0, 0.2, 1.0, 1.5)
+    swell = g.tonal_swell(110, d, 8, 0.008, 150, 2400) * g.env(d, 1.6, 1.6, 0.8, 1.0)
+    rum = g.brown(d) * g.env(d, 2.0, 1.5, 1.0, 0.8)
+    x = g.mix((g.at(gong1, 0.0, d), 1.0), (g.at(gong2, 0.15, d), 0.6), (g.at(wind, 1.2, d), 0.8),
+              (g.at(g.saturate(swell, 1.4), 0, d), 0.4), (rum, 1.3))
+    return [finish(g.glue(g.reverb(x, 1.4, 0.7, 0.3)))]
+
+
+def r_heaven_hand_pressure(L):
+    """Pressure of the descending palm: a real thunder roll low-passed to a groan + synth sub throb."""
+    d = 2.4
+    tt = g.t(d)
+    roll = g.lowpass(g.at(clip(L("thunder_josh"), dur=d, fade_in=0.3, fade_out=0.6), 0, d), 260)
+    sub = g.sine(38, d) * (0.7 + 0.3 * np.sin(2 * np.pi * 2.3 * tt)) * g.env(d, 0.4, 0.8, 0.8, 0.8)
+    groan = g.resonant(g.brown(d), 140, 6.0) * g.env(d, 0.5, 0.8, 0.7, 0.8)
+    x = g.mix((roll, 1.0), (g.saturate(sub, 1.6), 0.9), (groan, 0.8))
+    return [g.norm(g.fade(g.highpass(x, 24, 2), 0.1, 0.3), 0.9)]
+
+
+def r_heaven_hand_slam(L):
+    """The slam: real bomb boom + falling rock wall + extreme thunder, over the synth impact/sub drop."""
+    d = 5.5
+    boom = clip(L("boom_bag"), dur=2.8, fade_out=1.0)
+    rock = clip(L("rock_wall"), dur=3.2, fade_out=1.0)
+    thunder = clip(L("thunder_extreme"), dur=5.0, fade_out=1.5)
+    hit = g.impact(2.5, 105, 18, 85, crack=1.4, weight=2.4)
+    drop = g.saturate(g.glide(80, 20, 1.6, 0.4) * g.expdecay(1.6, 0.6), 2.0)
+    rum = g.brown(d) * g.expdecay(d, 2.2, delay=0.03)
+    x = g.mix((g.at(boom, 0, d), 1.0), (g.at(hit, 0, d), 0.7), (g.at(drop, 0, d), 0.8), (g.at(rock, 0.06, d), 0.8),
+              (g.at(thunder, 0.1, d), 0.9), (rum, 1.8))
+    return [finish(g.glue(g.reverb(x, 1.6, 0.7, 0.3)))]
+
+
+def r_heaven_hand_rumble(L):
+    """Distant rumble reaching far viewers after the slam: a real thunder roll low-passed hard,
+    swelling in (no click) and dying over 4 s, with a 28 Hz sub."""
+    d = 4.2
+    tt = g.t(d)
+    swell = g.env(d, 0.25, 1.0, 0.8, 2.4)
+    roll = g.lowpass(g.at(clip(L("thunder_netaj"), dur=d, fade_in=0.2, fade_out=1.2), 0, d), 200) * swell
+    sub = g.sine(28, d) * (0.8 + 0.2 * np.sin(2 * np.pi * 1.7 * tt)) * swell
+    x = g.mix((roll, 1.4), (g.saturate(sub, 1.5), 0.8), (g.lowpass(g.brown(d, hp=12.0), 220) * swell, 1.0))
+    return [g.norm(g.fade(g.highpass(x, 20, 2), 0.15, 1.0), 0.9)]
+
+
 def r_learn_skill(L):
     """A real plucked zither string (kayageum A2 = 110 Hz) re-pitched into a rising pentatonic run."""
     d = 2.2
@@ -665,6 +717,10 @@ RECIPES = {
     "skill/fire_whoosh": r_fire_whoosh,
     "skill/fire_explosion": r_fire_explosion,
     "skill/heaven_sword_impact": r_heaven_sword_impact,
+    "skill/heaven_hand_summon": r_heaven_hand_summon,
+    "skill/heaven_hand_pressure": r_heaven_hand_pressure,
+    "skill/heaven_hand_slam": r_heaven_hand_slam,
+    "skill/heaven_hand_rumble": r_heaven_hand_rumble,
     "skill/sword_qi": r_sword_qi,
     "skill/sword_launch": r_sword_launch,
     "skill/wind_slash": r_wind_slash,

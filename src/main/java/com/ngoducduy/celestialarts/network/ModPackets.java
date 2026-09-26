@@ -95,11 +95,23 @@ public final class ModPackets {
 	}
 
 	public static void sendFx(ServerWorld world, FxData fx) {
+		sendFx(world, fx, FX_RANGE);
+	}
+
+	/** Spawns a client effect for every player within {@code range} blocks of its position (world-scale effects). */
+	public static void sendFx(ServerWorld world, FxData fx, double range) {
 		PacketByteBuf buf = PacketByteBufs.create();
 		fx.write(buf);
-		for (ServerPlayerEntity p : PlayerLookup.around(world, fx.pos(), FX_RANGE)) {
+		for (ServerPlayerEntity p : PlayerLookup.around(world, fx.pos(), range)) {
 			send(p, SPAWN_FX, buf);
 		}
+	}
+
+	/** Spawns a client effect for one specific player only (per-viewer overlays such as screen flashes). */
+	public static void sendFxTo(ServerPlayerEntity player, FxData fx) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		fx.write(buf);
+		send(player, SPAWN_FX, buf);
 	}
 
 	/** Broadcasts an effect to every player tracking an entity (plus the entity itself if a player). */

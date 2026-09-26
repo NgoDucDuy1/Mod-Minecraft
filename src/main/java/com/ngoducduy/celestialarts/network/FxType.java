@@ -58,7 +58,13 @@ public enum FxType {
 	 * tinted with color), 1 frost patch (tinted with color). Fades in over a few ticks and out over
 	 * the last third of the duration.
 	 */
-	GROUND_DECAL;
+	GROUND_DECAL,
+	/**
+	 * Thiên Đạo Chi Thủ: sky formation, the descending {@code scale}-block-wide hand of heaven, its
+	 * slam and dissolution, all in one 330-tick effect. pos = ground centre, target = horizontal
+	 * direction the fingers point. Rendered without distance fog.
+	 */
+	HEAVEN_HAND;
 
 	private static final FxType[] VALUES = values();
 

@@ -301,6 +301,159 @@ def gen_circle_ice():
     out_fx("circle_ice", glow, size, size)
 
 
+def gen_circle_heaven():
+    """512x512 sky formation of Thiên Đạo Chi Thủ: three ring bands, the eight trigrams, a 64-glyph
+    outer scripture ring, a 12-spoke 'heavenly wheel', nine orbit dots and a blazing central sun with
+    a sixteen-ray star. Drawn at 4x and downsampled; the client rotates it slowly 150 blocks up."""
+    size = 512
+    col = (255, 240, 200)
+    gold = (255, 216, 120)
+    img = circle_base(size, [(0.975, 0.995, 0.006), (0.905, 0.915, 0.006), (0.86, 0.865, 0.005),
+                             (0.66, 0.672, 0.006), (0.62, 0.625, 0.005), (0.34, 0.35, 0.006), (0.30, 0.304, 0.005)], col)
+    S = T.SS
+    d = ImageDraw.Draw(img)
+    c = size * S / 2
+    # Outer scripture ring: 64 glyphs between the two outermost rings.
+    glyph_ring(img, size, 0.945, 64, col, 3.2, 1.2)
+    # Eight trigrams (Càn, Đoài, Ly, Chấn, Tốn, Khảm, Cấn, Khôn) in the wide band.
+    R = c * 0.765
+    for i in range(8):
+        a = i * math.pi / 4 + math.pi / 8
+        pattern = [(1, 1, 1), (0, 1, 1), (1, 0, 1), (0, 0, 1), (1, 1, 0), (0, 1, 0), (1, 0, 0), (0, 0, 0)][i]
+        for k, solid in enumerate(pattern):
+            rr = R - (k - 1) * 11 * S
+            px = c + math.cos(a) * rr
+            py = c + math.sin(a) * rr
+            tx, ty = -math.sin(a), math.cos(a)
+            L = 24 * S
+            if solid:
+                d.line([(px - tx * L, py - ty * L), (px + tx * L, py + ty * L)], fill=col + (255,), width=4 * S)
+            else:
+                d.line([(px - tx * L, py - ty * L), (px - tx * L * 0.18, py - ty * L * 0.18)], fill=col + (255,), width=4 * S)
+                d.line([(px + tx * L * 0.18, py + ty * L * 0.18), (px + tx * L, py + ty * L)], fill=col + (255,), width=4 * S)
+        # small seal circle between trigrams
+        b = a + math.pi / 8
+        sx, sy = c + math.cos(b) * R, c + math.sin(b) * R
+        d.ellipse([sx - 9 * S, sy - 9 * S, sx + 9 * S, sy + 9 * S], outline=gold + (255,), width=2 * S)
+        glyph_stroke(d, sx, sy, 5 * S, i % 8, gold, 2 * S)
+    # Heavenly wheel: 12 spokes from the 0.62 ring to the 0.35 ring, alternating long/short, with
+    # a dodecagon connecting the spoke roots.
+    pts = []
+    for i in range(12):
+        a = i * math.pi / 6
+        r0, r1 = c * 0.35, c * 0.62 if i % 2 == 0 else c * 0.50
+        d.line([(c + math.cos(a) * r0, c + math.sin(a) * r0), (c + math.cos(a) * r1, c + math.sin(a) * r1)], fill=col + (255,), width=3 * S)
+        pts.append((c + math.cos(a) * c * 0.50, c + math.sin(a) * c * 0.50))
+    d.polygon(pts, outline=gold + (255,), width=2 * S)
+    # Two interlaced squares (the eight directions) inside the wheel.
+    for k in range(2):
+        sq = [(c + math.cos(math.pi / 4 * (2 * i + k)) * c * 0.34, c + math.sin(math.pi / 4 * (2 * i + k)) * c * 0.34) for i in range(4)]
+        d.polygon(sq, outline=col + (255,), width=3 * S)
+    # Nine orbit dots (Cửu Cung) on the 0.44 radius.
+    for i in range(9):
+        a = i * 2 * math.pi / 9 - math.pi / 2
+        x, y = c + math.cos(a) * c * 0.44, c + math.sin(a) * c * 0.44
+        d.ellipse([x - 5 * S, y - 5 * S, x + 5 * S, y + 5 * S], fill=WHITE + (255,))
+    # Central sun: sixteen-ray star over a bright disc, plus a thin ring.
+    star = T.star_points(size / 2, size / 2, size * 0.135, size * 0.06, 16)
+    d.polygon([(x * S, y * S) for x, y in star], fill=gold + (200,), outline=col + (255,), width=2 * S)
+    d.ellipse([c - c * 0.085, c - c * 0.085, c + c * 0.085, c + c * 0.085], fill=WHITE + (255,))
+    d.ellipse([c - c * 0.20, c - c * 0.20, c + c * 0.20, c + c * 0.20], outline=col + (255,), width=2 * S)
+    # Light column glow behind the centre so the array has a bright heart.
+    img.alpha_composite(T.radial(size, size, (255, 236, 190, 150), (255, 216, 120, 0), power=1.6, radius=size * 0.16))
+    glow = img.filter(ImageFilter.GaussianBlur(4 * S))
+    glow.alpha_composite(img)
+    out_fx("circle_heaven", glow, size, size)
+
+
+def gen_palm_print():
+    """256x256 print of the hand of heaven. Fingers point to +V (bottom of the image, which the client
+    maps to +Z – the direction the fingers of the hand model point), thumb on the left (−U/−X).
+    Dark, pressed-flat earth with a rim of shattered ground and molten golden seams; the additive
+    pass on the client reuses the same texture so the seams glow and then cool down."""
+    size = 256
+    S = T.SS
+    W = size * S
+    img = T.new(size, size)
+    shape = Image.new("L", (W, W), 0)
+    d = ImageDraw.Draw(shape)
+
+    def ell(cx, cy, rx, ry, rot=0.0, fill=255):
+        # rotated ellipse as a polygon
+        pts = []
+        for i in range(64):
+            a = i * 2 * math.pi / 64
+            x, y = rx * math.cos(a), ry * math.sin(a)
+            xr = x * math.cos(rot) - y * math.sin(rot)
+            yr = x * math.sin(rot) + y * math.cos(rot)
+            pts.append(((cx + xr) * S, (cy + yr) * S))
+        d.polygon(pts, fill=fill)
+
+    def capsule(x0, y0, x1, y1, r, fill=255):
+        d.line([(x0 * S, y0 * S), (x1 * S, y1 * S)], fill=fill, width=int(2 * r * S))
+        d.ellipse([(x0 - r) * S, (y0 - r) * S, (x0 + r) * S, (y0 + r) * S], fill=fill)
+        d.ellipse([(x1 - r) * S, (y1 - r) * S, (x1 + r) * S, (y1 + r) * S], fill=fill)
+
+    # Palm (slightly wider at the fingers), wrist at the top.
+    ell(128, 118, 58, 62)
+    ell(128, 92, 44, 40)
+    # Four fingers, fanned, pointing down (+V).
+    fingers = [(84, 150, 62, 232, 13), (112, 160, 104, 244, 14), (144, 160, 154, 240, 14), (172, 148, 194, 214, 12)]
+    for (x0, y0, x1, y1, r) in fingers:
+        capsule(x0, y0, x1, y1, r)
+    # Thumb: from the left edge of the palm, splayed forward.
+    capsule(78, 96, 30, 150, 15)
+    capsule(30, 150, 12, 180, 12)
+    shape = shape.filter(ImageFilter.GaussianBlur(1.5 * S))
+
+    import numpy as np
+    m = np.asarray(shape).astype(np.float32) / 255.0
+    n1 = np.asarray(T.noise_layer(size, size, 71, scale=6, octaves=4)).astype(np.float32) / 255.0
+    n2 = np.asarray(T.noise_layer(size, size, 72, scale=18, octaves=3)).astype(np.float32) / 255.0
+    # Distance-from-edge proxy: blur the mask heavily → 1 deep inside, ~0.5 at the edge.
+    deep = np.asarray(shape.filter(ImageFilter.GaussianBlur(10 * S))).astype(np.float32) / 255.0
+    inside = m > 0.5
+    # Pressed floor: dark, slightly mottled.
+    floor_a = np.clip(m * (0.78 + 0.2 * n1), 0, 1)
+    # Rim of shattered ground just outside the print.
+    rim = np.clip((0.5 - np.abs(m - 0.5)) * 2.0, 0, 1) * (0.6 + 0.4 * n2)
+    outer = np.clip((deep - 0.05) * 6.0, 0, 1) * (m < 0.5) * n2 * 0.7
+    # Molten seams: thin bright lines where the noise crosses a threshold, only inside.
+    seam = np.clip(1.0 - np.abs(n1 - 0.5) * 22.0, 0, 1) * inside
+    seam += np.clip(1.0 - np.abs(n2 - 0.55) * 30.0, 0, 1) * inside * 0.6
+    seam = np.clip(seam * (0.4 + 0.6 * deep), 0, 1)
+    rgb = np.zeros((W, W, 3), dtype=np.float32)
+    # base dark brown / charcoal
+    rgb[..., 0] = 28 + 30 * n1
+    rgb[..., 1] = 18 + 18 * n1
+    rgb[..., 2] = 12 + 10 * n1
+    a = np.clip(floor_a + rim * 0.7 + outer, 0, 1)
+    # Cracked rim is lighter earth.
+    rgb[..., 0] += rim * 90 + outer * 70
+    rgb[..., 1] += rim * 70 + outer * 55
+    rgb[..., 2] += rim * 45 + outer * 35
+    # Seams: molten gold.
+    rgb[..., 0] = rgb[..., 0] * (1 - seam) + 255 * seam
+    rgb[..., 1] = rgb[..., 1] * (1 - seam) + 205 * seam
+    rgb[..., 2] = rgb[..., 2] * (1 - seam) + 90 * seam
+    # Outline of the print glows too.
+    edge = np.clip(1.0 - np.abs(m - 0.5) * 6.0, 0, 1)
+    rgb[..., 0] = rgb[..., 0] * (1 - edge * 0.8) + 255 * edge * 0.8
+    rgb[..., 1] = rgb[..., 1] * (1 - edge * 0.8) + 220 * edge * 0.8
+    rgb[..., 2] = rgb[..., 2] * (1 - edge * 0.8) + 130 * edge * 0.8
+    a = np.clip(a + edge * 0.5 + seam * 0.5, 0, 1)
+    arr = np.zeros((W, W, 4), dtype=np.uint8)
+    arr[..., :3] = np.clip(rgb, 0, 255).astype(np.uint8)
+    arr[..., 3] = (a * 255).astype(np.uint8)
+    img = Image.fromarray(arr, "RGBA")
+    # Central seal pressed into the palm: a dao ring with a cross glyph.
+    d2 = ImageDraw.Draw(img)
+    c = 128 * S
+    d2.ellipse([c - 30 * S, 118 * S - 30 * S, c + 30 * S, 118 * S + 30 * S], outline=(255, 225, 140, 255), width=3 * S)
+    glyph_stroke(d2, c, 118 * S, 16 * S, 0, (255, 235, 170), 3 * S)
+    out_fx("palm_print", img, size, size)
+
+
 def gen_beam():
     # 64 wide (wraps around), 256 tall (scrolls). Streaks of energy.
     w, h = 64, 256
@@ -712,6 +865,7 @@ def main():
     os.makedirs(PART, exist_ok=True)
     gen_ring(); gen_glow_soft(); gen_sparkle()
     gen_circle_taiji(); gen_circle_runes(); gen_circle_thunder(); gen_circle_ice()
+    gen_circle_heaven(); gen_palm_print()
     gen_beam(); gen_beam_core(); gen_slash(); gen_wind_blade(); gen_hex_shield()
     gen_flame_column(); gen_crack(); gen_vortex(); gen_cloud(); gen_glyph_strip()
     gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette(); gen_scorch(); gen_frost_patch()

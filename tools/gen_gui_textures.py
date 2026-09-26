@@ -38,6 +38,7 @@ SKILL_ELEMENT = {
     "taiji_formation": "dao", "sword_flight": "sword", "frozen_domain": "ice", "thousand_swords": "sword",
     "purple_thunder_beam": "lightning", "devouring_vortex": "void", "nine_tribulations": "lightning",
     "heaven_sword": "dao", "vajra_palm": "dao", "wind_dragon": "wind", "golden_body": "dao", "thunder_dragon": "lightning",
+    "heaven_hand": "dao",
 }
 
 
@@ -379,6 +380,92 @@ def icon_heaven_sword():
     icon_finish(img, "heaven_sword")
 
 
+def icon_heaven_hand():
+    """A colossal palm descending on a domain: eight-trigram ring above, palm with fingers spread,
+    pressure lines below and a tiny ground ring at the bottom."""
+    col, col2 = ELEMENT["dao"]
+    img = icon_bg(col, col2)
+    # dark domain sky
+    img.alpha_composite(T.radial(32, 32, (40, 24, 60, 170), (10, 6, 20, 0), power=1.2, radius=15, center=(16, 12)))
+    # formation ring in the sky
+    T.ellipse_glow(img, (3, 2, 29, 8), (255, 235, 170), glow=1.2, fill_alpha=0)
+    for k in range(8):
+        a = k * math.pi / 4
+        x, y = 16 + 12.5 * math.cos(a), 5 + 2.6 * math.sin(a)
+        T.ellipse_glow(img, (x - 0.9, y - 0.9, x + 0.9, y + 0.9), WHITE, glow=0.8)
+    # palm (seen from below: broad, fingers spread downward)
+    palm = [(9, 10), (23, 10), (24, 18), (20, 21), (12, 21), (8, 18)]
+    T.polygon_glow(img, palm, (255, 226, 150), glow=1.8, outline=(255, 250, 220))
+    for (x0, y0, x1, y1, w) in [(11, 20, 9, 27, 2.6), (14, 21, 13.5, 29, 2.8), (17.5, 21, 18, 29.5, 2.8), (21, 20, 23, 27, 2.6), (8.5, 14, 4, 18, 2.4)]:
+        T.polyline_glow(img, [(x0, y0), (x1, y1)], (255, 232, 160), w, glow=1.2)
+    # dao seal on the palm
+    T.ellipse_glow(img, (13, 12.5, 19, 18.5), (255, 250, 230), glow=1.0, fill_alpha=0)
+    T.polyline_glow(img, [(16, 13), (16, 18)], WHITE, 1.2, glow=0.6)
+    T.polyline_glow(img, [(13.5, 15.5), (18.5, 15.5)], WHITE, 1.2, glow=0.6)
+    # pressure ring on the ground
+    T.ellipse_glow(img, (2, 27, 30, 31), (255, 215, 110), glow=1.4, fill_alpha=0)
+    icon_finish(img, "heaven_hand")
+
+
+def effect_icon(name, draw_fn):
+    """32x32 status-effect icon (textures/mob_effect/<name>.png): dark rounded plate + glowing symbol."""
+    img = T.new(32, 32)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([1 * S, 1 * S, 31 * S - 1, 31 * S - 1], radius=6 * S, fill=(14, 10, 24, 235))
+    draw_fn(img)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([1 * S, 1 * S, 31 * S - 1, 31 * S - 1], radius=6 * S, outline=(120, 100, 150, 200), width=S)
+    save(img, os.path.join(TEX, "mob_effect"), name, 32, 32)
+
+
+def effect_icons():
+    def frozen(img):
+        col = ELEMENT["ice"][0]
+        img.alpha_composite(T.radial(32, 32, col + (120,), col + (0,), power=1.3, radius=13))
+        for k in range(3):
+            a = k * math.pi / 3
+            dx, dy = 10 * math.cos(a), 10 * math.sin(a)
+            T.polyline_glow(img, [(16 - dx, 16 - dy), (16 + dx, 16 + dy)], WHITE, 1.8, glow=1.2)
+            for sgn in (-1, 1):
+                bx, by = 16 + sgn * dx * 0.55, 16 + sgn * dy * 0.55
+                for rot in (-0.6, 0.6):
+                    ex, ey = bx + sgn * 3.5 * math.cos(a + rot), by + sgn * 3.5 * math.sin(a + rot)
+                    T.polyline_glow(img, [(bx, by), (ex, ey)], col, 1.4, glow=0.8)
+
+    def qi_burn(img):
+        col, col2 = ELEMENT["fire"]
+        img.alpha_composite(T.radial(32, 32, col + (110,), col + (0,), power=1.3, radius=13, center=(16, 19)))
+        T.polygon_glow(img, [(16, 4), (22, 12), (24, 20), (20, 27), (12, 27), (8, 20), (11, 12)], col, glow=1.6)
+        T.polygon_glow(img, [(16, 11), (19.5, 17), (20, 22), (16, 26), (12, 22), (12.5, 17)], col2, glow=1.2)
+        T.polygon_glow(img, [(16, 16), (18, 20), (16, 24), (14, 20)], WHITE, glow=0.8)
+
+    def sword_intent(img):
+        col, col2 = ELEMENT["sword"]
+        img.alpha_composite(T.radial(32, 32, col + (110,), col + (0,), power=1.3, radius=13))
+        T.polygon_glow(img, [(15, 27), (16, 4), (17, 27)], col2, glow=1.8)
+        T.polyline_glow(img, [(10, 23), (22, 23)], (200, 235, 255), 2.0, glow=1.0)
+        T.polyline_glow(img, [(16, 23), (16, 29)], (110, 140, 190), 2.0, glow=0.6)
+        T.polygon_glow(img, T.star_points(16, 6, 4, 1, 4), WHITE, glow=1.4, fill_alpha=220)
+
+    def suppressed(img):
+        col, col2 = ELEMENT["dao"]
+        img.alpha_composite(T.radial(32, 32, (255, 216, 107, 120), (255, 216, 107, 0), power=1.3, radius=13, center=(16, 10)))
+        # small palm pressing down
+        T.polygon_glow(img, [(11, 6), (21, 6), (22, 12), (19, 14), (13, 14), (10, 12)], (255, 226, 150), glow=1.4)
+        for (x0, x1) in [(12, 11), (14.5, 14.5), (17.5, 17.5), (20, 21)]:
+            T.polyline_glow(img, [(x0, 13.5), (x1, 18.5)], (255, 232, 160), 2.0, glow=1.0)
+        # pressure chevrons
+        for y in (20, 24):
+            T.polyline_glow(img, [(9, y), (16, y + 3.5), (23, y)], col, 1.8, glow=1.0)
+        # crushed figure / ground line
+        T.polyline_glow(img, [(6, 29), (26, 29)], (200, 170, 110), 1.6, glow=0.8)
+
+    effect_icon("frozen", frozen)
+    effect_icon("qi_burn", qi_burn)
+    effect_icon("sword_intent", sword_intent)
+    effect_icon("suppressed", suppressed)
+
+
 # ------------------------------------------------------------------------ GUI atlases
 
 def gui_hud():
@@ -583,6 +670,7 @@ def main():
     icon_taiji_formation(); icon_sword_flight(); icon_frozen_domain(); icon_thousand_swords()
     icon_purple_thunder_beam(); icon_devouring_vortex(); icon_nine_tribulations(); icon_heaven_sword()
     icon_vajra_palm(); icon_wind_dragon(); icon_golden_body(); icon_thunder_dragon()
+    icon_heaven_hand(); effect_icons()
     item_pill("qi_pill", (80, 220, 200))
     item_pill("heaven_pill", (255, 215, 90))
     gui_hud(); gui_skill_book(); advancement_bg(); mod_icon()

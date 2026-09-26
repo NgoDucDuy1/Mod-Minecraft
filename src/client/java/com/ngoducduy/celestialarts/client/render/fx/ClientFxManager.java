@@ -90,6 +90,7 @@ public final class ClientFxManager {
 			case SCREEN_FLASH -> null; // handled by ScreenOverlay in spawn()
 			case AFTERIMAGE -> new AfterimageFx(d, w);
 			case GROUND_DECAL -> new GroundDecalFx(d, w);
+			case HEAVEN_HAND -> new HeavenHandFx(d, w);
 		};
 	}
 

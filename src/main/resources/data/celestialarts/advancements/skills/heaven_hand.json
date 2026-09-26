@@ -4,10 +4,10 @@
 			"item": "celestialarts:scroll_heaven_hand"
 		},
 		"title": {
-			"translate": "advancements.celestialarts.learn_all_skills.title"
+			"translate": "advancements.celestialarts.skills.heaven_hand.title"
 		},
 		"description": {
-			"translate": "advancements.celestialarts.learn_all_skills.description"
+			"translate": "advancements.celestialarts.skills.heaven_hand.description"
 		},
 		"frame": "challenge",
 		"show_toast": true,
@@ -24,8 +24,8 @@
 			"granted"
 		]
 	],
-	"parent": "celestialarts:learn_first_skill",
+	"parent": "celestialarts:realm/tribulation",
 	"rewards": {
-		"experience": 500
+		"experience": 150
 	}
 }

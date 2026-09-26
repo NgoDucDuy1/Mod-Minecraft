@@ -32,7 +32,7 @@ public abstract class LivingEntityMixin {
 	@Inject(method = "jump", at = @At("HEAD"), cancellable = true)
 	private void celestialarts$noJumpWhileFrozen(CallbackInfo ci) {
 		LivingEntity self = (LivingEntity) (Object) this;
-		if (self.hasStatusEffect(ModEffects.FROZEN)) {
+		if (self.hasStatusEffect(ModEffects.FROZEN) || self.hasStatusEffect(ModEffects.SUPPRESSED)) {
 			ci.cancel();
 		}
 	}

@@ -1,7 +1,7 @@
 # Celestial Arts – Tiên Đạo Thần Thông
 
 Mod **Fabric cho Minecraft 1.20.1** mang hệ thống tu tiên / thần thông phong cách donghua vào game:
-linh lực, cảnh giới, độ kiếp, 20 công pháp với **hiệu ứng hoàn toàn tự dựng** (không dùng particle hay
+linh lực, cảnh giới, độ kiếp, 21 công pháp với **hiệu ứng hoàn toàn tự dựng** (không dùng particle hay
 hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm thanh tự tổng hợp và giao diện chọn kỹ năng.
 
 > Mod ID: `celestialarts` · Minecraft `1.20.1` · Fabric Loader `≥ 0.15` · Fabric API `0.92.2+1.20.1` · Java 17
@@ -39,7 +39,7 @@ Mỗi lần đột phá, thân thể tu sĩ được tôi luyện (áp dụng b�
 
 Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và các hạt linh khí xoáy vào đan điền.
 
-### 20 công pháp
+### 21 công pháp
 | Công pháp | Hệ | Loại | Cảnh giới | Mô tả hiệu ứng |
 |---|---|---|---|---|
 | Kiếm Khí Trảm | Kiếm | Đạn | Luyện Khí | Vung kiếm tạo vòng cung slash, phóng lưỡi kiếm khí có model riêng bay xa và xuyên địch; từ Kim Đan phóng **3 lưỡi hình quạt** |
@@ -62,6 +62,7 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 | Cửu Thiên Lôi Kiếp | Lôi | Diện rộng | Hóa Thần | Gọi mây kiếp, 9 tia lôi lần lượt giáng xuống vùng nhắm |
 | Lôi Long Phá | Lôi | Đạn | Hóa Thần | Tụ lôi rồi phóng **lôi long** tím: đầu rồng model riêng, thân là dải sét vẽ theo vệt bay, tự săn địch, xuyên 3 mục tiêu, phân nhánh sang kẻ bên cạnh và nổ ở cuối đường |
 | Thiên Kiếm | Đạo | Tuyệt kỹ | Độ Kiếp | Thiên kiếm khổng lồ giáng từ trời, cột sáng vàng, vết nứt & sóng xung kích hủy diệt |
+| **Thiên Đạo Chi Thủ** | Đạo | Siêu tuyệt kỹ | Độ Kiếp | Mượn ý chí Thiên Đạo 16,5 giây: trận bát quái 460 khối mở trên trời, **bàn tay rộng 300 khối** (model khớp ngón, 3 đốt/ngón) từ từ hạ xuống **trấn áp** mọi sinh linh trong bán kính **220 khối** (hiệu ứng Trấn Áp: không nhảy, không bay, bị kéo xuống, nghiền dần), rồi giáng chưởng: tâm 40 khối gần như tử vong, sóng xung kích 6 khối/tick lan tới rìa trận, màn hình trắng xoá, rung camera, tiếng ầm đến trễ theo tốc độ âm thanh, dấu bàn tay 300 khối cháy trên mặt đất 2 phút. Người thi triển bất động, gần bất tử, không dùng được kỹ năng khác |
 
 ### Hiệu ứng client tự dựng
 * Hệ thống **FX** riêng (`render/fx`): 18 loại hiệu ứng thế giới (vòng xung kích, trận đồ, chùm tia, cột lửa,
@@ -84,7 +85,7 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
   9 bí tịch cảnh giới thấp (Luyện Khí / Trúc Cơ). Bí tịch cảnh giới cao chỉ tìm thấy trong **rương công trình**
   (stronghold, mansion, bastion, ancient city, end city…) – độ hiếm tăng theo cảnh giới yêu cầu.
 * **Thành tựu** riêng (tab *Tiên Lộ*): nhặt linh thạch, lĩnh ngộ công pháp đầu tiên, từng lần đột phá cảnh giới,
-  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 20 công pháp.
+  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 21 công pháp.
 
 ### Phím mặc định
 `R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `B` – đột phá. Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
@@ -92,6 +93,13 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 ---
 
 ## Nhật ký cập nhật
+
+### 1.3.8 – Thiên Đạo Chi Thủ (siêu tuyệt kỹ, bán kính 220 khối)
+- **Kỹ năng thứ 21 – Thiên Đạo Chi Thủ** (`heaven_hand`, hệ Đạo, Độ Kiếp, 520 linh lực, hồi 5 phút): không phải một đòn ném ra mà là một *nghi thức* 330 tick không thể huỷ – **Khai Thiên** (trận bát quái mở ở độ cao 150 khối, trời tối lại cho mọi người chơi trong trận), **Giáng Lâm** (bàn tay hạ dần theo đường cong `u^2.4` – chậm rồi nhanh dần, cột áp lực nối lòng bàn tay và mặt đất, bóng đen phủ dần, vòng phù văn quanh cổ tay, cánh tay ánh sáng nối lên trận), **Trấn Áp** (chưởng giáng: 60–220 sát thương Thiên tại tâm 40 khối + đẩy văng; vòng xung kích 6 khối/tick tới 220 khối, mỗi mục tiêu trúng đúng một lần 10–60 sát thương; **flash trắng, rung camera 45 tick, tiếng ầm tới trễ `d/17` tick** như âm thanh thật), **Quy Thiên** (tay tan thành ánh sáng bay lên, dấu bàn tay 300 khối cháy vàng 2 phút rồi nguội dần).
+- **Hiệu ứng trạng thái mới `Trấn Áp` (`suppressed`)**: không nhảy (mixin), −25 % tốc độ, −20 % tốc độ đánh, bị kéo xuống khi ở trên không (thắng elytra/levitation, tắt bay creative-fly của người chơi thường), không nhận sát thương rơi do bị ép xuống; cấp độ 0–3 theo khoảng cách tới tâm.
+- **Hạ tầng render tầm xa**: `FarLayer` bọc các RenderLayer (`additiveFar`, `translucentGlowFar`, `solidGlowFar`) đẩy fog ra vô cực trong lúc vẽ – bàn tay 300 khối và trận trên trời không bị sương mù nuốt; `ModPackets.sendFx(world, fx, range)` (520 khối) và `sendFxTo(player, fx)` gửi flash/darken theo từng người chơi (không suy giảm theo khoảng cách).
+- **Model `HeavenHandModel`** (lòng bàn tay 32×6×36, 4 ngón × 3 đốt, ngón cái 2 đốt, texture 256×128 vẽ thủ tục – ngọc vàng, vân đạo văn, khớp tối), tư thế ngón thay đổi theo pha (thả lỏng → dập phẳng → co lại khi tan). Texture mới: `circle_heaven` 512², `palm_print` 256², icon kỹ năng, biểu tượng hiệu ứng `mob_effect/*` 32² cho cả 4 hiệu ứng.
+- 4 âm thanh mới `heaven_hand_summon / pressure / slam / rumble` (bản thu thật CC0 + synth), gametest `heavenHandSuppressesAndSlams` chạy ở batch riêng, autotest chụp 8 khung theo pha.
 
 ### 1.3.7 – Lớp âm thanh phản hồi & mastering
 - **Lớp âm thanh phản hồi mới (feedback layer)** – 9 sự kiện âm thanh mới: `cast_qi` (mọi kỹ năng thi triển thành công đều mở đầu bằng một tiếng linh khí bộc phát ngắn, phát tập trung tại `SkillManager`), `hit_slash` / `hit_blunt` / `hit_fire` / `hit_ice` / `hit_shock` (tiếng đòn trúng thân theo từng hệ – trước đây phần lớn kỹ năng trúng mục tiêu mà **không có tiếng va chạm**, chỉ phát lại tiếng vung), `riser` (tiếng dâng 2 giây trước Cửu Thiên Lôi Kiếp, Thiên Kiếm, Vạn Kiếm, Tử Lôi Quang, đột phá), `sub_drop` (tiếng nện siêu trầm điện ảnh cho những cú va chạm lớn nhất: Thiên Kiếm, Hỏa Liên Hoa nổ, Hư Không sụp, Địa Liệt, đột phá) và `dragon_flyby` (phong long lướt qua).
@@ -218,7 +226,7 @@ Các bài test hiện có (tất cả đều **pass** trên GitHub Actions):
 
 | Test | Kiểm tra |
 |---|---|
-| `castEverySkill` | 16 công pháp đều thi triển được ở cảnh giới Độ Kiếp, không ném exception |
+| `castEverySkill` | 21 công pháp đều thi triển được ở cảnh giới Độ Kiếp, không ném exception |
 | `projectileSkillsSpawnEntities` | Kiếm khí / băng tiễn / hoả liên / vạn kiếm / thiên kiếm sinh đúng entity |
 | `swordFlightMountsPlayer` | Ngự kiếm phi hành: người chơi cưỡi kiếm, bấm lần nữa thì hạ xuống |
 | `channelSkillStopsOnSecondPress` | Kỹ năng niệm (tử lôi quang trụ) chặn kỹ năng khác và dừng khi bấm lại |

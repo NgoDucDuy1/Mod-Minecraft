@@ -52,6 +52,12 @@ public final class ModSounds {
 	public static final SoundEvent RISER = register("skill.riser");
 	public static final SoundEvent SUB_DROP = register("skill.sub_drop");
 	public static final SoundEvent DRAGON_FLYBY = register("skill.dragon_flyby");
+	// 1.3.8 Thiên Đạo Chi Thủ: the formation opening, the pressure of the descending palm, the slam
+	// (heard at once) and the deep rumble that reaches distant viewers at the speed of sound.
+	public static final SoundEvent HEAVEN_HAND_SUMMON = register("skill.heaven_hand_summon");
+	public static final SoundEvent HEAVEN_HAND_PRESSURE = register("skill.heaven_hand_pressure");
+	public static final SoundEvent HEAVEN_HAND_SLAM = register("skill.heaven_hand_slam");
+	public static final SoundEvent HEAVEN_HAND_RUMBLE = register("skill.heaven_hand_rumble");
 
 	private ModSounds() {
 	}

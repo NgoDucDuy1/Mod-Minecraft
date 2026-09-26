@@ -6,6 +6,7 @@ import com.ngoducduy.celestialarts.skill.skills.EarthShatterSkill;
 import com.ngoducduy.celestialarts.skill.skills.FireLotusSkill;
 import com.ngoducduy.celestialarts.skill.skills.FlameClawSkill;
 import com.ngoducduy.celestialarts.skill.skills.FrozenDomainSkill;
+import com.ngoducduy.celestialarts.skill.skills.HeavenHandSkill;
 import com.ngoducduy.celestialarts.skill.skills.HeavenSwordSkill;
 import com.ngoducduy.celestialarts.skill.skills.IceArrowsSkill;
 import com.ngoducduy.celestialarts.skill.skills.LightningStepSkill;
@@ -61,6 +62,8 @@ public final class SkillRegistry {
 	public static final ThunderDragonSkill THUNDER_DRAGON = register("thunder_dragon", new ThunderDragonSkill());
 	// Realm 6 – Độ Kiếp
 	public static final HeavenSwordSkill HEAVEN_SWORD = register("heaven_sword", new HeavenSwordSkill());
+	/** The super-ultimate: a 300-block hand of heaven pressing down a 220-block domain. */
+	public static final HeavenHandSkill HEAVEN_HAND = register("heaven_hand", new HeavenHandSkill());
 
 	private SkillRegistry() {
 	}

@@ -28,6 +28,12 @@ public final class FxTextures {
 	public static final Identifier SPARKLE = fx("sparkle");
 	public static final Identifier SCORCH = fx("scorch");
 	public static final Identifier FROST_PATCH = fx("frost_patch");
+	/** 512x512 sky formation of Thiên Đạo Chi Thủ (eight trigrams, three rings, 64 glyphs). */
+	public static final Identifier CIRCLE_HEAVEN = fx("circle_heaven");
+	/** 256x256 golden palm print seared into the ground after the slam. */
+	public static final Identifier PALM_PRINT = fx("palm_print");
+	/** 256x128 skin of the giant hand model (entity texture folder, used by the FX renderer). */
+	public static final Identifier HEAVEN_HAND = new Identifier(CelestialArts.MOD_ID, "textures/entity/heaven_hand.png");
 
 	private FxTextures() {
 	}

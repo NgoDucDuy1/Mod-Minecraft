@@ -117,6 +117,52 @@ public abstract class ModRenderLayers extends RenderLayer {
 		return ADDITIVE.apply(texture);
 	}
 
+	/**
+	 * Wraps a layer and pushes the fog planes out to infinity while it draws. The core shaders read
+	 * {@code FogStart/FogEnd} from {@link RenderSystem} when the program is bound (i.e. at draw time,
+	 * inside this layer's start/end actions), so world-scale effects such as the sky formation and the
+	 * 300-block hand of Thiên Đạo Chi Thủ stay visible instead of dissolving into the distance fog
+	 * 150-250 blocks away. Depth testing against terrain is untouched.
+	 */
+	private static final class FarLayer extends RenderLayer {
+		private static float savedStart, savedEnd;
+
+		FarLayer(String name, RenderLayer inner) {
+			super(name, inner.getVertexFormat(), inner.getDrawMode(), inner.getExpectedBufferSize(), inner.hasCrumbling(), true,
+					() -> {
+						inner.startDrawing();
+						savedStart = RenderSystem.getShaderFogStart();
+						savedEnd = RenderSystem.getShaderFogEnd();
+						RenderSystem.setShaderFogStart(1.0E6F);
+						RenderSystem.setShaderFogEnd(1.0E7F);
+					},
+					() -> {
+						RenderSystem.setShaderFogStart(savedStart);
+						RenderSystem.setShaderFogEnd(savedEnd);
+						inner.endDrawing();
+					});
+		}
+	}
+
+	private static final Function<Identifier, RenderLayer> ADDITIVE_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_additive_far", additive(texture)));
+	private static final Function<Identifier, RenderLayer> TRANSLUCENT_GLOW_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_translucent_glow_far", translucentGlow(texture)));
+	private static final Function<Identifier, RenderLayer> SOLID_GLOW_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_solid_glow_far", solidGlow(texture)));
+
+	/** {@link #additive(Identifier)} without distance fog (world-scale effects). */
+	public static RenderLayer additiveFar(Identifier texture) {
+		return ADDITIVE_FAR.apply(texture);
+	}
+
+	/** {@link #translucentGlow(Identifier)} without distance fog. */
+	public static RenderLayer translucentGlowFar(Identifier texture) {
+		return TRANSLUCENT_GLOW_FAR.apply(texture);
+	}
+
+	/** {@link #solidGlow(Identifier)} without distance fog. */
+	public static RenderLayer solidGlowFar(Identifier texture) {
+		return SOLID_GLOW_FAR.apply(texture);
+	}
+
 	public static RenderLayer translucentGlow(Identifier texture) {
 		return TRANSLUCENT_GLOW.apply(texture);
 	}
@@ -174,6 +220,16 @@ public abstract class ModRenderLayers extends RenderLayer {
 				Identifier texture = (Identifier) field.get(null);
 				map.put(additive(texture), new BufferBuilder(256));
 			} catch (IllegalAccessException ignored) {
+			}
+		}
+		// Fog-less variants, same ordering: solid, translucent, additive.
+		for (Function<Identifier, RenderLayer> kind : java.util.List.of(SOLID_GLOW_FAR, TRANSLUCENT_GLOW_FAR, ADDITIVE_FAR)) {
+			for (Field field : FxTextures.class.getFields()) {
+				if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
+				try {
+					map.put(kind.apply((Identifier) field.get(null)), new BufferBuilder(256));
+				} catch (IllegalAccessException ignored) {
+				}
 			}
 		}
 		map.put(lightning(), new BufferBuilder(256));

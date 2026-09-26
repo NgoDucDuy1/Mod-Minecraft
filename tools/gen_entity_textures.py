@@ -259,6 +259,87 @@ def heaven_sword():
     t.save("heaven_sword")
 
 
+def heaven_hand():
+    """256x128 skin for HeavenHandModel (Thiên Đạo Chi Thủ): translucent golden jade with darker
+    joints, bright dao seams and a scripture seal in the palm. The model is drawn in world
+    orientation, so the 'top' UV region (-Y) is the palm surface that faces the ground."""
+    t = Tex(256, 128)
+    base = (236, 196, 118)
+    deep = (170, 118, 52)
+    hot = (255, 246, 214)
+    seam = (255, 232, 160)
+
+    def jade(fx, fy, seed):
+        n = hash_noise(int(fx * 40), int(fy * 40), seed) * 0.35 + hash_noise(int(fx * 9), int(fy * 9), seed + 3) * 0.65
+        return mix(mix(base, deep, 0.35), mix(base, hot, 0.25), n)
+
+    def palm(face, fx, fy):
+        c = jade(fx, fy, 1)
+        if face == "top":  # palm surface (-Y): three palm lines + central seal + rim
+            # rim darkening
+            rim = min(fx, 1 - fx, fy, 1 - fy)
+            c = mix(deep, c, min(1.0, rim * 9))
+            # lines of the palm (arcs)
+            for (cx, cy, r, w) in [(0.05, 0.2, 0.62, 0.02), (0.1, -0.05, 0.85, 0.018), (0.9, 0.35, 0.55, 0.016)]:
+                d = abs(math.hypot(fx - cx, fy - cy) - r)
+                if d < w:
+                    c = mix(seam, c, d / w)
+            # seal: ring + cross glyph in the centre
+            d = math.hypot((fx - 0.5) * 1.1, fy - 0.5)
+            if abs(d - 0.22) < 0.014 or abs(d - 0.30) < 0.008:
+                c = hot
+            if d < 0.18 and (abs(fx - 0.5) < 0.012 or abs(fy - 0.5) < 0.012 or abs(d - 0.10) < 0.01):
+                c = hot
+            # scripture dots around the seal
+            a = math.atan2(fy - 0.5, (fx - 0.5) * 1.1)
+            if abs(d - 0.26) < 0.012 and (int((a + math.pi) / (2 * math.pi) * 16) % 2 == 0):
+                c = seam
+            return with_a(c, 255)
+        if face == "bottom":  # back of the hand: tendon ridges running towards the fingers
+            ridge = 0.5 + 0.5 * math.cos((fx - 0.5) * 4 * 2 * math.pi)
+            c = mix(c, hot, ridge * 0.18 * fy)
+            c = mix(c, deep, (1 - fy) * 0.25)
+            return with_a(c, 255)
+        # side walls: darker with a bright seam line halfway
+        c = mix(c, deep, 0.35)
+        if abs(fy - 0.5) < 0.09:
+            c = mix(c, seam, 0.6)
+        return with_a(c, 255)
+
+    def finger(seed, last=False):
+        def p(face, fx, fy):
+            c = jade(fx, fy, seed)
+            if face in ("top", "bottom"):
+                # joints at both ends, bright nail seam on the tip segment (bottom = back of finger)
+                j = min(fy, 1 - fy)
+                c = mix(deep, c, min(1.0, j * 7))
+                if face == "top":
+                    # pad: slightly brighter centre line
+                    c = mix(c, hot, math.exp(-((fx - 0.5) / 0.28) ** 2) * 0.25)
+                if last and face == "bottom" and fy > 0.72:
+                    c = mix(c, hot, 0.55)
+            elif face in ("left", "right"):
+                j = min(fx, 1 - fx)
+                c = mix(deep, c, min(1.0, j * 7))
+                if abs(fy - 0.5) < 0.12:
+                    c = mix(c, seam, 0.5)
+            else:
+                c = mix(c, deep, 0.4)
+            return with_a(c, 255)
+        return p
+
+    t.cuboid(0, 0, 32, 6, 36, palm)
+    # (u, v, w, h, d, seed, last) – must match HeavenHandModel.getTexturedModelData()
+    segs = [
+        (0, 44, 7, 5, 14, 11, False), (44, 44, 7, 5, 15, 12, False), (90, 44, 7, 5, 14, 13, False), (134, 44, 6, 5, 11, 14, False), (170, 44, 7, 6, 12, 15, False),
+        (0, 66, 7, 5, 12, 21, False), (40, 66, 7, 5, 13, 22, False), (82, 66, 7, 5, 12, 23, False), (122, 66, 6, 5, 9, 24, False), (154, 66, 7, 6, 9, 25, True),
+        (0, 86, 7, 5, 8, 31, True), (32, 86, 7, 5, 9, 32, True), (66, 86, 7, 5, 8, 33, True), (98, 86, 6, 5, 7, 34, True),
+    ]
+    for (u, v, w, h, d, seed, last) in segs:
+        t.cuboid(u, v, w, h, d, finger(seed, last))
+    t.save("heaven_hand")
+
+
 def dragon_head(name, scale_dark, scale_light, belly, horn, eye, glow):
     """Eastern dragon head for DragonHeadModel (64x32): scales with a bright ridge, pale
     jaw/belly plates, ivory horns, glowing eyes and translucent fins."""
@@ -338,6 +419,7 @@ def thunder_dragon():
 
 def main():
     sword_qi(); ice_shard(); fire_lotus(); spirit_sword(); flying_sword(); rock_spike(); heaven_sword()
+    heaven_hand()
     wind_dragon(); thunder_dragon()
 
 

@@ -305,6 +305,10 @@ public final class CelestialAutoTest {
 
 	private static void castSlot(int slot, Skill skill) {
 		LOG.info("[AutoTest] casting {} from slot {}", skill.getId(), slot);
+		if (skill == SkillRegistry.HEAVEN_HAND) {
+			castHeavenHand(slot);
+			return;
+		}
 		boolean fp = FIRST_PERSON_SHOTS.contains(skill.getId().getPath());
 		submitAndWait(c -> {
 			// Deterministic aim: look along +Z, slightly down, so projectiles fly away from the camera.
@@ -368,6 +372,50 @@ public final class CelestialAutoTest {
 		// Let long-lived effects (formations, orbiting swords, domes) fade before the next skill so each
 		// screenshot shows one skill only. Capped so a stuck effect cannot stall the run.
 		waitFor("effects of " + skill.getId().getPath() + " to end", c -> ClientFxManager.count() == 0 && !modEntitiesPresent(c), Duration.ofSeconds(12), true);
+	}
+
+	/**
+	 * Thiên Đạo Chi Thủ is a 16.5-second world-scale ritual that cannot be released: the camera follows
+	 * its phases (formation in the sky, descent, impact, shock ring, dissolution / palm print) with the
+	 * pitch adjusted per phase, then waits for the cast to finish so the next skill is not locked out.
+	 */
+	private static void castHeavenHand(int slot) {
+		submitAndWait(c -> {
+			c.player.setYaw(0.0F);
+			c.player.setHeadYaw(0.0F);
+			c.player.setBodyYaw(0.0F);
+			c.player.setPitch(0.0F);
+			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+			ClientPackets.sendCast(slot);
+			return null;
+		});
+		int elapsed = 0;
+		int[][] shots = {{55, -62}, {150, -48}, {205, -32}, {236, -12}, {249, -4}, {262, -6}, {300, -22}, {332, -8}};
+		String[] names = {"skill_heaven_hand_1_formation", "skill_heaven_hand_2_descent", "skill_heaven_hand_3_approach", "skill_heaven_hand_4_impact",
+				"skill_heaven_hand", "skill_heaven_hand_6_shock_ring", "skill_heaven_hand_7_dissolve", "skill_heaven_hand_8_palm_print"};
+		for (int i = 0; i < shots.length; i++) {
+			final float pitch = shots[i][1];
+			waitTicks(Math.max(1, shots[i][0] - 2 - elapsed));
+			elapsed = shots[i][0] - 2;
+			submitAndWait(c -> {
+				c.player.setPitch(pitch);
+				c.player.prevPitch = pitch;
+				return null;
+			});
+			waitTicks(2);
+			elapsed += 2;
+			screenshot(names[i], false);
+		}
+		// Let the ritual end (330 ticks + packet slack), then drop the two-minute palm print so it does
+		// not leak into the following screenshots.
+		waitTicks(Math.max(5, 352 - elapsed));
+		submitAndWait(c -> {
+			c.player.setPitch(4.0F);
+			c.player.prevPitch = 4.0F;
+			ClientFxManager.clear();
+			return null;
+		});
+		waitTicks(5);
 	}
 
 	private static boolean modEntitiesPresent(MinecraftClient c) {
