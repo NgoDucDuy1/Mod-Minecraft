@@ -15,6 +15,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -58,7 +59,8 @@ public class HerbBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPES[state.get(AGE)].offset(state.getModelOffset(world, pos));
+		Vec3d off = state.getModelOffset(world, pos);
+		return SHAPES[state.get(AGE)].offset(off.x, off.y, off.z);
 	}
 
 	@Override

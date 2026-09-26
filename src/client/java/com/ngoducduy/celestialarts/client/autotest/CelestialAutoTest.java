@@ -1,6 +1,9 @@
 package com.ngoducduy.celestialarts.client.autotest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.block.HerbBlock;
+import com.ngoducduy.celestialarts.alchemy.Herbs;
+import com.ngoducduy.celestialarts.alchemy.Herb;
 import com.ngoducduy.celestialarts.client.ClientPackets;
 import com.ngoducduy.celestialarts.client.gui.CultivationScreen;
 import com.ngoducduy.celestialarts.client.gui.SkillBookScreen;
@@ -31,6 +34,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -263,6 +267,7 @@ public final class CelestialAutoTest {
 		});
 
 		cultivationSequence();
+		herbGarden();
 
 		// Breakthrough packet at the very top of cultivation: the server must refuse gracefully, no crash.
 		command("celestial realm 6");
@@ -542,6 +547,58 @@ public final class CelestialAutoTest {
 			ClientFxManager.clear();
 			return null;
 		});
+		waitTicks(10);
+	}
+
+	/**
+	 * 1.5.0 alchemy, part 1: a bed of linh dược. One mature specimen of every species is set out
+	 * in a grid on the flat world (grass, so only the soil-rooting species survive – the rest
+	 * are placed on the ground they need) and photographed from a low front angle.
+	 */
+	private static void herbGarden() {
+		Vec3d home = submitAndWait(c -> Objects.requireNonNull(c.player).getPos());
+		int bx = (int) Math.floor(home.x) + 30;
+		int by = (int) Math.floor(home.y);
+		int bz = (int) Math.floor(home.z) + 30;
+		List<Herb> herbs = Herbs.all();
+		int cols = 13;
+		for (int i = 0; i < herbs.size(); i++) {
+			Herb herb = herbs.get(i);
+			int x = bx + (i % cols) * 2;
+			int z = bz + (i / cols) * 2;
+			String ground = switch (herb.habitat().getGround()) {
+				case SOIL, SOIL_OR_STONE, SOIL_OR_SNOW, SAND_OR_SOIL -> "minecraft:grass_block";
+				case STONE -> "minecraft:stone";
+				case NETHER -> "minecraft:crimson_nylium";
+				case END -> "minecraft:end_stone";
+			};
+			command(String.format(Locale.ROOT, "setblock %d %d %d %s", x, by - 1, z, ground));
+			command(String.format(Locale.ROOT, "setblock %d %d %d celestialarts:%s[age=2]", x, by, z, herb.blockKey()));
+		}
+		waitTicks(10);
+		int placed = submitAndWait(c -> {
+			int n = 0;
+			for (int i = 0; i < herbs.size(); i++) {
+				BlockPos pos = new BlockPos(bx + (i % cols) * 2, by, bz + (i / cols) * 2);
+				if (c.world.getBlockState(pos).getBlock() instanceof HerbBlock) n++;
+			}
+			return n;
+		});
+		check(placed == herbs.size(), "all " + herbs.size() + " herb species placed and survived (" + placed + ")");
+		// Camera in front of the bed, low and slightly above, looking along +Z over the rows.
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 18", bx + cols - 1.0, by + 2.2, bz - 5.5));
+		submitAndWait(c -> {
+			c.inGameHud.getChatHud().clear(false);
+			c.options.setPerspective(Perspective.FIRST_PERSON);
+			return null;
+		});
+		waitTicks(40);
+		screenshot("14_herb_garden");
+		// Close-up of the rare (grade 4–5) row corner.
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 35 22", bx + 2.0, by + 1.6, bz - 2.5));
+		waitTicks(20);
+		screenshot("15_herb_closeup");
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z));
 		waitTicks(10);
 	}
 
