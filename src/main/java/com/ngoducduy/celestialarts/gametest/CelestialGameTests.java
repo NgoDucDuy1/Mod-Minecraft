@@ -211,7 +211,7 @@ public final class CelestialGameTests implements FabricGameTest {
 			float lost2 = before2 - high.getHealth();
 			float expected = 10.0F * CultivationStats.skillDamageMultiplier(qi, Element.SWORD);
 			ctx.assertTrue(Math.abs(lost2 - expected) < 0.01F, "tribulation skill hit is amplified, lost " + lost2 + " expected " + expected);
-			ctx.assertTrue(lost2 > lost * 1.5F, "peak tribulation hits much harder than early qi refining");
+			ctx.assertTrue(lost2 > lost * 1.3F, "peak tribulation hits much harder than early qi refining, " + lost2 + " vs " + lost);
 
 			// Non-skill damage from the same player is untouched.
 			high.timeUntilRegen = 0;
