@@ -27,7 +27,8 @@ import net.minecraft.world.WorldView;
  * 2 mature); only a mature plant yields more than one herb. Growth is a random tick roll whose
  * odds scale with the local spirit-qi density, so herb gardens do best on a spirit vein.
  * Bone meal (and, later, alchemists' qi) advances a stage. Each species roots only on the ground
- * of its habitat – see {@link Herb.Ground}.
+ * of its habitat – see {@link Herb.Ground}; Nether and End species must be farmed on nylium /
+ * end stone brought home.
  */
 public class HerbBlock extends PlantBlock implements Fertilizable {
 	public static final int MAX_AGE = 2;
@@ -81,8 +82,8 @@ public class HerbBlock extends PlantBlock implements Fertilizable {
 			case SAND_OR_SOIL -> soil || floor.isIn(BlockTags.SAND) || floor.isIn(BlockTags.TERRACOTTA) || floor.isOf(Blocks.SANDSTONE) || floor.isOf(Blocks.RED_SANDSTONE);
 			case STONE -> stone;
 			case NETHER -> floor.isIn(BlockTags.NYLIUM) || floor.isIn(BlockTags.BASE_STONE_NETHER) || floor.isOf(Blocks.SOUL_SOIL)
-					|| floor.isOf(Blocks.SOUL_SAND) || floor.isOf(Blocks.MAGMA_BLOCK) || floor.isIn(BlockTags.DIRT);
-			case END -> floor.isOf(Blocks.END_STONE) || floor.isIn(BlockTags.DIRT) || floor.isOf(Blocks.OBSIDIAN);
+					|| floor.isOf(Blocks.SOUL_SAND) || floor.isOf(Blocks.MAGMA_BLOCK);
+			case END -> floor.isOf(Blocks.END_STONE) || floor.isOf(Blocks.OBSIDIAN) || floor.isOf(Blocks.CRYING_OBSIDIAN);
 		};
 	}
 
