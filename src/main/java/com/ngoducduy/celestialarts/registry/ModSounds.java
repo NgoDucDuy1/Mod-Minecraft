@@ -7,8 +7,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 /**
- * Custom sound events. The .ogg files are procedurally designed (see tools/gen_sounds.py)
- * and layered with vanilla sounds in sounds.json.
+ * Custom sound events. Every .ogg is synthesised from physical ingredients (filtered noise,
+ * impacts, modal metal, electric arcs...) by tools/gen_sounds.py; frequently played events have
+ * several random variations listed in sounds.json.
  */
 public final class ModSounds {
 	public static final SoundEvent SWORD_QI = register("skill.sword_qi");
@@ -33,6 +34,11 @@ public final class ModSounds {
 	public static final SoundEvent HEAVEN_SWORD_FALL = register("skill.heaven_sword_fall");
 	public static final SoundEvent HEAVEN_SWORD_IMPACT = register("skill.heaven_sword_impact");
 	public static final SoundEvent SWORD_FLIGHT = register("skill.sword_flight");
+	public static final SoundEvent PALM_STRIKE = register("skill.palm_strike");
+	public static final SoundEvent GOLDEN_BODY = register("skill.golden_body");
+	public static final SoundEvent DRAGON_ROAR = register("skill.dragon_roar");
+	public static final SoundEvent VOID_COLLAPSE = register("skill.void_collapse");
+	public static final SoundEvent FREEZE_FIELD = register("skill.freeze_field");
 	public static final SoundEvent LEARN_SKILL = register("item.learn_skill");
 	public static final SoundEvent SPIRIT_STONE = register("item.spirit_stone");
 

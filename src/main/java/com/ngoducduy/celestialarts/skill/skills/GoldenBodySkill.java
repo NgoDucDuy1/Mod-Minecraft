@@ -57,8 +57,7 @@ public class GoldenBodySkill extends Skill {
 				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, DURATION, 0, false, false, true));
 				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, DURATION, 0, false, false, false));
 				SkillFx.goldenLight(world, caster.getPos().add(0, 1, 0), 40, 1.4);
-				world.playSound(null, caster.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 1.2f, 0.9f);
-				world.playSound(null, caster.getBlockPos(), ModSounds.BREAKTHROUGH, SoundCategory.PLAYERS, 0.5f, 1.5f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.GOLDEN_BODY, SoundCategory.PLAYERS, 1.3f, 1.0f);
 			}
 			if (age % 4 == 0) {
 				Vec3d p = caster.getPos().add(world.random.nextGaussian() * 0.5, world.random.nextDouble() * 1.8, world.random.nextGaussian() * 0.5);
@@ -78,7 +77,7 @@ public class GoldenBodySkill extends Skill {
 		protected void onEnd(boolean cancelled) {
 			caster.removeStatusEffect(StatusEffects.GLOWING);
 			SkillFx.goldenLight(world, caster.getPos().add(0, 1, 0), 20, 1.0);
-			world.playSound(null, caster.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 0.7f, 1.4f);
+			world.playSound(null, caster.getBlockPos(), ModSounds.SHIELD_HIT, SoundCategory.PLAYERS, 0.7f, 0.8f);
 		}
 	}
 }

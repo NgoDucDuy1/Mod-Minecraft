@@ -72,7 +72,8 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
   phong long (phễu lốc + đầu rồng) và lôi long (đầu rồng + thân sét theo lịch sử vị trí).
 * Rung camera theo cường độ, HUD (thanh linh lực, thanh tu vi, 6 ô kỹ năng với hồi chiêu), màn hình
   **Đạo Thư** để gán kỹ năng vào ô.
-* 24 âm thanh `.ogg` được tổng hợp riêng (không lấy từ vanilla).
+* 29 sự kiện âm thanh / 43 file `.ogg` được tổng hợp riêng từ "vật liệu" vật lý (không khí, va đập, kim loại, hồ quang điện,
+  đất đá, chiêng) – không lấy từ vanilla; các âm hay lặp có 2–3 biến thể ngẫu nhiên.
 * Mọi texture đều ≥ 32×32 (item 32², icon kỹ năng 32², trận đồ 256², thực thể tới 128²).
 
 ### Vật phẩm & lệnh
@@ -91,6 +92,21 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 ---
 
 ## Nhật ký cập nhật
+
+### 1.3.5 – Làm lại toàn bộ âm thanh
+* **Tất cả 24 âm thanh cũ bị thay** – bản cũ dựng từ các sóng sin tắt dần nên cái gì cũng nghe như chuông. Bộ mới trong
+  `tools/gen_sounds.py` tổng hợp từ thành phần vật lý: nhiễu lọc cộng hưởng quét tần (tiếng rít gió), va đập (sub-bass + tiếng
+  nổ + thân cộng hưởng + bão hòa), kim loại modal ngắn (tiếng "keng" lưỡi kiếm), Karplus-Strong (đàn tranh), hồ quang điện
+  (răng cưa/vuông ngắt quãng + tia lách tách), đất đá (nhiễu nâu + tiếng nứt cộng hưởng thấp + sỏi), chiêng chùa (chỉ dùng
+  cho trận pháp/đột phá), reverb Schroeder, nén bus, cắt đuôi im lặng.
+* Mỗi kỹ năng có âm đúng chất: kiếm khí = xé gió + keng thép; hỏa = gầm lửa rối + lách tách; băng = tinh thể lớn dần + nứt;
+  lôi = tiếng nổ tức thời + xé + ầm kéo dài; phong = rít gió cộng hưởng; thổ = rung nền + đá nứt; hư không = hút ngược +
+  drone vực sâu; khiên = "vwoom" khóa lại; đột phá = dồn nén → va đập → chiêng nở → dư âm.
+* **5 sự kiện mới** gắn cho kỹ năng trước đây phải mượn âm khác: `palm_strike` (Kim Cang Chưởng), `golden_body` (Kim Thân),
+  `dragon_roar` (Lôi Long / Phong Long – tiếng gầm formant thật), `void_collapse` (Thôn Phệ Vực nổ sập), `freeze_field`
+  (Băng Phong Vực). Có phụ đề vi/en.
+* Âm hay lặp (kiếm khí, phóng kiếm, lửa, gió, sét, địa chấn, băng vỡ, khiên đỡ, chưởng, long ngâm) có 2–3 biến thể ngẫu nhiên.
+* Script có `--analyse` in RMS, trọng tâm phổ (A-weighted), tỉ lệ năng lượng theo dải và độ phẳng phổ để kiểm tra cân bằng.
 
 ### 1.3.4 – Vạn Kiếm Quy Tông diện rộng
 * Theo góp ý: **72 phi kiếm** (6 hàng × 12), giãn cách >1 ô, bán kính 3 → 7,5 ô và cao 1,2 → 5,7 ô sau lưng, xòe ±85° – một
@@ -226,7 +242,7 @@ src/client/java/com/ngoducduy/celestialarts/client
 ├── gui/           SkillHud, SkillBookScreen
 └── mixin/         Camera (rung), BipedEntityModel (đứng trên kiếm), ParticleManager (sheet riêng)
 
-tools/  gen_fx_textures.py · gen_entity_textures.py · gen_gui_textures.py · gen_sounds.py (Pillow, numpy, soundfile)
+tools/  gen_fx_textures.py · gen_entity_textures.py · gen_gui_textures.py · gen_sounds.py (Pillow, numpy, scipy, soundfile)
 ```
 
 Tất cả texture và âm thanh được sinh bằng các script trong `tools/`, có thể chỉnh sửa và chạy lại bất cứ lúc nào.

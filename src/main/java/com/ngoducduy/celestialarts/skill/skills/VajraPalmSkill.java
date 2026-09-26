@@ -51,8 +51,7 @@ public class VajraPalmSkill extends Skill {
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, palm.add(look.multiply(0.6)), GOLD, 2.2f, 7).withTarget(look));
 		SkillFx.cone(ctx.world(), ModParticles.GOLDEN_LIGHT, palm, look, 30, 16, 0.5);
 		SkillFx.windGust(ctx.world(), palm, look, 12, 0.6);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.FORMATION, SoundCategory.PLAYERS, 0.8f, 1.6f);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 0.7f, 1.5f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.PALM_STRIKE, SoundCategory.PLAYERS, 1.3f, 1.0f);
 
 		boolean hitAny = false;
 		for (LivingEntity target : EntityUtil.inCone(ctx.world(), player, origin, look, RANGE, HALF_ANGLE)) {
@@ -68,7 +67,7 @@ public class VajraPalmSkill extends Skill {
 				if (!ctx.world().getBlockState(net.minecraft.util.math.BlockPos.ofFloored(behind)).getCollisionShape(ctx.world(), net.minecraft.util.math.BlockPos.ofFloored(behind)).isEmpty()) {
 					target.damage(ModDamageTypes.source(ctx.world(), ModDamageTypes.EARTH, player), DAMAGE * 0.5f);
 					SkillFx.rockDebris(ctx.world(), behind, 10, 0.3);
-					ctx.world().playSound(null, target.getBlockPos(), ModSounds.SHIELD_HIT, SoundCategory.PLAYERS, 0.8f, 0.7f);
+					ctx.world().playSound(null, target.getBlockPos(), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 0.7f, 1.3f);
 				}
 			}
 		}

@@ -50,8 +50,8 @@ public class WindDragonSkill extends Skill {
 		ModPackets.sendFx(ctx.world(), FxData.at(FxType.SHOCKWAVE_RING, start.add(0, 0.1, 0), 0xB8FFD9, 3.0f, 10));
 		SkillFx.helix(ctx.world(), ModParticles.WIND_STREAK, start, 1.2, 3.5, 30, 3, 0.0);
 		SkillFx.windGust(ctx.world(), player.getEyePos(), dir, 20, 0.6);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 1.4f, 0.6f);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 0.8f, 1.4f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.DRAGON_ROAR, SoundCategory.PLAYERS, 1.6f, 1.15f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 0.8f, 1.2f);
 		return true;
 	}
 }
