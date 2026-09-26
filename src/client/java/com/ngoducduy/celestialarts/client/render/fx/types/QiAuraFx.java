@@ -32,16 +32,21 @@ public class QiAuraFx extends ClientFx {
 		float s = scale;
 		float pulse = 0.85F + 0.15F * MathHelper.sin(t * 0.3F);
 		int white = RenderUtil.whiten(color, 0.6F);
+		// Own first-person view: the camera stands inside the shells, which would otherwise wash the
+		// whole screen with additive light – the shells and the glow fade with camera proximity while
+		// the ground rings (seen from above) stay.
+		float near = nearFade(camera, o.add(0.0, 1.0, 0.0), 0.7F * s, 2.4F * s);
+		float shell = 0.15F + 0.85F * near;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer pillar = consumers.getBuffer(ModRenderLayers.additive(FxTextures.PILLAR));
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 2.0F));
-		RenderUtil.cylinder(pillar, matrices.peek(), 0.95F * s, 0.5F * s, 3.4F * s, 20, 3.0F, 1.0F, t * 0.05F, color, alpha * 0.45F * pulse, 0.0F);
+		RenderUtil.cylinder(pillar, matrices.peek(), 0.95F * s, 0.5F * s, 3.4F * s, 20, 3.0F, 1.0F, t * 0.05F, color, alpha * 0.45F * pulse * shell, 0.0F);
 		matrices.pop();
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-t * 3.0F + 40.0F));
-		RenderUtil.cylinder(pillar, matrices.peek(), 0.75F * s, 0.35F * s, 2.8F * s, 16, 2.0F, 1.0F, t * 0.08F, white, alpha * 0.3F * pulse, 0.0F);
+		RenderUtil.cylinder(pillar, matrices.peek(), 0.75F * s, 0.35F * s, 2.8F * s, 16, 2.0F, 1.0F, t * 0.08F, white, alpha * 0.3F * pulse * shell, 0.0F);
 		matrices.pop();
 		// Ground rings.
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additive(FxTextures.RING));
@@ -57,8 +62,7 @@ public class QiAuraFx extends ClientFx {
 		matrices.push();
 		matrices.translate(0, 1.0F * s, 0);
 		faceCamera(matrices, camera);
-		// Fades when the camera stands inside the aura (own first-person view) so it never veils the screen.
-		RenderUtil.billboardQuad(glow, matrices.peek(), 1.6F * s * pulse, color, alpha * 0.25F * nearFade(camera, o.add(0.0, 1.0, 0.0), 0.8F * s, 2.5F * s));
+		if (near > 0.0F) RenderUtil.billboardQuad(glow, matrices.peek(), 1.6F * s * pulse, color, alpha * 0.25F * near);
 		matrices.pop();
 	}
 }

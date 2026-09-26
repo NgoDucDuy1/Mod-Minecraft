@@ -121,6 +121,8 @@ public final class CelestialAutoTest {
 		command("time set noon");
 		command("weather clear");
 		command("gamerule doDaylightCycle false");
+		// Keeps "Teleported ..." feedback out of the cinematic screenshots.
+		command("gamerule sendCommandFeedback false");
 		command("celestial realm 6");
 		command("celestial learn all");
 		command("celestial qi 9999");
@@ -396,7 +398,7 @@ public final class CelestialAutoTest {
 		});
 		// Wide vantage: beside the target point (72 blocks ahead of the caster, hand 110 wide), looking +X.
 		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 -16", home.x - 130.0, home.y, home.z + 72.0);
-		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 -50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
+		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
 		String back = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z);
 
 		// From the caster, looking up: the eight-trigram array unfolding 120 blocks up.
@@ -427,7 +429,7 @@ public final class CelestialAutoTest {
 			return null;
 		});
 		command(high);
-		lookAt(t0 + 326, -50.0F);
+		lookAt(t0 + 326, 50.0F);
 		screenshot("skill_heaven_hand_8_palm_print", false);
 
 		// Let the ritual end (330 ticks + packet slack), return home on foot and drop the two-minute

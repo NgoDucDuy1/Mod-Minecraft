@@ -38,10 +38,10 @@ public class HeavenPillarFx extends ClientFx {
 		float r = scale * (0.7F + 0.3F * in) * (1.0F + 0.05F * MathHelper.sin(t * 0.9F));
 		int white = RenderUtil.whiten(color, 0.9F);
 		// Standing inside the pillar (caster in first person, or a third-person camera clipped against
-		// the ground) must not white the screen out: the wide shells and the camera-facing flash fade
-		// with camera proximity while the falling rings and the ground burst stay readable.
+		// the ground) must not white the screen out: every shell (including the white core) and the
+		// camera-facing flash fade with camera proximity while the falling rings and the ground burst stay.
 		float near = nearFade(camera, o.add(0.0, 1.5, 0.0), r * 1.2F, r * 4.0F);
-		float shell = 0.4F + 0.6F * near;
+		float shell = 0.08F + 0.92F * near;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer pillar = consumers.getBuffer(ModRenderLayers.additive(FxTextures.PILLAR));
@@ -53,7 +53,7 @@ public class HeavenPillarFx extends ClientFx {
 		RenderUtil.cylinder(pillar, matrices.peek(), r * 1.5F, r * 1.5F, HEIGHT, 24, 4.0F, HEIGHT / 8.0F, t * 0.2F, color, env * 0.3F * shell, env * 0.3F * shell);
 		matrices.pop();
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
-		RenderUtil.cylinder(core, e, r * 0.45F, r * 0.45F, HEIGHT, 12, 1.0F, HEIGHT / 4.0F, t * 0.3F, white, env, env);
+		RenderUtil.cylinder(core, e, r * 0.45F, r * 0.45F, HEIGHT, 12, 1.0F, HEIGHT / 4.0F, t * 0.3F, white, env * shell, env * shell);
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));
 		RenderUtil.cylinder(glow, e, r * 2.6F, r * 2.6F, HEIGHT, 16, 1.0F, 1.0F, 0.0F, color, env * 0.18F * near, env * 0.18F * near);
 
