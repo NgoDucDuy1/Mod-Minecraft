@@ -2,10 +2,13 @@ name: Fetch real sounds
 
 # Downloads the CC0 Freesound recordings listed in tools/fetch_real_sounds.py, edits them into the
 # mod's sound events and commits the resulting OGG files + sounds.json back to the branch.
-# Run manually (workflow_dispatch) whenever the recipe list changes.
+# Runs on any push whose commit message contains "[fetch-sounds]" (workflow_dispatch only works for
+# files that already exist on the default branch), or manually once it is on main.
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["**"]
 
 permissions:
   contents: write
@@ -13,6 +16,7 @@ permissions:
 
 jobs:
   fetch:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[fetch-sounds]')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
