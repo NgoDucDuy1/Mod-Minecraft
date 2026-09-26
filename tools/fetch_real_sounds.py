@@ -256,7 +256,7 @@ def _steel(L, key, dur=0.45, hp=1500):
 
 
 def r_sword_qi(L):
-    swings = [clip(L("swing_tube"), dur=0.7, fade_out=0.25), clip(L("swing_metal"), dur=0.7, fade_out=0.25), clip(L("swing_sword2"), dur=0.65, fade_out=0.25)]
+    swings = [clip(L("swing_tube"), dur=0.45, fade_out=0.2), clip(L("swing_metal"), dur=0.6, fade_out=0.25), clip(L("swing_sword2"), dur=0.55, fade_out=0.2)]
     steels = [_steel(L, "steel_unsheathe"), _steel(L, "steel_machete"), _steel(L, "steel_slide")]
     res = []
     for sw, st in zip(swings, steels):
@@ -271,7 +271,7 @@ def r_sword_launch(L):
     res = []
     for sw_key, st_key, ratio in (("swing_tube", "steel_slide", 1.35), ("swing_foam", "steel_slide2", 1.25), ("swing_metal", "steel_unsheathe", 1.5)):
         d = 0.9
-        sw = pitch(clip(L(sw_key), dur=0.9, fade_out=0.3), ratio)
+        sw = pitch(clip(L(sw_key), dur=0.6, fade_out=0.25), ratio)
         st = pitch(_steel(L, st_key, 0.5), 1.2)
         rip = g.sweep(g.noise(0.6), 700, 5000, q=8, shape=0.6) * g.env(0.6, 0.01, 0.45)
         x = g.mix((g.at(sw, 0, d), 1.0), (g.at(st, 0.02, d), 0.5), (g.at(rip, 0, d), 0.35))
@@ -369,8 +369,12 @@ def r_lightning_step(L):
 
 
 def r_beam_loop(L):
-    arc = L("arc_hv")
-    x = arc[onset(arc):][: g.n_samples(1.2)]
+    arc = denoise_gate(L("arc_hv"), -34.0)
+    e = envelope(arc, 8)
+    w = g.n_samples(1.2)
+    cs = np.cumsum(np.concatenate([[0.0], e]))
+    best = int(np.argmax(cs[w:] - cs[:-w])) if len(e) > w else 0  # the densest 1.2 s of arcing
+    x = arc[best:best + w]
     hum = g.bandpass(0.5 * g.osc_from_freq(np.full(len(x), 55.0), "saw") + 0.5 * g.osc_from_freq(np.full(len(x), 110.0), "square"), 60, 4000)
     y = g.mix((x, 1.0), (hum, 0.3))
     return [g.norm(g.loopable(y, 0.1), 0.55)]
@@ -381,7 +385,7 @@ def r_formation(L):
     gong = clip(L("gong_boss"), dur=3.0, fade_out=1.0)
     runes = g.crackle(d, 40, 3000, 10000, 0.004) * g.env(d, 0.3, 1.0, 0.2, 0.6)
     drone = g.tonal_swell(65.4, d, 7, 0.01, 150, 1800) * g.env(d, 0.6, 0.6, 0.6, 0.8)
-    x = g.mix((g.at(gong, 0, d), 1.0), (runes, 0.2), (g.saturate(drone, 1.5), 0.2))
+    x = g.mix((g.at(gong, 0, d), 1.0), (runes, 0.08), (g.saturate(drone, 1.5), 0.15))
     return [finish(g.reverb(x, 1.0, 0.6, 0.3), 0.85)]
 
 
@@ -425,7 +429,7 @@ def r_learn_skill(L):
         x += g.at(pl, 0.1 * i, d)
     swell = g.tonal_swell(110.0, d, 6, 0.008, 150, 1800) * g.env(d, 0.4, 0.6, 0.3, 0.6)
     air = g.breath(d, 500, 3000) * g.env(d, 0.3, 0.6, 0.3, 0.5)
-    x = g.mix((x, 1.0), (g.saturate(swell, 1.3), 0.12), (air, 0.2))
+    x = g.mix((x, 1.4), (g.saturate(swell, 1.3), 0.1), (air, 0.15))
     return [finish(g.reverb(x, 0.7, 0.55, 0.3))]
 
 

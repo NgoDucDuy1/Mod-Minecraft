@@ -72,8 +72,8 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
   phong long (phễu lốc + đầu rồng) và lôi long (đầu rồng + thân sét theo lịch sử vị trí).
 * Rung camera theo cường độ, HUD (thanh linh lực, thanh tu vi, 6 ô kỹ năng với hồi chiêu), màn hình
   **Đạo Thư** để gán kỹ năng vào ô.
-* 29 sự kiện âm thanh / 43 file `.ogg` được tổng hợp riêng từ "vật liệu" vật lý (không khí, va đập, kim loại, hồ quang điện,
-  đất đá, chiêng) – không lấy từ vanilla; các âm hay lặp có 2–3 biến thể ngẫu nhiên.
+* 29 sự kiện âm thanh: 19 sự kiện dùng **bản thu thật** (sét, lửa, pháo, kiếm thép, gió, băng, đá lở, hồ quang, chiêng, đàn –
+  36 bản ghi CC0, xem `tools/SOUND_CREDITS.md`), phần còn lại tổng hợp từ "vật liệu" vật lý; âm hay lặp có 2–4 biến thể.
 * Mọi texture đều ≥ 32×32 (item 32², icon kỹ năng 32², trận đồ 256², thực thể tới 128²).
 
 ### Vật phẩm & lệnh
@@ -92,6 +92,18 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 ---
 
 ## Nhật ký cập nhật
+
+### 1.3.6 – Âm thanh thật từ đời thực
+* **19 sự kiện dùng bản thu thật** (36 bản ghi Freesound, tất cả giấy phép **CC0**, liệt kê trong `tools/SOUND_CREDITS.md`):
+  sét thật cho `thunder_strike` (Cửu Thiên Lôi Kiếp, Lôi Long, Tử Lôi, Lôi Bộ, đột phá – 4 bản), lửa thật (`fire_whoosh` ×3),
+  pháo/pháo hoa thật + đuôi sét cho `fire_explosion` và Thiên kiếm chạm đất, vung kiếm thật + tiếng rút kiếm thép cho
+  `sword_qi`/`sword_launch`, gió giật thật nén thành `wind_slash` ×4 và loop `sword_flight`, băng nứt thật (`ice_cast`,
+  `ice_shatter`, `freeze_field`), vách đá đổ thật (`earth_quake`), hồ quang cao thế/taser/tia lửa thật (`thunder_charge`,
+  `lightning_step`, `beam_loop`), chiêng thật (`formation`, `breakthrough`), dây đàn tranh thật đổi cao độ ngũ cung (`learn_skill`).
+* Những gì không tồn tại ngoài đời (khí, hư không, khiên, kim thân, long ngâm, linh thạch, kiếm ngân…) vẫn là bản tổng hợp 1.3.5.
+* Quy trình: `tools/fetch_real_sounds.py` tải preview, cắt tự động quanh điểm nổ, lọc/ghép/đổi cao độ; workflow
+  `fetch-sounds.yml` chạy trên GitHub Actions và commit file `.ogg` vào `sounds/real/`; `sounds.json` ghép hai manifest
+  (`tools/sounds_synth.json`, `tools/sounds_real.json`), ưu tiên bản thật, thiếu file thì tự rơi về bản tổng hợp.
 
 ### 1.3.5 – Làm lại toàn bộ âm thanh
 * **Tất cả 24 âm thanh cũ bị thay** – bản cũ dựng từ các sóng sin tắt dần nên cái gì cũng nghe như chuông. Bộ mới trong
