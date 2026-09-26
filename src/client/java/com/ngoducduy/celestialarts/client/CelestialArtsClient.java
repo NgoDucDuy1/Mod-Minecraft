@@ -12,6 +12,9 @@ import com.ngoducduy.celestialarts.client.render.post.GlowPass;
 import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.registry.ModBlocks;
+import com.ngoducduy.celestialarts.registry.ModScreenHandlers;
+import com.ngoducduy.celestialarts.client.gui.AlchemyFurnaceScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.block.Block;
 import net.minecraft.client.render.RenderLayer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -32,6 +35,7 @@ public final class CelestialArtsClient implements ClientModInitializer {
 		ModModelLayers.register();
 		ModEntityRenderers.register();
 		ModParticleFactories.register();
+		HandledScreens.register(ModScreenHandlers.ALCHEMY_FURNACE, AlchemyFurnaceScreen::new);
 		for (Block block : ModBlocks.all()) {
 			BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
 		}

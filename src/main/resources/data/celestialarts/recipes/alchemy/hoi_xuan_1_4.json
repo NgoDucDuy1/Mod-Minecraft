@@ -1,0 +1,42 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_luc_tam_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_thanh_diep_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_son_can_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_hoi_xuan_1",
+    "count": 1
+  },
+  "grade": 1,
+  "fire_tier": 1,
+  "time": 1100,
+  "heat": [
+    {
+      "span": 0.32,
+      "target": 32,
+      "tol": 17
+    },
+    {
+      "span": 0.68,
+      "target": 39,
+      "tol": 17
+    }
+  ],
+  "qi": {
+    "start": 0.3,
+    "end": 0.6,
+    "min": 30
+  },
+  "volatility": 0.2
+}

@@ -47,6 +47,7 @@ public abstract class LivingEntityMixin {
 		if (amount > 0 && source.getAttacker() instanceof ServerPlayerEntity attacker && attacker != self
 				&& ModDamageTypes.isSkillDamage(source)) {
 			amount *= CultivationStats.skillDamageMultiplier(QiHolder.get(attacker), ModDamageTypes.elementOf(source));
+			amount *= com.ngoducduy.celestialarts.effect.SpiritPowerEffect.multiplier(attacker);
 		}
 
 		if (self instanceof ServerPlayerEntity player && celestialarts$wouldVanillaAccept(self, source, amount)) {

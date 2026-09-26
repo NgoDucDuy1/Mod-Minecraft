@@ -1,0 +1,46 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thai_am_thuy_tinh_hoa",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_cuu_u_huyen_bang_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_hon_don_hac_lien",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_truc_co_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_bang_tam_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.5,
+      "target": 10,
+      "tol": 5
+    },
+    {
+      "span": 0.5,
+      "target": 10,
+      "tol": 5
+    }
+  ],
+  "qi": {
+    "start": 0.2,
+    "end": 0.7,
+    "min": 56
+  },
+  "volatility": 0.8
+}

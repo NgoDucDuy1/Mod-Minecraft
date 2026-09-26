@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_dan_sa_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_xich_diem_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_tu_dien_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_liet_hoa_1",
+    "count": 1
+  },
+  "grade": 1,
+  "fire_tier": 1,
+  "time": 1100,
+  "heat": [
+    {
+      "span": 0.2,
+      "target": 60,
+      "tol": 12
+    },
+    {
+      "span": 0.6,
+      "target": 95,
+      "tol": 12
+    },
+    {
+      "span": 0.2,
+      "target": 62,
+      "tol": 12
+    }
+  ],
+  "qi": {
+    "start": 0.4,
+    "end": 0.8,
+    "min": 45
+  },
+  "volatility": 0.55
+}

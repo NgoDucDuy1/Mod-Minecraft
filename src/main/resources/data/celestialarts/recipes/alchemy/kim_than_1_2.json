@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thiet_can_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_bach_kim_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_tu_dien_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_kim_than_1",
+    "count": 1
+  },
+  "grade": 1,
+  "fire_tier": 1,
+  "time": 1100,
+  "heat": [
+    {
+      "span": 0.3,
+      "target": 68,
+      "tol": 13
+    },
+    {
+      "span": 0.4,
+      "target": 92,
+      "tol": 13
+    },
+    {
+      "span": 0.3,
+      "target": 64,
+      "tol": 13
+    }
+  ],
+  "qi": {
+    "start": 0.5,
+    "end": 0.85,
+    "min": 50
+  },
+  "volatility": 0.4
+}

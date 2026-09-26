@@ -3,7 +3,9 @@ package com.ngoducduy.celestialarts.registry;
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.effect.FrozenEffect;
 import com.ngoducduy.celestialarts.effect.QiBurnEffect;
+import com.ngoducduy.celestialarts.effect.PillFortuneEffect;
 import com.ngoducduy.celestialarts.effect.QiDeviationEffect;
+import com.ngoducduy.celestialarts.effect.SpiritPowerEffect;
 import com.ngoducduy.celestialarts.effect.SuppressedEffect;
 import com.ngoducduy.celestialarts.effect.SwordIntentEffect;
 import net.minecraft.entity.effect.StatusEffect;
@@ -21,6 +23,11 @@ public final class ModEffects {
 	public static final StatusEffect SUPPRESSED = register("suppressed", new SuppressedEffect());
 	/** Tẩu hỏa nhập ma – qi running wild after a failed breakthrough: no regen, no skills, slow internal burn. */
 	public static final StatusEffect QI_DEVIATION = register("qi_deviation", new QiDeviationEffect());
+
+	/** Đan Vận – from pills: raises breakthrough chance. */
+	public static final StatusEffect PILL_FORTUNE = register("pill_fortune", new PillFortuneEffect());
+	/** Linh Lực – from pills: skill damage bonus. */
+	public static final StatusEffect SPIRIT_POWER = register("spirit_power", new SpiritPowerEffect());
 
 	private ModEffects() {
 	}

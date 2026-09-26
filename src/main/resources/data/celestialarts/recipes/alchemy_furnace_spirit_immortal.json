@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MTM",
+    "MCM",
+    "SSS"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:diamond"
+    },
+    "T": {
+      "item": "celestialarts:spirit_stone"
+    },
+    "C": {
+      "item": "minecraft:diamond_block"
+    },
+    "S": {
+      "item": "minecraft:polished_deepslate"
+    }
+  },
+  "result": {
+    "item": "celestialarts:alchemy_furnace_spirit_immortal",
+    "count": 1
+  }
+}

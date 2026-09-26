@@ -1,0 +1,9 @@
+{
+  "parent": "celestialarts:block/furnace/base",
+  "textures": {
+    "particle": "celestialarts:block/furnace/spirit_treasure_plain",
+    "side": "celestialarts:block/furnace/spirit_treasure_side_lit",
+    "top": "celestialarts:block/furnace/spirit_treasure_top_lit",
+    "plain": "celestialarts:block/furnace/spirit_treasure_plain"
+  }
+}

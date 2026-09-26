@@ -1,6 +1,13 @@
 package com.ngoducduy.celestialarts.gametest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import net.minecraft.item.ItemStack;
+import com.ngoducduy.celestialarts.registry.ModRecipes;
+import com.ngoducduy.celestialarts.item.PillItem;
+import com.ngoducduy.celestialarts.block.entity.AlchemyFurnaceBlockEntity;
+import com.ngoducduy.celestialarts.block.AlchemyFurnaceBlock;
+import com.ngoducduy.celestialarts.alchemy.Pills;
+import com.ngoducduy.celestialarts.alchemy.AlchemyRecipe;
 import com.ngoducduy.celestialarts.alchemy.Herb;
 import com.ngoducduy.celestialarts.alchemy.Herbs;
 import com.ngoducduy.celestialarts.block.HerbBlock;
@@ -642,6 +649,67 @@ public final class CelestialGameTests implements FabricGameTest {
 			Vec3d c = ctx.getAbsolute(new Vec3d(0.5, 2.5, 0.5));
 			List<ItemEntity> drops = world.getEntitiesByType(EntityType.ITEM, new Box(c, c).expand(3.0), e -> e.getStack().isOf(meadow.asItem()));
 			ctx.assertTrue(!drops.isEmpty(), "breaking a mature herb drops the herb");
+			ctx.complete();
+		});
+	}
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 1400)
+	public void alchemyFurnaceRefinesPill(TestContext ctx) {
+		ServerWorld world = ctx.getWorld();
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.GOLDEN_CORE);
+		QiHolder.get(player).setQi(QiHolder.get(player).getMaxQi());
+		List<AlchemyRecipe> recipes = world.getRecipeManager().listAllOfType(ModRecipes.ALCHEMY_TYPE);
+		ctx.assertTrue(recipes.size() >= 300, "at least 300 alchemy recipes loaded (" + recipes.size() + ")");
+		ctx.assertTrue(Pills.all().size() == 75, "75 pills");
+		ctx.assertTrue(ModBlocks.furnaces().size() == 12, "12 furnaces");
+		for (AlchemyRecipe r : recipes) {
+			ctx.assertTrue(Math.abs(r.targetHeat(0.0F) - r.heatPhases().get(0).target()) < 0.01F, "curve starts at first phase " + r.getId());
+			ctx.assertTrue(r.targetHeat(1.0F) >= 0 && r.targetHeat(1.0F) <= 100, "curve in range " + r.getId());
+		}
+		AlchemyRecipe recipe = recipes.stream().filter(r -> r.grade() == 1 && r.fireTier() == 1).findFirst().orElseThrow();
+
+		BlockPos rel = new BlockPos(0, 2, 0);
+		ctx.setBlockState(rel, ModBlocks.furnaces().get(0).getDefaultState());
+		ctx.assertTrue(ctx.getBlockEntity(rel) instanceof AlchemyFurnaceBlockEntity, "furnace block entity created");
+		AlchemyFurnaceBlockEntity be = (AlchemyFurnaceBlockEntity) ctx.getBlockEntity(rel);
+		int slot = 0;
+		for (AlchemyRecipe.IngredientStack ing : recipe.ingredientStacks()) {
+			be.setStack(slot++, new ItemStack(ing.item(), ing.count()));
+		}
+		be.setStack(AlchemyFurnaceBlockEntity.SLOT_FLAME, new ItemStack(ModItems.flames().get(0)));
+		ctx.assertTrue(recipe.matches(be, world), "furnace inventory matches the recipe");
+		be.onButton(player, AlchemyFurnaceBlockEntity.BTN_START);
+		ctx.assertTrue(be.getState() == AlchemyFurnaceBlockEntity.STATE_REFINING, "refining started");
+		ctx.assertTrue(world.getBlockState(ctx.getAbsolutePos(rel)).get(AlchemyFurnaceBlock.LIT), "furnace lit");
+
+		// Bang-bang control towards the target, qi kept up inside the window.
+		ctx.runAtEveryTick(() -> {
+			if (be.getState() != AlchemyFurnaceBlockEntity.STATE_REFINING || be.getRecipe() == null) return;
+			float target = be.getRecipe().targetHeat(be.progress());
+			be.setFireLevel(be.getHeat() < target ? AlchemyFurnaceBlockEntity.MAX_FIRE_LEVEL : 0);
+			if (be.getRecipe().qiWindow().contains(be.progress()) && be.getQiGauge() < be.getRecipe().qiWindow().min() + 10) {
+				QiHolder.get(player).setQi(QiHolder.get(player).getMaxQi());
+				be.onButton(player, AlchemyFurnaceBlockEntity.BTN_QI);
+			}
+		});
+		ctx.runAtTick(recipe.time() - 20, () -> {
+			ctx.assertTrue(be.getState() == AlchemyFurnaceBlockEntity.STATE_REFINING, "still refining near the end");
+			ctx.assertTrue(be.getDamage() < AlchemyFurnaceBlockEntity.RUIN_DAMAGE, "bang-bang control keeps the batch alive (damage " + be.getDamage() + ")");
+			ctx.assertTrue(be.currentScore() > 0.35F, "score with simple control (" + be.currentScore() + ")");
+		});
+		ctx.runAtTick(recipe.time() + 40, () -> {
+			ctx.assertTrue(be.getState() != AlchemyFurnaceBlockEntity.STATE_REFINING, "run ended");
+			ItemStack out = be.getStack(AlchemyFurnaceBlockEntity.SLOT_OUTPUT);
+			ctx.assertTrue(!out.isEmpty(), "output produced (pill or slag)");
+			ctx.assertTrue(out.getItem() instanceof PillItem || out.isOf(ModItems.PILL_SLAG), "output is a pill or slag");
+			ctx.assertTrue(be.getStack(0).isEmpty() || be.getStack(0).getCount() < recipe.ingredientStacks().get(0).count() + 1, "herbs consumed");
+			ctx.assertTrue(!world.getBlockState(ctx.getAbsolutePos(rel)).get(AlchemyFurnaceBlock.LIT), "furnace unlit after the run");
+			if (out.getItem() instanceof PillItem pillItem) {
+				// Eating the pill applies its effects.
+				float before = QiHolder.get(player).getQi();
+				QiHolder.get(player).setQi(0);
+				pillItem.finishUsing(out.copy(), world, player);
+				ctx.assertTrue(QiHolder.get(player).getQi() > 0 || !pillItem.getPill().effects().isEmpty(), "pill applied");
+			}
 			ctx.complete();
 		});
 	}

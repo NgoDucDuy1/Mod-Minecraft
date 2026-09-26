@@ -1,0 +1,42 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_hon_don_thanh_lien",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_truc_co_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_kien_moc_linh_nha",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_ngo_dao_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.4,
+      "target": 50,
+      "tol": 5
+    },
+    {
+      "span": 0.6,
+      "target": 42,
+      "tol": 5
+    }
+  ],
+  "qi": {
+    "start": 0.2,
+    "end": 1.0,
+    "min": 66
+  },
+  "volatility": 0.5
+}

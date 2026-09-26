@@ -1,6 +1,14 @@
 package com.ngoducduy.celestialarts.client.autotest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.Hand;
+import com.ngoducduy.celestialarts.screen.AlchemyFurnaceScreenHandler;
+import com.ngoducduy.celestialarts.registry.ModRecipes;
+import com.ngoducduy.celestialarts.client.gui.AlchemyFurnaceScreen;
+import com.ngoducduy.celestialarts.block.entity.AlchemyFurnaceBlockEntity;
+import com.ngoducduy.celestialarts.alchemy.AlchemyRecipe;
 import com.ngoducduy.celestialarts.block.HerbBlock;
 import com.ngoducduy.celestialarts.alchemy.Herbs;
 import com.ngoducduy.celestialarts.alchemy.Herb;
@@ -268,6 +276,7 @@ public final class CelestialAutoTest {
 
 		cultivationSequence();
 		herbGarden();
+		alchemySequence();
 
 		// Breakthrough packet at the very top of cultivation: the server must refuse gracefully, no crash.
 		command("celestial realm 6");
@@ -600,6 +609,92 @@ public final class CelestialAutoTest {
 		screenshot("15_herb_closeup");
 		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z));
 		waitTicks(10);
+	}
+
+	/**
+	 * 1.5.0 alchemy, part 2: a Liệt Diễm Lô (Bảo cấp) is set down next to the player, loaded with
+	 * the herbs of a grade-1 recipe and a Phàm Hỏa through /item, opened through a real block
+	 * interaction, lit with the GUI button and steered to the end with the +/− fire and inject-qi
+	 * buttons, exactly as a player would. Screenshots of the idle screen, mid-run and the result.
+	 */
+	private static void alchemySequence() {
+		Vec3d home = submitAndWait(c -> Objects.requireNonNull(c.player).getPos());
+		int fx = (int) Math.floor(home.x) + 2;
+		int fy = (int) Math.floor(home.y);
+		int fz = (int) Math.floor(home.z);
+		command(String.format(Locale.ROOT, "setblock %d %d %d celestialarts:alchemy_furnace_fierce_treasure[facing=west]", fx, fy, fz));
+		AlchemyRecipe recipe = submitAndWait(c -> c.world.getRecipeManager().listAllOfType(ModRecipes.ALCHEMY_TYPE).stream()
+				.filter(r -> r.grade() == 1 && r.fireTier() == 1).findFirst().orElse(null));
+		check(recipe != null, "client received the alchemy recipes");
+		if (recipe == null) return;
+		int slot = 0;
+		for (AlchemyRecipe.IngredientStack ing : recipe.ingredientStacks()) {
+			command(String.format(Locale.ROOT, "item replace block %d %d %d container.%d with %s %d", fx, fy, fz, slot++, Registries.ITEM.getId(ing.item()), ing.count()));
+		}
+		command(String.format(Locale.ROOT, "item replace block %d %d %d container.%d with celestialarts:flame_mortal 1", fx, fy, fz, AlchemyFurnaceBlockEntity.SLOT_FLAME));
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 25", home.x, home.y, home.z));
+		waitTicks(10);
+		screenshot("16_alchemy_furnace_block");
+		// Open the furnace with a real right-click on the block.
+		BlockPos furnacePos = new BlockPos(fx, fy, fz);
+		submitAndWait(c -> {
+			c.inGameHud.getChatHud().clear(false);
+			BlockHitResult hit = new BlockHitResult(Vec3d.ofCenter(furnacePos), Direction.UP, furnacePos, false);
+			c.interactionManager.interactBlock(c.player, Hand.MAIN_HAND, hit);
+			return null;
+		});
+		waitFor("alchemy furnace screen", c -> c.currentScreen instanceof AlchemyFurnaceScreen, Duration.ofSeconds(10), true);
+		waitTicks(10);
+		screenshot("17_alchemy_gui_idle");
+		AlchemyFurnaceScreenHandler handler = submitAndWait(c -> c.currentScreen instanceof AlchemyFurnaceScreen s ? s.getScreenHandler() : null);
+		check(handler != null, "furnace screen handler open");
+		if (handler == null) return;
+		submitAndWait(c -> {
+			c.interactionManager.clickButton(handler.syncId, AlchemyFurnaceBlockEntity.BTN_START);
+			return null;
+		});
+		waitTicks(5);
+		check(handler.isRefining(), "refining started from the GUI button");
+		// Steer: one button press per tick at most, like a quick-fingered player.
+		int total = recipe.time();
+		boolean midShot = false;
+		for (int t = 0; t < total + 60; t++) {
+			int state = handler.get(AlchemyFurnaceBlockEntity.P_STATE);
+			if (state != AlchemyFurnaceBlockEntity.STATE_REFINING) break;
+			float heat = handler.get(AlchemyFurnaceBlockEntity.P_HEAT) / 10.0F;
+			float target = handler.get(AlchemyFurnaceBlockEntity.P_TARGET) / 10.0F;
+			int level = handler.get(AlchemyFurnaceBlockEntity.P_FIRE_LEVEL);
+			int qiMin = handler.get(AlchemyFurnaceBlockEntity.P_QI_PHASE);
+			float qi = handler.get(AlchemyFurnaceBlockEntity.P_QI) / 10.0F;
+			final int btn;
+			if (qiMin >= 0 && qi < qiMin + 10) btn = AlchemyFurnaceBlockEntity.BTN_QI;
+			else if (heat < target - 1 && level < AlchemyFurnaceBlockEntity.MAX_FIRE_LEVEL) btn = AlchemyFurnaceBlockEntity.BTN_MORE;
+			else if (heat > target + 1 && level > 0) btn = AlchemyFurnaceBlockEntity.BTN_LESS;
+			else btn = -1;
+			if (btn >= 0) {
+				submitAndWait(c -> {
+					if (c.currentScreen instanceof AlchemyFurnaceScreen) c.interactionManager.clickButton(handler.syncId, btn);
+					return null;
+				});
+			}
+			if (!midShot && handler.get(AlchemyFurnaceBlockEntity.P_PROGRESS) >= 500) {
+				midShot = true;
+				screenshot("18_alchemy_refining", false);
+			}
+			waitTicks(1);
+		}
+		waitTicks(10);
+		int finalState = handler.get(AlchemyFurnaceBlockEntity.P_STATE);
+		LOG.info("[AutoTest] alchemy run ended in state {} (damage {}, score {})", finalState,
+				handler.get(AlchemyFurnaceBlockEntity.P_DAMAGE) / 10.0F, handler.get(AlchemyFurnaceBlockEntity.P_SCORE) / 1000.0F);
+		check(finalState != AlchemyFurnaceBlockEntity.STATE_REFINING, "alchemy run finished");
+		check(handler.get(AlchemyFurnaceBlockEntity.P_DAMAGE) < 1000, "GUI steering kept the batch from ruin");
+		screenshot("19_alchemy_result", false);
+		submitAndWait(c -> {
+			c.player.closeHandledScreen();
+			return null;
+		});
+		waitTicks(5);
 	}
 
 	/** Waits for the world clock, then points the camera two ticks before the shot so interpolation has settled. */

@@ -1,0 +1,51 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thien_loi_tu_lien",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_loi_kiep_hoa",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_minh_ha_thao",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_nguyen_anh_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_do_kiep_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.16,
+      "target": 49,
+      "tol": 5
+    },
+    {
+      "span": 0.3,
+      "target": 95,
+      "tol": 5
+    },
+    {
+      "span": 0.54,
+      "target": 69,
+      "tol": 5
+    }
+  ],
+  "qi": {
+    "start": 0.45,
+    "end": 0.75,
+    "min": 71
+  },
+  "volatility": 0.75
+}

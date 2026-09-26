@@ -2,7 +2,10 @@ package com.ngoducduy.celestialarts.registry;
 
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.alchemy.Herb;
+import com.ngoducduy.celestialarts.alchemy.FurnaceGrade;
+import com.ngoducduy.celestialarts.alchemy.FurnaceType;
 import com.ngoducduy.celestialarts.alchemy.Herbs;
+import com.ngoducduy.celestialarts.block.AlchemyFurnaceBlock;
 import com.ngoducduy.celestialarts.block.HerbBlock;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -22,11 +25,33 @@ import java.util.Map;
 public final class ModBlocks {
 	private static final List<Block> ALL = new ArrayList<>();
 	private static final Map<Herb, HerbBlock> HERBS = new LinkedHashMap<>();
+	private static final List<AlchemyFurnaceBlock> FURNACES = new ArrayList<>();
 
 	static {
 		for (Herb herb : Herbs.all()) {
 			HERBS.put(herb, register(herb.blockKey(), new HerbBlock(herb, herbSettings(herb))));
 		}
+		for (FurnaceType type : FurnaceType.values()) {
+			for (FurnaceGrade grade : FurnaceGrade.values()) {
+				AbstractBlock.Settings s = AbstractBlock.Settings.create()
+						.mapColor(MapColor.IRON_GRAY)
+						.instrument(Instrument.IRON_XYLOPHONE)
+						.requiresTool()
+						.strength(3.5F + grade.ordinal(), 6.0F + 2.0F * grade.ordinal())
+						.sounds(BlockSoundGroup.METAL)
+						.nonOpaque()
+						.luminance(state -> state.get(AlchemyFurnaceBlock.LIT) ? 12 : 0);
+				FURNACES.add(register(furnaceKey(type, grade), new AlchemyFurnaceBlock(type, grade, s)));
+			}
+		}
+	}
+
+	public static String furnaceKey(FurnaceType type, FurnaceGrade grade) {
+		return "alchemy_furnace_" + type.getKey() + "_" + grade.getKey();
+	}
+
+	public static List<AlchemyFurnaceBlock> furnaces() {
+		return Collections.unmodifiableList(FURNACES);
 	}
 
 	private ModBlocks() {

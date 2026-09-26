@@ -1,0 +1,46 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thanh_long_moc_nha",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_van_nien_duong_sam",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_dia_long_sam",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_ngo_dao_hoa",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_hoi_xuan_4",
+    "count": 1
+  },
+  "grade": 4,
+  "fire_tier": 3,
+  "time": 2000,
+  "heat": [
+    {
+      "span": 0.4,
+      "target": 36,
+      "tol": 11
+    },
+    {
+      "span": 0.6,
+      "target": 52,
+      "tol": 11
+    }
+  ],
+  "qi": {
+    "start": 0.3,
+    "end": 0.6,
+    "min": 42
+  },
+  "volatility": 0.35
+}

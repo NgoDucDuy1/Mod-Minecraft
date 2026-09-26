@@ -195,6 +195,8 @@ public final class Breakthrough {
 		private void resolve(PlayerQi qi) {
 			if (!qi.canBreakthrough()) return;
 			float chance = CultivationStats.breakthroughChance(qi, qi.getSpiritQi());
+			// Đan Vận from a Trúc Cơ / Độ Kiếp pill.
+			chance = Math.min(0.98F, chance + com.ngoducduy.celestialarts.effect.PillFortuneEffect.bonus(caster));
 			int cost = qi.getExpForBreakthrough();
 			Vec3d pos = caster.getPos();
 			if (world.random.nextFloat() < chance) {

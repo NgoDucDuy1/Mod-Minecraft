@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_cuu_thien_loi_truc",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_tich_loi_moc_nha",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_canh_kim_nha",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_do_kiep_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.2,
+      "target": 55,
+      "tol": 7
+    },
+    {
+      "span": 0.3,
+      "target": 95,
+      "tol": 7
+    },
+    {
+      "span": 0.5,
+      "target": 67,
+      "tol": 7
+    }
+  ],
+  "qi": {
+    "start": 0.45,
+    "end": 0.75,
+    "min": 63
+  },
+  "volatility": 0.6
+}

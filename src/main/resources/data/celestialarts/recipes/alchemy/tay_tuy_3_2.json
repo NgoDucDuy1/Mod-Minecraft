@@ -1,0 +1,52 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thanh_tam_lien",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_linh_khi_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_huyen_nham_chi",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_tay_tuy_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.25,
+      "target": 26,
+      "tol": 6
+    },
+    {
+      "span": 0.25,
+      "target": 56,
+      "tol": 6
+    },
+    {
+      "span": 0.25,
+      "target": 86,
+      "tol": 6
+    },
+    {
+      "span": 0.25,
+      "target": 28,
+      "tol": 6
+    }
+  ],
+  "qi": {
+    "start": 0.5,
+    "end": 1.0,
+    "min": 73
+  },
+  "volatility": 0.6
+}

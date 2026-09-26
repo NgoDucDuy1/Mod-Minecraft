@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_tu_quang_chi",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_tu_dien_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_bach_kim_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_do_kiep_1",
+    "count": 1
+  },
+  "grade": 1,
+  "fire_tier": 1,
+  "time": 1100,
+  "heat": [
+    {
+      "span": 0.2,
+      "target": 44,
+      "tol": 11
+    },
+    {
+      "span": 0.3,
+      "target": 95,
+      "tol": 11
+    },
+    {
+      "span": 0.5,
+      "target": 56,
+      "tol": 11
+    }
+  ],
+  "qi": {
+    "start": 0.45,
+    "end": 0.75,
+    "min": 55
+  },
+  "volatility": 0.5
+}
