@@ -515,7 +515,7 @@ def r_hit_shock(L):
         spark = clip(L("spark_zapper"), dur=0.12)
         taser = pitch(clip(L("arc_taser"), dur=0.3, fade_out=0.15), ratio)
         pun = _punch(L, punch_key)
-        x = g.mix((g.at(spark, 0, d), 1.0), (g.at(taser, 0.005, d), 0.8), (g.at(pun, 0.0, d), 0.7), (g.at(_sub_thump(), 0.0, d), 0.4))
+        x = g.mix((g.at(spark, 0, d), 0.6), (g.at(taser, 0.005, d), 0.7), (g.at(pun, 0.0, d), 1.0), (g.at(_sub_thump(), 0.0, d), 0.6))
         res.append(finish(g.reverb(x, 0.25, 0.3, 0.1)))
     return res
 
@@ -525,11 +525,12 @@ def r_dragon_flyby(L):
     res = []
     for key, ratio in (("wind_gust", 0.9), ("wind_woosh2", 0.8)):
         x = pitch(L(key), ratio)
-        x = shape(x[onset(x, -20):], 0.15, 0.3, 0.6)
+        x = g.bandpass(shape(x[onset(x, -20):], 0.15, 0.3, 0.6), 150, 7000)
         d = len(x) / SR
+        edge = g.whoosh(d, 300, 1800, 400, q=4, peak_at=0.4)[: len(x)]
         throat = g.saturate(g.osc_from_freq(70 + 20 * np.sin(2 * np.pi * 3 * g.t(d)), "saw"), 2.0) * g.env(d, 0.2, 0.4, 0.5, 0.2)
-        throat = g.lowpass(throat, 500)
-        res.append(finish(g.mix((x, 1.0), (throat[: len(x)], 0.35))))
+        throat = g.lowpass(throat, 500)[: len(x)]
+        res.append(finish(g.mix((x, 1.0), (edge, 0.5), (throat, 0.12))))
     return res
 
 

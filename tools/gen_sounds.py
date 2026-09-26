@@ -894,11 +894,12 @@ def s_cast_qi():
 
 def _body_hit(d, crack_hi, tone_f, tail):
     """Generic synthesised body hit: click + mid thud + sub + tail (fallback when no recording)."""
-    click = bandpass(noise(d), 800, crack_hi) * expdecay(d, 0.006)
-    thud = bandpass(noise(d), 120, 700) * expdecay(d, 0.045)
-    sub = saturate(glide(120, 45, d, 0.3) * expdecay(d, 0.09), 1.6)
+    click = bandpass(noise(d), 800, crack_hi) * expdecay(d, 0.008)
+    thud = bandpass(noise(d), 150, 900) * expdecay(d, 0.07)
+    body = resonant(noise(d), 260, 5) * expdecay(d, 0.1)
+    sub = saturate(glide(120, 50, d, 0.3) * expdecay(d, 0.07), 1.6)
     ring = resonant(noise(d), tone_f, 25) * expdecay(d, tail) * 0.3
-    return mix((click, 0.9), (thud, 1.0), (sub, 0.8), (ring, 1.0))
+    return mix((click, 0.7), (thud, 1.3), (body, 1.0), (sub, 0.35), (ring, 1.0))
 
 
 def s_hit_slash():
@@ -1073,8 +1074,15 @@ def master(x, path):
         x = transient_shape(x, 0.6 if kind == "impact" else 0.4)
     if kind != "loop":
         x = x + 0.3 * highpass(x, 6000, 2)
-    gain = 10 ** ((KIND_TARGET[kind] - short_term_db(x)) / 20)
+    target = KIND_TARGET[kind]
+    gain = 10 ** ((target - short_term_db(x)) / 20)
     x = x * min(gain, 40.0)
+    if kind in ("big", "impact") and np.max(np.abs(x)) > 1.3:
+        # Spiky material (a click on top of a short body) cannot reach the target by gain alone:
+        # a two-stage soft clip squashes the peak by up to ~8 dB - the classic game-SFX "punch" -
+        # then the loudness is re-aimed at the target.
+        x = soft_limit(x / np.max(np.abs(x)) * 2.2, 0.97, 0.3)
+        x = x * min(10 ** ((target - short_term_db(x)) / 20), 40.0)
     x = soft_limit(x)
     if np.max(np.abs(x)) > 0.985:
         x = x / np.max(np.abs(x)) * 0.985

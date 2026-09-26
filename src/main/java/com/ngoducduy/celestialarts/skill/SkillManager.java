@@ -3,8 +3,10 @@ package com.ngoducduy.celestialarts.skill;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.network.ModPackets;
+import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.skill.cast.ActiveCast;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -103,7 +105,7 @@ public final class SkillManager {
 		boolean ok = skill.activate(ctx);
 		if (ok) {
 			// Every successful cast opens with a short qi release so casts read even when the skill's own sound is delayed.
-			player.getWorld().playSound(null, player.getBlockPos(), ModSounds.CAST_QI, SoundCategory.PLAYERS, 0.6f, 0.95f + player.getRandom().nextFloat() * 0.1f);
+			player.getServerWorld().playSound(null, player.getBlockPos(), ModSounds.CAST_QI, SoundCategory.PLAYERS, 0.6f, 0.95f + player.getRandom().nextFloat() * 0.1f);
 		}
 		if (ok) {
 			if (!player.isCreative()) qi.consumeQi(skill.getQiCost());

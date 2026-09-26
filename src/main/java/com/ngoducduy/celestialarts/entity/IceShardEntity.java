@@ -70,7 +70,7 @@ public class IceShardEntity extends SkillProjectileEntity {
 				}
 			} else {
 				living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80, stacks, false, false, true), owner);
-				this.getWorld().playSound(null, living.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 0.9f, 1.0f + random.nextFloat() * 0.15f);
+				if (this.getWorld() instanceof ServerWorld sw) sw.playSound(null, living.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 0.9f, 1.0f + random.nextFloat() * 0.15f);
 			}
 			living.setFrozenTicks(Math.max(living.getFrozenTicks(), 100));
 		}
