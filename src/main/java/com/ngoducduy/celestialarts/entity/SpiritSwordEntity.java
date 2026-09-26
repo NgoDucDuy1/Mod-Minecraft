@@ -207,12 +207,12 @@ public class SpiritSwordEntity extends Entity {
 				targetId = t.getId();
 			} else {
 				// Nobody ahead: the wall of swords flies to the spot the owner is looking at.
-				Vec3d aim = Targeting.lookPoint(own, 36);
-				targetPos = aim.add((random.nextDouble() - 0.5) * 4.0, random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 4.0);
+				Vec3d aim = Targeting.lookPoint(own, 40);
+				targetPos = aim.add((random.nextDouble() - 0.5) * 7.0, random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 7.0);
 			}
 			setPhase(PHASE_LAUNCH);
 			// Every sword first shoots straight ahead past the owner, then homes in on its target.
-			this.setVelocity(launchDir.multiply(1.3));
+			this.setVelocity(launchDir.multiply(1.5));
 			faceVelocity(this.getVelocity());
 			if (formIndex % 3 == 0) {
 				this.getWorld().playSound(null, this.getBlockPos(), ModSounds.SWORD_LAUNCH, SoundCategory.PLAYERS, 0.8f, 1.0f + random.nextFloat() * 0.4f);
@@ -223,11 +223,11 @@ public class SpiritSwordEntity extends Entity {
 	/** Like {@link #pickTarget} but rotates through the candidates so a volley is shared out. */
 	private LivingEntity pickTargetSpread(LivingEntity own, int index) {
 		Vec3d look = own.getRotationVec(1.0f);
-		var cone = EntityUtil.inCone(this.getWorld(), own, own.getEyePos(), look, 36, 40);
+		var cone = EntityUtil.inCone(this.getWorld(), own, own.getEyePos(), look, 40, 45);
 		if (!cone.isEmpty()) {
 			var list = EntityUtil.prioritised(cone, own.getPos());
-			// Nearer targets take a bigger share: index modulo min(size, 4).
-			return list.get(index % Math.min(list.size(), 4));
+			// Shared out over up to six targets, nearer ones first.
+			return list.get(index % Math.min(list.size(), 6));
 		}
 		return null;
 	}
@@ -291,7 +291,7 @@ public class SpiritSwordEntity extends Entity {
 		this.setPosition(end.x, end.y, end.z);
 		faceVelocity(vel);
 
-		if (lifeAfterLaunch > 70 || !this.getWorld().getBlockState(this.getBlockPos()).isAir()
+		if (lifeAfterLaunch > (getMode() == MODE_FORMATION ? 90 : 70) || !this.getWorld().getBlockState(this.getBlockPos()).isAir()
 				&& this.getWorld().getBlockState(this.getBlockPos()).isOpaque()) {
 			if (this.getWorld() instanceof ServerWorld sw) SkillFx.swordGlints(sw, this.getPos(), 8, 0.2);
 			setPhase(PHASE_STUCK);

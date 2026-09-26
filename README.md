@@ -92,6 +92,11 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.4 – Vạn Kiếm Quy Tông diện rộng
+* Theo góp ý: **72 phi kiếm** (6 hàng × 12), giãn cách >1 ô, bán kính 3 → 7,5 ô và cao 1,2 → 5,7 ô sau lưng, xòe ±85° – một
+  "bầu trời kiếm" thay vì bức tường sát người. Phóng 2 kiếm/tick, truy kích chia đều tới 6 mục tiêu trong nón 40 ô; không
+  có địch thì rải xuống vùng 7×7 ô quanh điểm nhìn.
+
 ### 1.3.3 – Vạn Kiếm Quy Tông mới, sửa trận pháp bị xéo, Liệt Diễm Trảo xa hơn
 * **Sửa lỗi hình học quan trọng**: `ClientFx.alignY/alignZ` dùng góc yaw kiểu Minecraft (`atan2(-x, z)`) với phép quay
   thuận tay phải nên **mọi hiệu ứng có hướng bị lật gương theo trục X** khi người chơi không nhìn dọc ±Z – trận pháp của
