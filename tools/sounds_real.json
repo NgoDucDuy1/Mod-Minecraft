@@ -78,6 +78,18 @@
 	"skill/heaven_sword_impact": [
 		"real/skill/heaven_sword_impact"
 	],
+	"skill/heaven_hand_summon": [
+		"real/skill/heaven_hand_summon"
+	],
+	"skill/heaven_hand_pressure": [
+		"real/skill/heaven_hand_pressure"
+	],
+	"skill/heaven_hand_slam": [
+		"real/skill/heaven_hand_slam"
+	],
+	"skill/heaven_hand_rumble": [
+		"real/skill/heaven_hand_rumble"
+	],
 	"skill/sword_qi": [
 		"real/skill/sword_qi_1",
 		"real/skill/sword_qi_2",

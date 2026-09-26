@@ -161,6 +161,46 @@
 			}
 		]
 	},
+	"skill.heaven_hand_pressure": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_hand_pressure",
+		"sounds": [
+			{
+				"name": "celestialarts:real/skill/heaven_hand_pressure",
+				"stream": false
+			}
+		]
+	},
+	"skill.heaven_hand_rumble": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_hand_rumble",
+		"sounds": [
+			{
+				"name": "celestialarts:real/skill/heaven_hand_rumble",
+				"stream": false
+			}
+		]
+	},
+	"skill.heaven_hand_slam": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_hand_slam",
+		"sounds": [
+			{
+				"name": "celestialarts:real/skill/heaven_hand_slam",
+				"stream": false
+			}
+		]
+	},
+	"skill.heaven_hand_summon": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_hand_summon",
+		"sounds": [
+			{
+				"name": "celestialarts:real/skill/heaven_hand_summon",
+				"stream": false
+			}
+		]
+	},
 	"skill.heaven_sword_fall": {
 		"category": "player",
 		"subtitle": "subtitles.celestialarts.skill.heaven_sword_fall",

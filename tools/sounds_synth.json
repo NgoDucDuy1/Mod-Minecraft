@@ -1,4 +1,16 @@
 {
+	"skill/heaven_hand_summon": [
+		"synth/skill/heaven_hand_summon"
+	],
+	"skill/heaven_hand_pressure": [
+		"synth/skill/heaven_hand_pressure"
+	],
+	"skill/heaven_hand_slam": [
+		"synth/skill/heaven_hand_slam"
+	],
+	"skill/heaven_hand_rumble": [
+		"synth/skill/heaven_hand_rumble"
+	],
 	"skill/hit_slash": [
 		"synth/skill/hit_slash_1",
 		"synth/skill/hit_slash_2",
