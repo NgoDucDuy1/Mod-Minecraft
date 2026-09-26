@@ -36,7 +36,7 @@ public class QiAuraFx extends ClientFx {
 		// whole screen with additive light – the shells and the glow fade with camera proximity while
 		// the ground rings (seen from above) stay.
 		float near = nearFade(camera, o.add(0.0, 1.0, 0.0), 0.7F * s, 2.4F * s);
-		float shell = 0.15F + 0.85F * near;
+		float shell = near;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer pillar = consumers.getBuffer(ModRenderLayers.additive(FxTextures.PILLAR));
@@ -55,7 +55,7 @@ public class QiAuraFx extends ClientFx {
 		RenderUtil.flatQuad(ring, matrices.peek(), 1.25F * s * pulse, color, alpha * 0.6F);
 		float rise = (t * 0.03F) % 1.0F;
 		matrices.translate(0, rise * 2.5F * s, 0);
-		RenderUtil.flatQuad(ring, matrices.peek(), (1.1F - rise * 0.6F) * s, white, alpha * (1.0F - rise) * 0.5F);
+		RenderUtil.flatQuad(ring, matrices.peek(), (1.1F - rise * 0.6F) * s, white, alpha * (1.0F - rise) * 0.5F * (0.3F + 0.7F * near));
 		matrices.pop();
 		// Soft glow around the body.
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));

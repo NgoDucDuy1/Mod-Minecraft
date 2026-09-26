@@ -20,18 +20,23 @@ SHADE = {"top": 1.0, "bottom": 0.62, "front": 0.88, "back": 0.80, "left": 0.72, 
 
 
 class Tex:
-    def __init__(self, w, h):
+    def __init__(self, w, h, density=1):
+        """w x h is the UV space of the model; density multiplies the pixel resolution (a
+        density-4 256x128 skin is a 1024x512 PNG with the same UV layout – Minecraft samples
+        normalised UVs, so world-scale props get four times the detail per model unit)."""
         self.w, self.h = w, h
-        self.arr = np.zeros((h, w, 4), dtype=np.float32)
+        self.density = density
+        self.arr = np.zeros((h * density, w * density, 4), dtype=np.float32)
 
     def face_regions(self, u, v, w, h, d):
+        k = self.density
         return {
-            "top": (u + d, v, w, d),
-            "bottom": (u + d + w, v, w, d),
-            "right": (u, v + d, d, h),
-            "front": (u + d, v + d, w, h),
-            "left": (u + d + w, v + d, d, h),
-            "back": (u + 2 * d + w, v + d, w, h),
+            "top": ((u + d) * k, v * k, w * k, d * k),
+            "bottom": ((u + d + w) * k, v * k, w * k, d * k),
+            "right": (u * k, (v + d) * k, d * k, h * k),
+            "front": ((u + d) * k, (v + d) * k, w * k, h * k),
+            "left": ((u + d + w) * k, (v + d) * k, d * k, h * k),
+            "back": ((u + 2 * d + w) * k, (v + d) * k, w * k, h * k),
         }
 
     def cuboid(self, u, v, w, h, d, painter, shade=True):
@@ -260,71 +265,114 @@ def heaven_sword():
 
 
 def heaven_hand():
-    """256x128 skin for HeavenHandModel (Thiên Đạo Chi Thủ): translucent golden jade with darker
-    joints, bright dao seams and a scripture seal in the palm. The model is drawn in world
-    orientation, so the 'top' UV region (-Y) is the palm surface that faces the ground."""
-    t = Tex(256, 128)
-    base = (236, 196, 118)
-    deep = (170, 118, 52)
-    hot = (255, 246, 214)
-    seam = (255, 232, 160)
+    """1024x512 skin (UV space 256x128, density 4) for HeavenHandModel (Thiên Đạo Chi Thủ): pale
+    luminous golden jade with dark mineral veins, bevelled joints, bright dao seams, a scripture seal
+    in the palm and a sun seal on the back of the hand. The model is drawn in world orientation, so
+    the 'top' UV region (-Y) is the palm surface that faces the ground."""
+    import texlib as T
+    t = Tex(256, 128, density=4)
+    base = (234, 214, 156)
+    deep = (150, 106, 50)
+    dark = (96, 62, 26)
+    hot = (255, 250, 228)
+    seam = (255, 232, 150)
+    # Smooth noise fields sampled by normalised face coordinates: body tone, veins, fine grain.
+    tone = np.asarray(T.noise_layer(256, 256, 41, scale=3, octaves=4, ss=False), dtype=np.float32) / 255.0
+    vein = np.asarray(T.noise_layer(256, 256, 87, scale=5, octaves=3, ss=False), dtype=np.float32) / 255.0
+    grain = np.asarray(T.noise_layer(256, 256, 19, scale=24, octaves=2, ss=False), dtype=np.float32) / 255.0
+
+    def sample(field, fx, fy, ox, oy, rep=1.0):
+        x = int(((fx * rep + ox) % 1.0) * 255)
+        y = int(((fy * rep + oy) % 1.0) * 255)
+        return float(field[y, x])
 
     def jade(fx, fy, seed):
-        n = hash_noise(int(fx * 40), int(fy * 40), seed) * 0.35 + hash_noise(int(fx * 9), int(fy * 9), seed + 3) * 0.65
-        return mix(mix(base, deep, 0.35), mix(base, hot, 0.25), n)
+        ox, oy = (seed * 0.173) % 1.0, (seed * 0.371) % 1.0
+        n = sample(tone, fx, fy, ox, oy)
+        g = sample(grain, fx, fy, ox, oy, 2.0)
+        c = mix(mix(base, deep, 0.28), mix(base, hot, 0.35), n)
+        c = mix(c, deep, (g - 0.5) * 0.18 + 0.09)
+        # Ridged veins: thin dark mineral lines with a faint bright halo (jade inclusions).
+        v = abs(sample(vein, fx, fy, ox, oy, 1.5) - 0.5)
+        if v < 0.012:
+            c = mix(c, dark, 0.7 * (1 - v / 0.012))
+        elif v < 0.03:
+            c = mix(c, hot, 0.12 * (1 - (v - 0.012) / 0.018))
+        return c
+
+    def bevel(c, fx, fy, k=10.0, strength=1.0):
+        rim = min(fx, 1 - fx, fy, 1 - fy)
+        return mix(mix(dark, c, 0.35), c, min(1.0, rim * k)) if strength > 0 else c
 
     def palm(face, fx, fy):
         c = jade(fx, fy, 1)
-        if face == "top":  # palm surface (-Y): three palm lines + central seal + rim
-            # rim darkening
-            rim = min(fx, 1 - fx, fy, 1 - fy)
-            c = mix(deep, c, min(1.0, rim * 9))
-            # lines of the palm (arcs)
-            for (cx, cy, r, w) in [(0.05, 0.2, 0.62, 0.02), (0.1, -0.05, 0.85, 0.018), (0.9, 0.35, 0.55, 0.016)]:
+        if face == "top":  # palm surface (-Y): palm lines, central scripture seal, bevelled rim
+            c = bevel(c, fx, fy, 14.0)
+            for (cx, cy, r, w) in [(0.05, 0.2, 0.62, 0.014), (0.1, -0.05, 0.85, 0.012), (0.9, 0.35, 0.55, 0.011)]:
                 d = abs(math.hypot(fx - cx, fy - cy) - r)
                 if d < w:
                     c = mix(seam, c, d / w)
-            # seal: ring + cross glyph in the centre
             d = math.hypot((fx - 0.5) * 1.1, fy - 0.5)
-            if abs(d - 0.22) < 0.014 or abs(d - 0.30) < 0.008:
+            # Seal: double ring, eight-spoke wheel, inner ring, centre dot.
+            if abs(d - 0.22) < 0.009 or abs(d - 0.30) < 0.005 or abs(d - 0.10) < 0.006:
                 c = hot
-            if d < 0.18 and (abs(fx - 0.5) < 0.012 or abs(fy - 0.5) < 0.012 or abs(d - 0.10) < 0.01):
-                c = hot
-            # scripture dots around the seal
             a = math.atan2(fy - 0.5, (fx - 0.5) * 1.1)
-            if abs(d - 0.26) < 0.012 and (int((a + math.pi) / (2 * math.pi) * 16) % 2 == 0):
-                c = seam
+            if 0.10 < d < 0.22:
+                spoke = abs(((a / (math.pi / 4)) + 0.5) % 1.0 - 0.5)
+                if spoke * d < 0.006:
+                    c = mix(c, hot, 0.85)
+            if d < 0.035:
+                c = hot
+            # 24 scripture strokes between the rings.
+            if 0.235 < d < 0.29:
+                cell = ((a + math.pi) / (2 * math.pi) * 24) % 1.0
+                if 0.2 < cell < 0.5 and abs(d - 0.262) < 0.018 * (0.5 + 0.5 * math.sin(cell * math.pi * 3)):
+                    c = mix(c, seam, 0.9)
             return with_a(c, 255)
-        if face == "bottom":  # back of the hand: tendon ridges running towards the fingers
+        if face == "bottom":  # back of the hand: tendon ridges + sun seal near the wrist
             ridge = 0.5 + 0.5 * math.cos((fx - 0.5) * 4 * 2 * math.pi)
-            c = mix(c, hot, ridge * 0.18 * fy)
-            c = mix(c, deep, (1 - fy) * 0.25)
+            c = mix(c, hot, ridge * 0.14 * fy)
+            c = bevel(c, fx, fy, 14.0)
+            d = math.hypot((fx - 0.5) * 1.1, (fy - 0.30) * 1.0)
+            if abs(d - 0.16) < 0.007 or abs(d - 0.05) < 0.02:
+                c = hot
+            a = math.atan2(fy - 0.30, (fx - 0.5) * 1.1)
+            if 0.16 < d < 0.24 and abs(((a / (math.pi / 8)) + 0.5) % 1.0 - 0.5) * d < 0.004:
+                c = mix(c, seam, 0.9)
             return with_a(c, 255)
-        # side walls: darker with a bright seam line halfway
-        c = mix(c, deep, 0.35)
-        if abs(fy - 0.5) < 0.09:
-            c = mix(c, seam, 0.6)
+        # side walls: darker, bevelled, one bright seam line halfway
+        c = mix(c, deep, 0.3)
+        c = bevel(c, fx, fy, 12.0)
+        if abs(fy - 0.5) < 0.06:
+            c = mix(c, seam, 0.55 * (1 - abs(fy - 0.5) / 0.06))
         return with_a(c, 255)
 
     def finger(seed, last=False):
         def p(face, fx, fy):
             c = jade(fx, fy, seed)
             if face in ("top", "bottom"):
-                # joints at both ends, bright nail seam on the tip segment (bottom = back of finger)
+                # dark joints at both ends, bevelled sides, bright nail seam on the tip segment
                 j = min(fy, 1 - fy)
-                c = mix(deep, c, min(1.0, j * 7))
+                c = mix(dark, c, min(1.0, j * 9))
+                c = bevel(c, fx, fy, 9.0)
                 if face == "top":
-                    # pad: slightly brighter centre line
-                    c = mix(c, hot, math.exp(-((fx - 0.5) / 0.28) ** 2) * 0.25)
+                    c = mix(c, hot, math.exp(-((fx - 0.5) / 0.28) ** 2) * 0.2)
+                    # a single glyph stroke on each finger pad
+                    if abs(fx - 0.5) < 0.05 and 0.3 < fy < 0.7:
+                        c = mix(c, seam, 0.6)
                 if last and face == "bottom" and fy > 0.72:
-                    c = mix(c, hot, 0.55)
+                    c = mix(c, hot, 0.6)
+                    if fy > 0.78 and abs(fx - 0.5) < 0.3:
+                        c = mix(c, (255, 255, 255), 0.35)
             elif face in ("left", "right"):
                 j = min(fx, 1 - fx)
-                c = mix(deep, c, min(1.0, j * 7))
-                if abs(fy - 0.5) < 0.12:
-                    c = mix(c, seam, 0.5)
+                c = mix(dark, c, min(1.0, j * 9))
+                c = bevel(c, fx, fy, 9.0)
+                if abs(fy - 0.5) < 0.08:
+                    c = mix(c, seam, 0.5 * (1 - abs(fy - 0.5) / 0.08))
             else:
                 c = mix(c, deep, 0.4)
+                c = bevel(c, fx, fy, 8.0)
             return with_a(c, 255)
         return p
 

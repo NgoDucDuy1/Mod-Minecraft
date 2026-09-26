@@ -41,7 +41,7 @@ public class HeavenPillarFx extends ClientFx {
 		// the ground) must not white the screen out: every shell (including the white core) and the
 		// camera-facing flash fade with camera proximity while the falling rings and the ground burst stay.
 		float near = nearFade(camera, o.add(0.0, 1.5, 0.0), r * 1.2F, r * 4.0F);
-		float shell = 0.08F + 0.92F * near;
+		float shell = near;
 
 		matrices.translate(o.x, o.y, o.z);
 		VertexConsumer pillar = consumers.getBuffer(ModRenderLayers.additive(FxTextures.PILLAR));
@@ -62,7 +62,7 @@ public class HeavenPillarFx extends ClientFx {
 		for (int i = 0; i < RINGS; i++) {
 			float f = ((t * 0.02F) + (float) i / RINGS) % 1.0F;
 			float y = (1.0F - f) * 30.0F;
-			float a = env * (1.0F - f) * 0.7F;
+			float a = env * (1.0F - f) * 0.7F * (0.15F + 0.85F * near);
 			matrices.push();
 			matrices.translate(0, y, 0);
 			RenderUtil.flatQuad(ring, matrices.peek(), r * (3.0F - 1.2F * f), i % 2 == 0 ? white : color, a);

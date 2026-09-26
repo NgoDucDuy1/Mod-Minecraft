@@ -396,8 +396,10 @@ public final class CelestialAutoTest {
 			ClientPackets.sendCast(slot);
 			return Objects.requireNonNull(c.world).getTime();
 		});
-		// Wide vantage: beside the target point (72 blocks ahead of the caster, hand 110 wide), looking +X.
-		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 -16", home.x - 130.0, home.y, home.z + 72.0);
+		// Wide vantage: 155 blocks from the target point (72 blocks ahead of the caster) on the
+		// front-left diagonal, hovering 6 blocks up, looking +X+Z – the hand (110 wide, ~180 long
+		// with the fingers) is seen three-quarter on instead of edge-on.
+		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -45 -10", home.x - 110.0, home.y + 6.0, home.z + 72.0 - 110.0);
 		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
 		String back = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z);
 
@@ -409,25 +411,25 @@ public final class CelestialAutoTest {
 		screenshot("skill_heaven_hand_2_descent", false);
 
 		waitUntil(t0 + 135);
-		command(wide);
-		lookAt(t0 + 200, -16.0F);
-		screenshot("skill_heaven_hand_3_approach", false);
-		lookAt(t0 + 243, -14.0F);
-		screenshot("skill_heaven_hand_4_impact", false);
-		lookAt(t0 + 253, -12.0F);
-		screenshot("skill_heaven_hand", false);
-		lookAt(t0 + 266, -10.0F);
-		screenshot("skill_heaven_hand_6_shock_ring", false);
-		lookAt(t0 + 296, -12.0F);
-		screenshot("skill_heaven_hand_7_dissolve", false);
-
-		// High angle over the palm print while the hand lifts away and fades.
-		waitUntil(t0 + 300);
 		submitAndWait(c -> {
 			c.player.getAbilities().flying = true;
 			c.player.sendAbilitiesUpdate();
 			return null;
 		});
+		command(wide);
+		lookAt(t0 + 200, -12.0F);
+		screenshot("skill_heaven_hand_3_approach", false);
+		lookAt(t0 + 243, -8.0F);
+		screenshot("skill_heaven_hand_4_impact", false);
+		lookAt(t0 + 253, -6.0F);
+		screenshot("skill_heaven_hand", false);
+		lookAt(t0 + 266, -5.0F);
+		screenshot("skill_heaven_hand_6_shock_ring", false);
+		lookAt(t0 + 296, -8.0F);
+		screenshot("skill_heaven_hand_7_dissolve", false);
+
+		// High angle over the palm print while the hand lifts away and fades.
+		waitUntil(t0 + 300);
 		command(high);
 		lookAt(t0 + 326, 50.0F);
 		screenshot("skill_heaven_hand_8_palm_print", false);

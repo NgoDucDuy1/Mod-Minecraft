@@ -221,7 +221,7 @@ public class HeavenHandFx extends ClientFx {
 		VertexConsumer solid = consumers.getBuffer(ModRenderLayers.entityFar(FxTextures.HEAVEN_HAND));
 		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.98F, 0.92F, solidA);
 		// Faint emissive rim while descending; blazing only as the hand returns to light.
-		float glowA = body * (0.05F + 0.05F * u) + appear * dissolve * (1.0F - dissolve) * 0.9F;
+		float glowA = body * 0.03F * u + appear * dissolve * (1.0F - dissolve) * 1.4F;
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.HEAVEN_HAND));
 		matrices.scale(1.015F, 1.015F, 1.015F);
 		m.render(matrices, glow, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.9F, 0.6F, glowA);
