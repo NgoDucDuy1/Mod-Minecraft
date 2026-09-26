@@ -73,6 +73,7 @@ public final class Breakthrough {
 				ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, caster.getId(), pos, color, 1.2f, DURATION));
 				ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, pos.add(0, 0.05, 0), color, 3.5f, DURATION).withExtra(1));
 				world.playSound(null, caster.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.2f, 0.9f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 1.6f, 0.9f);
 			}
 
 			// Slow the player down: they are sitting in meditation.
@@ -102,6 +103,7 @@ public final class Breakthrough {
 				SkillFx.glowBurst(world, pos.add(0, 1, 0), color, 80, 1.2f, 0.35);
 				world.playSound(null, caster.getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.PLAYERS, 1.0f, 1.4f);
 				world.playSound(null, caster.getBlockPos(), ModSounds.BREAKTHROUGH, SoundCategory.PLAYERS, 1.5f, 1.0f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 2.0f, 1.0f);
 			}
 		}
 

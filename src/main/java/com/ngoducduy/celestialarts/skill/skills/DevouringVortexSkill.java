@@ -133,6 +133,7 @@ public class DevouringVortexSkill extends Skill {
 				}
 			}
 			ModPackets.sendFx(caster, FxData.follow(FxType.VORTEX, caster.getId(), caster.getPos(), 0x6A1FB0, 0f, 0).withExtra(-1));
+			world.playSound(null, caster.getBlockPos(), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 1.4f, 0.9f);
 			world.playSound(null, caster.getBlockPos(), ModSounds.VOID_COLLAPSE, SoundCategory.PLAYERS, 1.4f, 1.0f);
 		}
 	}

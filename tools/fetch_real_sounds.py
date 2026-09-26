@@ -85,6 +85,18 @@ SOURCES = {
     "gong_di": (127265, 1779874, "Gong.wav", "DiArchangeli"),
     "gong_paiste": (112507, 1985275, "Gong.wav (Paiste)", "cdiupe"),
     "zither_a2": (24551, 164315, "kayageum1_A2.wav", "spt3125"),
+    # body / blade impacts
+    "hit_sword_body": (411122, 1424100, "Sword hits the body", "vdovitsky"),
+    "hit_sword_impact": (547042, 7614679, "Hit Impact Sword 3", "CogFireStudios"),
+    "punch_newage": (348242, 4067257, "punch", "newagesoup"),
+    "punch_taylor": (94778, 1533925, "punch", "taylorsyoung"),
+    "punch_jew": (244513, 2756077, "punch", "JewTwinz"),
+    "punch_insanity": (276600, 464940, "punch.wav", "insanity54"),
+    "thud_metal": (244983, 3008343, "metallic thud", "ani_music"),
+    "collision_fast": (332056, 71257, "collision", "qubodup"),
+    # creature roars (recorded voice, slowed)
+    "roar_mighty": (420466, 8379536, "Roar.m4a", "tahirahg1991"),
+    "roar_beast": (267452, 3415022, "Beast Roar.wav", "cylon8472"),
 }
 
 
@@ -433,7 +445,221 @@ def r_learn_skill(L):
     return [finish(g.reverb(x, 0.7, 0.55, 0.3))]
 
 
+# ------------------------------------------------------------------ hit / feedback layer (1.3.7)
+
+def _punch(L, key, dur=0.35):
+    x = clip(L(key), dur=dur, fade_out=0.12)
+    return g.highpass(x, 60, 2)
+
+
+def _sub_thump(d=0.35, f0=110, f1=45, dec=0.09):
+    return g.saturate(g.glide(f0, f1, d, dec * 2) * g.expdecay(d, dec), 1.6)
+
+
+def r_hit_slash(L):
+    """Blade meeting flesh: the real sword-body hit + a punch for weight + a bright steel tick."""
+    res = []
+    for body_key, punch_key, ratio in (("hit_sword_body", "punch_newage", 1.0), ("hit_sword_impact", "punch_taylor", 1.1), ("hit_sword_body", "punch_jew", 0.9)):
+        d = 0.6
+        body = pitch(clip(L(body_key), dur=0.5, fade_out=0.15), ratio)
+        pun = _punch(L, punch_key)
+        tick = g.highpass(pitch(_steel(L, "steel_slide", 0.25), 1.4), 3000) * 0.5
+        x = g.mix((g.at(body, 0, d), 1.0), (g.at(pun, 0.0, d), 0.7), (g.at(tick, 0.0, d), 0.35), (g.at(_sub_thump(), 0.0, d), 0.5))
+        res.append(finish(g.reverb(x, 0.25, 0.3, 0.12)))
+    return res
+
+
+def r_hit_blunt(L):
+    """Palm / rock / wind body blows: real punches with a metallic thud or fast collision underneath."""
+    res = []
+    for punch_key, under_key, ratio in (("punch_insanity", "collision_fast", 1.0), ("punch_taylor", "thud_metal", 0.85), ("punch_jew", "collision_fast", 0.95)):
+        d = 0.55
+        pun = pitch(_punch(L, punch_key, 0.4), ratio)
+        under = g.lowpass(clip(L(under_key), dur=0.45, fade_out=0.2), 900)
+        x = g.mix((g.at(pun, 0, d), 1.0), (g.at(under, 0.005, d), 0.6), (g.at(_sub_thump(0.4, 120, 40, 0.11), 0.0, d), 0.8))
+        res.append(finish(g.reverb(x, 0.3, 0.3, 0.1)))
+    return res
+
+
+def r_hit_fire(L):
+    """Flame claw raking a body: punch + a snap of the real fire flare + ember hiss."""
+    res = []
+    for punch_key, ratio in (("punch_newage", 1.0), ("punch_insanity", 1.15)):
+        d = 0.7
+        pun = _punch(L, punch_key)
+        flare = g.highpass(clip(L("fire_flare"), dur=0.5, fade_out=0.25), 400) * g.expdecay(0.5, 0.2)
+        hiss = g.crackle(0.6, 60, 1500, 8000, 0.003) * g.expdecay(0.6, 0.25)
+        x = g.mix((g.at(pun, 0, d), 1.0), (g.at(flare, 0.01, d), 0.9), (g.at(hiss, 0.02, d), 0.35), (g.at(_sub_thump(), 0.0, d), 0.5))
+        res.append(finish(g.reverb(x, 0.3, 0.35, 0.12)))
+    return res
+
+
+def r_hit_ice(L):
+    """Ice shard biting: glass impact + ice crack + a cold ring, not the big shatter."""
+    res = []
+    for ice_key, ratio in (("ice_step", 1.3), ("ice_piezo", 1.1)):
+        d = 0.6
+        glass = pitch(clip(L("glass_impact"), dur=0.35, fade_out=0.15), ratio)
+        crack = clip(L(ice_key), dur=0.4, fade_out=0.2)
+        ring = g.resonant(g.noise(0.5), 4200 * ratio, 40) * g.expdecay(0.5, 0.15) * 0.3
+        x = g.mix((g.at(glass, 0, d), 1.0), (g.at(crack, 0.01, d), 0.8), (g.at(ring, 0.0, d), 0.3), (g.at(_sub_thump(0.3, 100, 50, 0.07), 0.0, d), 0.4))
+        res.append(finish(g.reverb(x, 0.35, 0.4, 0.15)))
+    return res
+
+
+def r_hit_shock(L):
+    """Lightning striking a body: spark snap + taser bite + punch."""
+    res = []
+    for punch_key, ratio in (("punch_taylor", 1.0), ("punch_newage", 1.2)):
+        d = 0.55
+        spark = clip(L("spark_zapper"), dur=0.12)
+        taser = pitch(clip(L("arc_taser"), dur=0.3, fade_out=0.15), ratio)
+        pun = _punch(L, punch_key)
+        x = g.mix((g.at(spark, 0, d), 1.0), (g.at(taser, 0.005, d), 0.8), (g.at(pun, 0.0, d), 0.7), (g.at(_sub_thump(), 0.0, d), 0.4))
+        res.append(finish(g.reverb(x, 0.25, 0.3, 0.1)))
+    return res
+
+
+def r_dragon_flyby(L):
+    """A wind dragon rushing past: the big gust at natural pitch, a low synth throat, and a tail."""
+    res = []
+    for key, ratio in (("wind_gust", 0.9), ("wind_woosh2", 0.8)):
+        x = pitch(L(key), ratio)
+        x = shape(x[onset(x, -20):], 0.15, 0.3, 0.6)
+        d = len(x) / SR
+        throat = g.saturate(g.osc_from_freq(70 + 20 * np.sin(2 * np.pi * 3 * g.t(d)), "saw"), 2.0) * g.env(d, 0.2, 0.4, 0.5, 0.2)
+        throat = g.lowpass(throat, 500)
+        res.append(finish(g.mix((x, 1.0), (throat[: len(x)], 0.35))))
+    return res
+
+
+def r_cast_qi(L):
+    """Qi release that opens every cast: the real gust pitched up and shaped short + synth sparkle."""
+    res = []
+    for key, ratio in (("wind_woosh", 2.4), ("wind_gust", 2.8), ("wind_woosh2", 2.0)):
+        x = pitch(L(key), ratio)
+        x = shape(x[onset(x, -18):], 0.03, 0.06, 0.4)
+        d = max(len(x) / SR, 0.5)
+        spark = g.crackle(d, 80, 4000, 13000, 0.0015) * g.expdecay(d, 0.2, delay=0.02)
+        tone = g.glide(1200, 2200, d, 0.6) * g.expdecay(d, 0.12) * 0.25
+        res.append(finish(g.reverb(g.mix((g.at(x, 0, d), 1.0), (spark, 0.35), (tone, 0.2)), 0.4, 0.35, 0.18)))
+    return res
+
+
+def r_riser(L):
+    """Anticipation before the big channelled skills: a reversed real thunder swell under the
+    synth riser, cut dead at the top."""
+    d = 2.0
+    th = clip(L("thunder_extreme"), dur=d, fade_out=0.02)[::-1].copy()
+    th = th * (g.t(len(th) / SR) / d) ** 1.6
+    synth = g.SOUNDS["skill/riser"]()[0]
+    x = g.mix((g.at(th, 0, d), 1.0), (g.at(synth, 0, d), 0.8))
+    return [g.norm(g.fade(g.highpass(x, 30, 2), 0.05, 0.005), 0.9)]
+
+
+def r_palm_strike(L):
+    """Vajra palm: the synthesised golden strike now sits on a real punch and a rock slap."""
+    res = []
+    for i, (punch_key, ratio) in enumerate((("punch_insanity", 0.9), ("punch_newage", 1.0))):
+        synth = g.SOUNDS["skill/palm_strike"]()[i]
+        d = len(synth) / SR
+        pun = pitch(_punch(L, punch_key, 0.4), ratio)
+        rock = g.lowpass(clip(L("rock_thrown"), dur=0.5, fade_out=0.25), 1200)
+        x = g.mix((synth, 1.0), (g.at(pun, 0.0, d), 0.9), (g.at(rock, 0.01, d), 0.45))
+        res.append(finish(x))
+    return res
+
+
+def r_shield_hit(L):
+    """Something hitting the qi shield: synth fizz + real punch + metallic thud."""
+    res = []
+    for i, punch_key in enumerate(("punch_taylor", "punch_jew")):
+        synth = g.SOUNDS["skill/shield_hit"]()[i]
+        d = len(synth) / SR
+        pun = _punch(L, punch_key)
+        thud = g.lowpass(clip(L("thud_metal"), dur=0.4, fade_out=0.2), 1500)
+        x = g.mix((synth, 1.0), (g.at(pun, 0.0, d), 0.6), (g.at(thud, 0.0, d), 0.5))
+        res.append(finish(x))
+    return res
+
+
+def r_dragon_roar(L):
+    """Dragon roar: the synthesised roar + a real recorded roar slowed down + thunder body."""
+    res = []
+    for i, (roar_key, ratio) in enumerate((("roar_mighty", 0.6), ("roar_beast", 0.85))):
+        synth = g.SOUNDS["skill/dragon_roar"]()[i]
+        d = len(synth) / SR
+        roar = pitch(clip(L(roar_key), dur=1.6, fade_out=0.4), ratio)
+        roar = g.bandpass(roar, 90, 3500)
+        th = g.lowpass(clip(L("thunder_josh"), dur=d, fade_out=0.5), 600)
+        x = g.mix((synth, 1.0), (g.at(roar, 0.05, d), 1.0), (g.at(th, 0.0, d), 0.6))
+        res.append(finish(g.reverb(x, 0.8, 0.45, 0.2)))
+    return res
+
+
+def r_qi_gather(L):
+    """Qi gathering: the synth shimmer with a reversed real gust drawing inward."""
+    synth = g.SOUNDS["skill/qi_gather"]()[0]
+    d = len(synth) / SR
+    gust = clip(L("wind_gust"), dur=min(1.4, d), fade_out=0.01)[::-1].copy()
+    gust = g.bandpass(gust, 300, 5000)
+    x = g.mix((synth, 1.0), (g.at(gust, max(0.0, d - len(gust) / SR - 0.05), d), 0.7))
+    return [finish(x)]
+
+
+def r_void_drain(L):
+    """Devouring vortex pull: synth drone + reversed thunder rolling in."""
+    synth = g.SOUNDS["skill/void_drain"]()[0]
+    d = len(synth) / SR
+    th = clip(L("thunder_netaj"), dur=d, fade_out=0.01)[::-1].copy()
+    th = g.lowpass(th, 900) * (g.t(len(th) / SR) / d) ** 1.2
+    return [finish(g.mix((synth, 1.0), (g.at(th, 0, d), 0.6)))]
+
+
+def r_void_collapse(L):
+    """Vortex collapse: synth implosion + firework explosion + reversed thunder swallow."""
+    synth = g.SOUNDS["skill/void_collapse"]()[0]
+    d = len(synth) / SR
+    boom = clip(L("boom_firework_sharp"), dur=1.2, fade_out=0.4)
+    th = clip(L("thunder_josh"), dur=0.7, fade_out=0.01)[::-1].copy() * (g.t(0.7) / 0.7) ** 2
+    x = g.mix((synth, 1.0), (g.at(boom, 0.7, d), 0.9), (g.at(th, 0.0, d), 0.6))
+    return [finish(x)]
+
+
+def r_sub_drop(L):
+    """Cinematic sub-drop: synth drop + the real bomb's low body."""
+    synth = g.SOUNDS["skill/sub_drop"]()[0]
+    d = len(synth) / SR
+    bag = g.lowpass(clip(L("boom_bag"), dur=0.9, fade_out=0.3), 220)
+    return [finish(g.mix((synth, 1.0), (g.at(bag, 0.0, d), 0.8)))]
+
+
+def r_golden_body(L):
+    """Golden body: the synth bell/shell with a real gong strike ringing behind it."""
+    synth = g.SOUNDS["skill/golden_body"]()[0]
+    d = len(synth) / SR
+    gong = pitch(clip(L("gong_di"), dur=min(2.4, d), fade_out=0.6), 1.3)
+    thud = clip(L("thud_metal"), dur=0.4, fade_out=0.2)
+    return [finish(g.mix((synth, 1.0), (g.at(gong, 0.02, d), 0.5), (g.at(thud, 0.0, d), 0.4)))]
+
+
 RECIPES = {
+    "skill/hit_slash": r_hit_slash,
+    "skill/hit_blunt": r_hit_blunt,
+    "skill/hit_fire": r_hit_fire,
+    "skill/hit_ice": r_hit_ice,
+    "skill/hit_shock": r_hit_shock,
+    "skill/dragon_flyby": r_dragon_flyby,
+    "skill/cast_qi": r_cast_qi,
+    "skill/riser": r_riser,
+    "skill/sub_drop": r_sub_drop,
+    "skill/palm_strike": r_palm_strike,
+    "skill/shield_hit": r_shield_hit,
+    "skill/dragon_roar": r_dragon_roar,
+    "skill/qi_gather": r_qi_gather,
+    "skill/void_drain": r_void_drain,
+    "skill/void_collapse": r_void_collapse,
+    "skill/golden_body": r_golden_body,
     "skill/thunder_strike": r_thunder_strike,
     "skill/fire_whoosh": r_fire_whoosh,
     "skill/fire_explosion": r_fire_explosion,
@@ -506,7 +732,7 @@ def main():
             p = name if len(variants) == 1 else "%s_%d" % (name, i + 1)
             full = os.path.join(OUT, p + ".ogg")
             os.makedirs(os.path.dirname(full), exist_ok=True)
-            x = np.clip(x, -1, 1).astype(np.float32)
+            x = np.clip(g.master(x, p), -1, 1).astype(np.float32)
             sf.write(full, x, SR, format="OGG", subtype="VORBIS")
             paths.append("real/" + p)
             print("%-32s %.2fs  <- %s" % (p, len(x) / SR, ", ".join(sorted(keys))))

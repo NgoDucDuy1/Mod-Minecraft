@@ -83,7 +83,7 @@ public class SwordFlightSkill extends Skill {
 					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, caster), 6.0f)) {
 						EntityUtil.knockback(target, pos, 0.5, 0.3);
 						SkillFx.swordGlints(world, target.getBoundingBox().getCenter(), 10, 0.3);
-						world.playSound(null, target.getBlockPos(), ModSounds.SWORD_QI, SoundCategory.PLAYERS, 0.8f, 1.3f);
+						world.playSound(null, target.getBlockPos(), ModSounds.HIT_SLASH, SoundCategory.PLAYERS, 0.9f, 1.0f + world.random.nextFloat() * 0.1f);
 					}
 				}
 			}
@@ -122,7 +122,7 @@ public class SwordFlightSkill extends Skill {
 				ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, ground.add(0, 0.1, 0), 0x9FE8FF, 3.0f + power * 2.0f, 12));
 				ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, ground.add(0, 0.8, 0), 0xE8FBFF, 1.2f + power * 0.5f, 8));
 				SkillFx.swordGlints(world, ground.add(0, 0.5, 0), 30, 0.5);
-				world.playSound(null, caster.getBlockPos(), ModSounds.SWORD_QI, SoundCategory.PLAYERS, 1.3f, 0.7f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.HIT_SLASH, SoundCategory.PLAYERS, 1.3f, 0.9f);
 				ModPackets.sendCameraShake(world, ground, 20.0, 0.5f, 8);
 				caster.fallDistance = 0.0f;
 				for (LivingEntity target : EntityUtil.inCylinder(world, caster, ground, 2.5 + power * 1.5, 2.5)) {

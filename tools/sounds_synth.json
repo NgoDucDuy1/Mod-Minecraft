@@ -1,4 +1,41 @@
 {
+	"skill/hit_slash": [
+		"synth/skill/hit_slash_1",
+		"synth/skill/hit_slash_2",
+		"synth/skill/hit_slash_3"
+	],
+	"skill/hit_blunt": [
+		"synth/skill/hit_blunt_1",
+		"synth/skill/hit_blunt_2",
+		"synth/skill/hit_blunt_3"
+	],
+	"skill/hit_fire": [
+		"synth/skill/hit_fire_1",
+		"synth/skill/hit_fire_2"
+	],
+	"skill/hit_ice": [
+		"synth/skill/hit_ice_1",
+		"synth/skill/hit_ice_2"
+	],
+	"skill/hit_shock": [
+		"synth/skill/hit_shock_1",
+		"synth/skill/hit_shock_2"
+	],
+	"skill/dragon_flyby": [
+		"synth/skill/dragon_flyby_1",
+		"synth/skill/dragon_flyby_2"
+	],
+	"skill/cast_qi": [
+		"synth/skill/cast_qi_1",
+		"synth/skill/cast_qi_2",
+		"synth/skill/cast_qi_3"
+	],
+	"skill/riser": [
+		"synth/skill/riser"
+	],
+	"skill/sub_drop": [
+		"synth/skill/sub_drop"
+	],
 	"skill/sword_qi": [
 		"synth/skill/sword_qi_1",
 		"synth/skill/sword_qi_2",

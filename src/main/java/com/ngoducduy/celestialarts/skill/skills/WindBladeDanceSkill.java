@@ -68,7 +68,7 @@ public class WindBladeDanceSkill extends Skill {
 					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.WIND, caster), 3.0f)) {
 						EntityUtil.knockback(target, caster.getPos(), 0.25, 0.05);
 						SkillFx.windGust(world, target.getBoundingBox().getCenter(), target.getPos().subtract(caster.getPos()), 6, 0.3);
-						world.playSound(null, target.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 0.6f, 1.3f + world.random.nextFloat() * 0.3f);
+						world.playSound(null, target.getBlockPos(), ModSounds.HIT_SLASH, SoundCategory.PLAYERS, 0.8f, 1.0f + world.random.nextFloat() * 0.1f);
 					}
 				}
 			}
@@ -105,7 +105,7 @@ public class WindBladeDanceSkill extends Skill {
 				}
 			}
 			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, caster.getPos().add(0, 0.1, 0), 0xB8FFD9, (float) FINALE_RANGE, 12));
-			world.playSound(null, caster.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 1.4f, 0.7f);
+			world.playSound(null, caster.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 1.4f, 0.9f);
 		}
 	}
 }

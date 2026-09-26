@@ -94,7 +94,7 @@ public class ThunderDragonEntity extends SkillProjectileEntity {
 			Vec3d c = target.getBoundingBox().getCenter();
 			SkillFx.thunderSparks(sw, c, 16, 0.4);
 			ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c, 0xE6D6FF, 1.0F, 6));
-			sw.playSound(null, target.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 1.0F, 1.3F + random.nextFloat() * 0.2F);
+			sw.playSound(null, target.getBlockPos(), ModSounds.HIT_SHOCK, SoundCategory.PLAYERS, 1.0F, 0.95F + random.nextFloat() * 0.1F);
 			// Fork into up to two neighbours.
 			int forks = 0;
 			for (LivingEntity other : EntityUtil.inSphere(sw, owner == null ? this : owner, c, 5.0)) {

@@ -99,6 +99,7 @@ public class RockSpikeEntity extends Entity {
 				if (target.damage(ModDamageTypes.projectile(this.getWorld(), ModDamageTypes.EARTH, this, owner), damage)) {
 					target.addVelocity(0, 0.7 + h * 0.08, 0);
 					target.velocityModified = true;
+					this.getWorld().playSound(null, target.getBlockPos(), ModSounds.HIT_BLUNT, SoundCategory.PLAYERS, 1.0f, 0.9f + random.nextFloat() * 0.15f);
 				}
 			}
 		}

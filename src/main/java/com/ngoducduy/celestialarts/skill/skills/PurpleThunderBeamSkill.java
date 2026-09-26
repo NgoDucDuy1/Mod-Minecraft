@@ -73,6 +73,7 @@ public class PurpleThunderBeamSkill extends Skill {
 				ModPackets.sendFx(caster, FxData.follow(FxType.BEAM, caster.getId(), caster.getPos(), purple, 0.55f, MAX_DURATION).withExtra((int) RANGE));
 				ModPackets.sendFx(caster, FxData.follow(FxType.MAGIC_CIRCLE, caster.getId(), caster.getPos(), purple, 2.4f, MAX_DURATION).withExtra(2));
 				world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_CHARGE, SoundCategory.PLAYERS, 1.2f, 1.0f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 1.0f, 1.3f);
 			}
 			PlayerQi qi = QiHolder.get(caster);
 			if (!caster.isCreative() && !qi.consumeQi(DRAIN_PER_TICK)) {
@@ -135,7 +136,7 @@ public class PurpleThunderBeamSkill extends Skill {
 
 		@Override
 		protected void onEnd(boolean cancelled) {
-			world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 0.6f, 1.5f);
+			world.playSound(null, caster.getBlockPos(), ModSounds.HIT_SHOCK, SoundCategory.PLAYERS, 0.8f, 0.9f);
 			// Tell clients to stop the beam early (the fx checks entity + duration; a short
 			// burst marks the end for the player).
 			ModPackets.sendFx(caster, FxData.follow(FxType.BEAM, caster.getId(), caster.getPos(), 0xB57BFF, 0f, 0).withExtra(-1));

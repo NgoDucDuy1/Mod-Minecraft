@@ -41,6 +41,17 @@ public final class ModSounds {
 	public static final SoundEvent FREEZE_FIELD = register("skill.freeze_field");
 	public static final SoundEvent LEARN_SKILL = register("item.learn_skill");
 	public static final SoundEvent SPIRIT_STONE = register("item.spirit_stone");
+	// 1.3.7 feedback layer: every skill opens with a qi release, every hit has an element-specific
+	// body impact, the biggest moments get a riser before and a sub-drop after.
+	public static final SoundEvent CAST_QI = register("skill.cast_qi");
+	public static final SoundEvent HIT_SLASH = register("skill.hit_slash");
+	public static final SoundEvent HIT_BLUNT = register("skill.hit_blunt");
+	public static final SoundEvent HIT_FIRE = register("skill.hit_fire");
+	public static final SoundEvent HIT_ICE = register("skill.hit_ice");
+	public static final SoundEvent HIT_SHOCK = register("skill.hit_shock");
+	public static final SoundEvent RISER = register("skill.riser");
+	public static final SoundEvent SUB_DROP = register("skill.sub_drop");
+	public static final SoundEvent DRAGON_FLYBY = register("skill.dragon_flyby");
 
 	private ModSounds() {
 	}

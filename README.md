@@ -93,6 +93,12 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.7 – Lớp âm thanh phản hồi & mastering
+- **Lớp âm thanh phản hồi mới (feedback layer)** – 9 sự kiện âm thanh mới: `cast_qi` (mọi kỹ năng thi triển thành công đều mở đầu bằng một tiếng linh khí bộc phát ngắn, phát tập trung tại `SkillManager`), `hit_slash` / `hit_blunt` / `hit_fire` / `hit_ice` / `hit_shock` (tiếng đòn trúng thân theo từng hệ – trước đây phần lớn kỹ năng trúng mục tiêu mà **không có tiếng va chạm**, chỉ phát lại tiếng vung), `riser` (tiếng dâng 2 giây trước Cửu Thiên Lôi Kiếp, Thiên Kiếm, Vạn Kiếm, Tử Lôi Quang, đột phá), `sub_drop` (tiếng nện siêu trầm điện ảnh cho những cú va chạm lớn nhất: Thiên Kiếm, Hỏa Liên Hoa nổ, Hư Không sụp, Địa Liệt, đột phá) và `dragon_flyby` (phong long lướt qua).
+- **Bản thu thật cho các event từng là synth chán nhất:** đòn trúng thân dùng bản thu kiếm chém + đấm thật (CC0), Kim Cang Chưởng và hộ thuẫn nay có cú đấm thật phía dưới, Long Ngâm lồng thêm tiếng gầm thu thật + sấm, Hư Không hút/sụp dùng sấm đảo ngược, Kim Thân có tiếng cồng thật, Tụ Khí có gió đảo ngược.
+- **Mastering thống nhất** cho toàn bộ 60+ file (cả synth lẫn bản thu): chuẩn hoá độ lớn ngắn hạn A-weighted theo nhóm (đòn lớn −10.5 dB, va chạm −12.5, thi triển −15.5, vòng lặp −21), transient shaper làm đanh phần đầu của các đòn đánh, thêm "air" trên 6 kHz, giới hạn mềm tanh – hết tình trạng tiếng to nhỏ lệch nhau và tiếng đục.
+- **Bỏ pitch-down cực đoan** trên bản thu thật (0.5–0.7 khiến âm thanh đục và "chậm"): Phong Long, Thiên Kiếm, Băng Nhận, Địa Liệt, Cửu Thiên Lôi Kiếp, Kiếm Ngự đều phát ở pitch ≈ 0.9–1.0 với event chuyên dụng.
+
 ### 1.3.6 – Âm thanh thật từ đời thực
 * **19 sự kiện dùng bản thu thật** (36 bản ghi Freesound, tất cả giấy phép **CC0**, liệt kê trong `tools/SOUND_CREDITS.md`):
   sét thật cho `thunder_strike` (Cửu Thiên Lôi Kiếp, Lôi Long, Tử Lôi, Lôi Bộ, đột phá – 4 bản), lửa thật (`fire_whoosh` ×3),

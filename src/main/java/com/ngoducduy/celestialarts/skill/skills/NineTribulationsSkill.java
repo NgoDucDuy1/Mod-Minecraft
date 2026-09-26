@@ -70,7 +70,8 @@ public class NineTribulationsSkill extends Skill {
 				ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, center.add(0, 0.06, 0), purple, (float) AREA_RADIUS, duration).withExtra(2));
 				// The heavens press down: the whole screen darkens for the tribulation.
 				ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, center, 0x1A0F33, 0.85f, duration).withExtra(1));
-				world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_CHARGE, SoundCategory.PLAYERS, 2.0f, 0.7f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.THUNDER_CHARGE, SoundCategory.PLAYERS, 2.0f, 0.85f);
+				world.playSound(null, caster.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 2.0f, 1.0f);
 				world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(center), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 1.5f, 0.6f);
 				SkillFx.runes(world, center.add(0, 0.3, 0), 20, AREA_RADIUS * 0.8);
 			}
@@ -112,7 +113,8 @@ public class NineTribulationsSkill extends Skill {
 			ModPackets.sendFx(world, FxData.at(FxType.GROUND_DECAL, hit.add(0, 0.03, 0), color, (float) radius * (last ? 1.2f : 0.9f), last ? 700 : 400));
 			SkillFx.thunderSparks(world, hit.add(0, 0.5, 0), last ? 60 : 24, last ? 0.8 : 0.45);
 			SkillFx.rockDebris(world, hit, last ? 20 : 6, 0.5);
-			world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(hit), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, last ? 3.0f : 1.8f, last ? 0.7f : 0.9f + world.random.nextFloat() * 0.3f);
+			world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(hit), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, last ? 3.0f : 1.8f, last ? 0.9f : 0.95f + world.random.nextFloat() * 0.2f);
+			if (last) world.playSound(null, net.minecraft.util.math.BlockPos.ofFloored(hit), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 2.5f, 1.0f);
 			ModPackets.sendCameraShake(world, hit, 40.0, last ? 1.4f : 0.6f, last ? 16 : 7);
 			ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, hit, 0xD9C7FF, last ? 0.9f : 0.45f, last ? 10 : 6));
 

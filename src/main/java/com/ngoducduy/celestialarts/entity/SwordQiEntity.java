@@ -64,7 +64,7 @@ public class SwordQiEntity extends SkillProjectileEntity {
 			living.velocityModified = true;
 			if (this.getWorld() instanceof ServerWorld sw) {
 				SkillFx.swordGlints(sw, target.getBoundingBox().getCenter(), 10, 0.25);
-				sw.playSound(null, target.getBlockPos(), ModSounds.SWORD_QI, SoundCategory.PLAYERS, 0.8f, 1.4f + random.nextFloat() * 0.3f);
+				sw.playSound(null, target.getBlockPos(), ModSounds.HIT_SLASH, SoundCategory.PLAYERS, 1.0f, 0.95f + random.nextFloat() * 0.1f);
 			}
 		}
 		return true;

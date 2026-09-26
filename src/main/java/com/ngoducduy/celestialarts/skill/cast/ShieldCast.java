@@ -107,7 +107,7 @@ public class ShieldCast extends ActiveCast {
 		ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, center.add(0, 0.1, 0), color, 4.0f, 12));
 		ModPackets.sendFx(world, FxData.at(FxType.ENERGY_BURST, center.add(0, 1.0, 0), color, 1.6f, 8));
 		SkillFx.shell(world, GlowParticleEffect.glow(color, 0.6f, 16), caster.getBoundingBox().getCenter(), 1.3, 40, 0.25);
-		world.playSound(null, caster.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.0f, 0.6f);
+		world.playSound(null, caster.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.0f, 0.9f);
 		world.playSound(null, caster.getBlockPos(), ModSounds.EARTH_QUAKE, SoundCategory.PLAYERS, 0.8f, 1.2f);
 		for (LivingEntity e : EntityUtil.inSphere(world, caster, center.add(0, 1, 0), 4.0)) {
 			if (e.damage(ModDamageTypes.source(world, ModDamageTypes.EARTH, caster), wave)) {

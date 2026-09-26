@@ -280,7 +280,7 @@ public class SpiritSwordEntity extends Entity {
 			}
 			if (this.getWorld() instanceof ServerWorld sw) {
 				SkillFx.swordGlints(sw, hit.getPos(), 12, 0.3);
-				sw.playSound(null, this.getBlockPos(), ModSounds.SWORD_QI, SoundCategory.PLAYERS, 1.0f, 1.2f + random.nextFloat() * 0.3f);
+				sw.playSound(null, this.getBlockPos(), ModSounds.HIT_SLASH, SoundCategory.PLAYERS, 1.0f, 0.95f + random.nextFloat() * 0.1f);
 			}
 			this.setPosition(hit.getPos().x, hit.getPos().y, hit.getPos().z);
 			this.setVelocity(Vec3d.ZERO);

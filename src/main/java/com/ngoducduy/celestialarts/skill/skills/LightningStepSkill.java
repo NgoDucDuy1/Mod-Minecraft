@@ -98,7 +98,7 @@ public class LightningStepSkill extends Skill {
 				next.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 25, 3, false, false, true), player);
 				SkillFx.thunderSparks(ctx.world(), hit, 8, 0.25);
 			}
-			ctx.world().playSound(null, next.getBlockPos(), ModSounds.THUNDER_STRIKE, SoundCategory.PLAYERS, 0.5f, 1.5f + hop * 0.15f);
+			ctx.world().playSound(null, next.getBlockPos(), ModSounds.HIT_SHOCK, SoundCategory.PLAYERS, 0.9f, 1.0f + hop * 0.08f);
 			from = hit;
 			dmg *= 0.7f;
 		}

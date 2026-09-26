@@ -53,8 +53,9 @@ public class HeavenSwordSkill extends Skill {
 		ModPackets.sendFx(player, FxData.follow(FxType.QI_AURA, player.getId(), player.getPos(), 0xFFE9A8, 1.3f, HeavenSwordEntity.MATERIALISE_TICKS));
 		ModPackets.sendFx(player, FxData.follow(FxType.MAGIC_CIRCLE, player.getId(), player.getPos(), 0xFFE9A8, 3.0f, HeavenSwordEntity.MATERIALISE_TICKS).withExtra(1));
 		SkillFx.goldenLight(ctx.world(), player.getPos().add(0, 1, 0), 40, 1.5);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.5f, 0.8f);
-		ctx.world().playSound(null, player.getBlockPos(), ModSounds.SWORD_HUM, SoundCategory.PLAYERS, 1.5f, 0.6f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.2f, 0.9f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 1.4f, 1.0f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.SWORD_HUM, SoundCategory.PLAYERS, 1.5f, 0.8f);
 		return true;
 	}
 

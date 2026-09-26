@@ -72,7 +72,7 @@ public class WindDragonEntity extends SkillProjectileEntity {
 			}
 		}
 		if (this.age % 10 == 0) {
-			sw.playSound(null, this.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 0.9F, 0.6F + random.nextFloat() * 0.1F);
+			sw.playSound(null, this.getBlockPos(), ModSounds.DRAGON_FLYBY, SoundCategory.PLAYERS, 0.9F, 0.95F + random.nextFloat() * 0.1F);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class WindDragonEntity extends SkillProjectileEntity {
 		ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c.add(0, FUNNEL_HEIGHT * 0.5, 0), 0xE8FFF3, 1.8F, 8));
 		SkillFx.ring(sw, ModParticles.WIND_STREAK, c.add(0, 0.5, 0), 1.0, 40, 0.6, 0.2);
 		SkillFx.shell(sw, ModParticles.WIND_STREAK, c.add(0, FUNNEL_HEIGHT * 0.5, 0), 1.5, 30, 0.45);
-		sw.playSound(null, this.getBlockPos(), ModSounds.WIND_SLASH, SoundCategory.PLAYERS, 1.6F, 0.5F);
+		sw.playSound(null, this.getBlockPos(), ModSounds.DRAGON_FLYBY, SoundCategory.PLAYERS, 1.6F, 0.8F);
 	}
 
 	@Override

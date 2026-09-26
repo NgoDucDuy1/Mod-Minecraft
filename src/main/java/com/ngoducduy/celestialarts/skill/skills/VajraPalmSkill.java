@@ -57,6 +57,7 @@ public class VajraPalmSkill extends Skill {
 		for (LivingEntity target : EntityUtil.inCone(ctx.world(), player, origin, look, RANGE, HALF_ANGLE)) {
 			if (target.damage(ModDamageTypes.source(ctx.world(), ModDamageTypes.HEAVEN, player), DAMAGE)) {
 				hitAny = true;
+				ctx.world().playSound(null, target.getBlockPos(), ModSounds.HIT_BLUNT, SoundCategory.PLAYERS, 1.2f, 0.9f);
 				Vec3d push = look.multiply(1.6).add(0, 0.35, 0);
 				target.addVelocity(push.x, push.y, push.z);
 				target.velocityModified = true;

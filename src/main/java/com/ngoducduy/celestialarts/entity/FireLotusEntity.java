@@ -168,6 +168,7 @@ public class FireLotusEntity extends SkillProjectileEntity {
 				target.addStatusEffect(new StatusEffectInstance(ModEffects.QI_BURN, 100, 1, false, true, true), owner);
 				target.setOnFireFor(6);
 				EntityUtil.knockback(target, center, 0.9 * falloff + 0.3, 0.45);
+				sw.playSound(null, target.getBlockPos(), ModSounds.HIT_FIRE, SoundCategory.PLAYERS, 0.8f, 0.85f);
 			}
 		}
 
@@ -181,7 +182,8 @@ public class FireLotusEntity extends SkillProjectileEntity {
 		SkillFx.shell(sw, ModParticles.FLAME_WISP, center, 1.0, 40, 0.35);
 		SkillFx.ring(sw, ModParticles.EMBER, center.add(0, 0.2, 0), 1.0, 32, 0.5, 0.15);
 		SkillFx.burst(sw, ModParticles.LOTUS_PETAL, center, 40, 0.5, 0.4);
-		sw.playSound(null, this.getBlockPos(), ModSounds.FIRE_EXPLOSION, SoundCategory.PLAYERS, 2.0f, 0.9f);
+		sw.playSound(null, this.getBlockPos(), ModSounds.FIRE_EXPLOSION, SoundCategory.PLAYERS, 2.0f, 1.0f);
+		sw.playSound(null, this.getBlockPos(), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 1.8f, 1.0f);
 		sw.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 1.2f, 0.7f);
 		ModPackets.sendCameraShake(sw, center, 30.0, 0.9f, 12);
 		ModPackets.sendFx(sw, FxData.at(FxType.SCREEN_FLASH, center, 0xFFB35C, 0.7f, 10));

@@ -849,7 +849,112 @@ def s_freeze_field():
     return [norm(fade(reverb(x, 1.0, 0.6, 0.3), 0.05, 0.5), 0.85)]
 
 
+def s_riser():
+    """Anticipation before a big channelled skill: a 2 s reverse swell - filtered noise rising in
+    pitch and density, a detuned drone climbing an octave, sparks thickening, cut dead at the top."""
+    d = 2.0
+    tt = t(d)
+    u = tt / d
+    swell = sweep(noise(d), 120, 6000, q=2.5, shape=0.8) * u ** 2.2
+    drone = osc_from_freq(55 * 2 ** u, "saw") + osc_from_freq(55.4 * 2 ** u, "saw") + 0.5 * osc_from_freq(110 * 2 ** u, "square")
+    drone = sweep(drone, 150, 3000, q=0.8, shape=1.0, mode="low") * u ** 1.8
+    sparks = crackle(d, 60, 2500, 10000, 0.003) * u ** 3
+    thump = np.zeros_like(tt)
+    for k in range(8):  # accelerating pulses
+        p = d * (1 - 0.55 * (1 - k / 8.0) ** 1.6)
+        thump += at(lowpass(noise(0.12), 200) * expdecay(0.12, 0.03) * (0.3 + 0.1 * k), p, d)
+    x = mix((swell, 1.0), (saturate(drone, 1.5), 0.35), (sparks, 0.5), (thump, 0.8))
+    return [norm(fade(x, 0.05, 0.01), 0.9)]
+
+
+def s_sub_drop():
+    """Cinematic sub-drop layer for the biggest impacts: click + 90->25 Hz sine drop + saturated
+    thump + a short broadband slap so it reads on small speakers too."""
+    d = 1.1
+    click = bandpass(noise(d), 1500, 8000) * expdecay(d, 0.004)
+    drop = saturate(glide(95, 24, d, 0.45) * expdecay(d, 0.45), 1.8)
+    thump = lowpass(noise(d), 180) * expdecay(d, 0.07)
+    slap = bandpass(noise(d), 200, 2500) * expdecay(d, 0.03)
+    x = mix((click, 0.7), (drop, 1.0), (thump, 1.2), (slap, 0.8))
+    return [norm(fade(x, 0.001, 0.3))]
+
+
+def s_cast_qi():
+    """Qi release at the start of every skill: a short bright burst of air with a sparkle tail."""
+    out = []
+    for i, (fpk, d) in enumerate([(3800, 0.55), (3000, 0.6), (4600, 0.5)]):
+        burst = whoosh(d, 400, fpk, 1200, q=4, peak_at=0.18, gain_curve=0.6) * expdecay(d, 0.28)
+        spark = crackle(d, 90, 4000, 13000, 0.0015) * expdecay(d, 0.2, delay=0.02)
+        tone = glide(fpk * 0.35, fpk * 0.6, d, 0.6) * expdecay(d, 0.12) * 0.3
+        puff = lowpass(noise(d), 300) * expdecay(d, 0.05)
+        x = mix((burst, 1.0), (spark, 0.35), (tone, 0.25), (puff, 1.0))
+        out.append(norm(fade(reverb(x, 0.4, 0.35, 0.18))))
+    return out
+
+
+def _body_hit(d, crack_hi, tone_f, tail):
+    """Generic synthesised body hit: click + mid thud + sub + tail (fallback when no recording)."""
+    click = bandpass(noise(d), 800, crack_hi) * expdecay(d, 0.006)
+    thud = bandpass(noise(d), 120, 700) * expdecay(d, 0.045)
+    sub = saturate(glide(120, 45, d, 0.3) * expdecay(d, 0.09), 1.6)
+    ring = resonant(noise(d), tone_f, 25) * expdecay(d, tail) * 0.3
+    return mix((click, 0.9), (thud, 1.0), (sub, 0.8), (ring, 1.0))
+
+
+def s_hit_slash():
+    return [norm(fade(reverb(_body_hit(0.55, 9000, f, 0.12) + 0.3 * highpass(noise(0.55), 4000) * expdecay(0.55, 0.05), 0.25, 0.3, 0.12))) for f in (3200, 4100, 2600)]
+
+
+def s_hit_blunt():
+    return [norm(fade(reverb(_body_hit(0.5, 4000, f, 0.08), 0.3, 0.3, 0.1))) for f in (420, 300, 520)]
+
+
+def s_hit_fire():
+    out = []
+    for f in (1800, 2400):
+        d = 0.65
+        x = _body_hit(d, 5000, f, 0.1) + 0.5 * crackle(d, 60, 1500, 8000, 0.003) * expdecay(d, 0.25) + 0.4 * bandpass(noise(d), 300, 3000) * expdecay(d, 0.2)
+        out.append(norm(fade(reverb(x, 0.3, 0.35, 0.12))))
+    return out
+
+
+def s_hit_ice():
+    out = []
+    for f in (4200, 5600):
+        d = 0.6
+        x = _body_hit(d, 12000, f, 0.15) + 0.4 * crackle(d, 40, 3000, 12000, 0.002) * expdecay(d, 0.15)
+        out.append(norm(fade(reverb(x, 0.35, 0.4, 0.15))))
+    return out
+
+
+def s_hit_shock():
+    out = []
+    for f in (2800, 3600):
+        d = 0.5
+        x = _body_hit(d, 10000, f, 0.08) + 0.5 * crackle(d, 200, 2000, 12000, 0.001) * expdecay(d, 0.12) + 0.3 * electric_buzz(d, 40, 300, dropout=0.4, shape=1.2) * expdecay(d, 0.15)
+        out.append(norm(fade(reverb(x, 0.25, 0.3, 0.1))))
+    return out
+
+
+def s_dragon_flyby():
+    out = []
+    for fpk in (900, 1300):
+        d = 1.1
+        x = whoosh(d, 150, fpk, 200, q=3, peak_at=0.4) + 0.35 * lowpass(saturate(osc_from_freq(70 + 20 * np.sin(2 * np.pi * 3 * t(d)), "saw"), 2.0), 500) * env(d, 0.2, 0.4, 0.5, 0.2)
+        out.append(norm(fade(x, 0.05, 0.2)))
+    return out
+
+
 SOUNDS = {
+    "skill/hit_slash": s_hit_slash,
+    "skill/hit_blunt": s_hit_blunt,
+    "skill/hit_fire": s_hit_fire,
+    "skill/hit_ice": s_hit_ice,
+    "skill/hit_shock": s_hit_shock,
+    "skill/dragon_flyby": s_dragon_flyby,
+    "skill/cast_qi": s_cast_qi,
+    "skill/riser": s_riser,
+    "skill/sub_drop": s_sub_drop,
     "skill/sword_qi": s_sword_qi,
     "skill/sword_hum": s_sword_hum,
     "skill/sword_launch": s_sword_launch,
@@ -898,13 +1003,90 @@ def trim_silence(x, floor_db=-46.0, keep=0.05):
     return y
 
 
+# ------------------------------------------------------------------ mastering
+# Target short-term loudness (A-weighted RMS of the loudest 300 ms window, dBFS) per sound class so
+# that hits punch, casts sit underneath and loops stay in the background at equal in-game volume.
+KIND_TARGET = {"big": -10.5, "impact": -12.5, "cast": -15.5, "soft": -18.5, "loop": -21.0}
+EVENT_KIND = {
+    "big": {"fire_explosion", "heaven_sword_impact", "breakthrough", "thunder_strike", "earth_quake", "void_collapse", "sub_drop"},
+    "impact": {"sword_qi", "sword_launch", "ice_shatter", "shield_hit", "palm_strike", "lightning_step", "wind_slash", "fire_whoosh",
+               "dragon_roar", "dragon_flyby", "hit_slash", "hit_blunt", "hit_fire", "hit_ice", "hit_shock", "golden_body"},
+    "cast": {"ice_cast", "thunder_charge", "shield_up", "formation", "qi_gather", "freeze_field", "heaven_sword_fall", "void_drain",
+             "cast_qi", "riser", "learn_skill", "spirit_stone"},
+    "soft": {"sword_hum"},
+    "loop": {"beam_loop", "sword_flight"},
+}
+
+
+def kind_of(path):
+    base = os.path.basename(path)
+    base = base.rsplit("_", 1)[0] if base[-1].isdigit() and "_" in base else base
+    for k, names in EVENT_KIND.items():
+        if base in names:
+            return k
+    return "cast"
+
+
+def a_weighted(x):
+    spec = np.fft.rfft(x)
+    f = np.fft.rfftfreq(len(x), 1 / SR)
+    f2 = np.maximum(f, 1.0) ** 2
+    ra = (12194 ** 2 * f2 ** 2) / ((f2 + 20.6 ** 2) * np.sqrt((f2 + 107.7 ** 2) * (f2 + 737.9 ** 2)) * (f2 + 12194 ** 2))
+    return np.fft.irfft(spec * ra * 1.2589, n=len(x))
+
+
+def short_term_db(x, win=0.3):
+    """Loudest 300 ms A-weighted RMS, in dBFS."""
+    w = min(len(x), n_samples(win))
+    p = a_weighted(x) ** 2
+    cs = np.cumsum(np.concatenate([[0.0], p]))
+    rms = np.sqrt(np.max(cs[w:] - cs[:-w]) / w) if len(p) > w else np.sqrt(np.mean(p))
+    return 20 * np.log10(rms + 1e-9)
+
+
+def transient_shape(x, amount=0.6, fast=0.001, slow=0.05):
+    """Emphasise attacks: boost where the fast envelope exceeds the slow one."""
+    af = np.exp(-1 / (SR * fast))
+    as_ = np.exp(-1 / (SR * slow))
+    ax = np.abs(x)
+    ef = signal.lfilter([1 - af], [1, -af], ax)
+    es = signal.lfilter([1 - as_], [1, -as_], ax)
+    gain = 1 + amount * np.clip(ef / (es + 1e-6) - 1, 0, 2.5)
+    return x * gain
+
+
+def soft_limit(x, ceiling=0.97, knee=0.6):
+    """Soft-knee limiter: linear below `knee`, tanh-compressed above, never exceeding `ceiling`."""
+    y = x.copy()
+    over = np.abs(x) > knee
+    span = ceiling - knee
+    y[over] = np.sign(x[over]) * (knee + span * np.tanh((np.abs(x[over]) - knee) / span))
+    return y
+
+
+def master(x, path):
+    """Final chain for every file (synth and real): rumble cut, transient emphasis on hits, a touch
+    of 'air', loudness normalisation to the class target, soft limiting."""
+    kind = kind_of(path)
+    x = highpass(x, 30, 2)
+    if kind in ("big", "impact"):
+        x = transient_shape(x, 0.6 if kind == "impact" else 0.4)
+    if kind != "loop":
+        x = x + 0.3 * highpass(x, 6000, 2)
+    gain = 10 ** ((KIND_TARGET[kind] - short_term_db(x)) / 20)
+    x = x * min(gain, 40.0)
+    x = soft_limit(x)
+    if np.max(np.abs(x)) > 0.985:
+        x = x / np.max(np.abs(x)) * 0.985
+    return x
+
+
 def write(path, x):
     full = os.path.join(OUT, path + ".ogg")
     os.makedirs(os.path.dirname(full), exist_ok=True)
     if path not in LOOPS:
         x = trim_silence(x)
-    if path not in LOOPS:
-        x = norm(highpass(x, 32, 2), 0.9)
+    x = master(x, path)
     x = np.clip(x, -1, 1).astype(np.float32)
     sf.write(full, x, SR, format="OGG", subtype="VORBIS")
     return len(x) / SR
@@ -926,7 +1108,7 @@ def analyse(name, x):
     bands = [int(round(100 * np.sum(spec[(f >= a) & (f < b)]) / tot)) for a, b in zip(edges[:-1], edges[1:])]
     sp = spec[(f > 60) & (f < 12000)] + 1e-12
     flat = float(np.exp(np.mean(np.log(sp))) / np.mean(sp))
-    print("    %-30s rms %.3f cent %5d Hz  bands%% %-22s flat %.3f" % (name, rms, cent, bands, flat))
+    print("    %-30s ST %.1f dB peak %.2f cent %5d Hz  bands%% %-22s flat %.3f" % (name, short_term_db(x), float(np.max(np.abs(x))), cent, bands, flat))
 
 
 def build_sounds_json():
@@ -978,7 +1160,7 @@ def main():
             paths.append(p)
             print("%-32s %.2fs" % (p, dur))
             if do_analyse:
-                analyse(p, x if p in LOOPS else trim_silence(x))
+                analyse(p, master(x if p in LOOPS else trim_silence(x), p))
         files[name] = ["synth/" + p for p in paths]
     with open(SYNTH_MANIFEST, "w") as f:
         json.dump(files, f, indent="\t")

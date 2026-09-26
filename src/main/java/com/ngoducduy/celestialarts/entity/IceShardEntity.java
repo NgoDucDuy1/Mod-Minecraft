@@ -55,7 +55,8 @@ public class IceShardEntity extends SkillProjectileEntity {
 				ModPackets.sendFx(sw, FxData.at(FxType.ENERGY_BURST, c, 0xE8FBFF, 1.2f, 6));
 				SkillFx.frostBurst(sw, c, 50, 0.4);
 				SkillFx.shell(sw, ModParticles.ICE_CRYSTAL, c, 0.8, 30, 0.35);
-				sw.playSound(null, living.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.4f, 0.7f);
+				sw.playSound(null, living.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.4f, 1.0f);
+				sw.playSound(null, living.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 1.0f, 0.9f);
 				return true;
 			}
 			StatusEffectInstance slow = living.getStatusEffect(StatusEffects.SLOWNESS);
@@ -65,10 +66,11 @@ public class IceShardEntity extends SkillProjectileEntity {
 				living.addStatusEffect(new StatusEffectInstance(ModEffects.FROZEN, 60, 0, false, false, true), owner);
 				if (this.getWorld() instanceof ServerWorld sw) {
 					SkillFx.frostBurst(sw, living.getBoundingBox().getCenter(), 30, 0.2);
-					sw.playSound(null, living.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 1.0f, 0.8f);
+					sw.playSound(null, living.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 1.2f, 0.8f);
 				}
 			} else {
 				living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 80, stacks, false, false, true), owner);
+				this.getWorld().playSound(null, living.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 0.9f, 1.0f + random.nextFloat() * 0.15f);
 			}
 			living.setFrozenTicks(Math.max(living.getFrozenTicks(), 100));
 		}
@@ -79,7 +81,7 @@ public class IceShardEntity extends SkillProjectileEntity {
 	protected void onDissipate(Vec3d pos) {
 		if (this.getWorld() instanceof ServerWorld sw) {
 			SkillFx.frostBurst(sw, pos, 12, 0.18);
-			sw.playSound(null, this.getBlockPos(), ModSounds.ICE_SHATTER, SoundCategory.PLAYERS, 0.6f, 1.3f + random.nextFloat() * 0.3f);
+			sw.playSound(null, this.getBlockPos(), ModSounds.HIT_ICE, SoundCategory.PLAYERS, 0.5f, 1.2f + random.nextFloat() * 0.2f);
 		}
 	}
 

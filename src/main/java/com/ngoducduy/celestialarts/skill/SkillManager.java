@@ -102,6 +102,10 @@ public final class SkillManager {
 		SkillContext ctx = new SkillContext(player, player.getServerWorld(), qi);
 		boolean ok = skill.activate(ctx);
 		if (ok) {
+			// Every successful cast opens with a short qi release so casts read even when the skill's own sound is delayed.
+			player.getWorld().playSound(null, player.getBlockPos(), ModSounds.CAST_QI, SoundCategory.PLAYERS, 0.6f, 0.95f + player.getRandom().nextFloat() * 0.1f);
+		}
+		if (ok) {
 			if (!player.isCreative()) qi.consumeQi(skill.getQiCost());
 			qi.setCooldown(id, skill.getCooldownTicks());
 			qi.markDirty();

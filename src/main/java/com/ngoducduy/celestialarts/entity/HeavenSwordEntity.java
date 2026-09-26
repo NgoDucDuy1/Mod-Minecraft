@@ -108,7 +108,8 @@ public class HeavenSwordEntity extends Entity {
 				if (phaseAge == 1) {
 					ModPackets.sendFx(sw, FxData.at(FxType.MAGIC_CIRCLE, this.getPos().add(0, 2.0, 0), 0xFFE9A8, 9.0f, MATERIALISE_TICKS + 10).withExtra(1));
 					ModPackets.sendFx(sw, FxData.at(FxType.MAGIC_CIRCLE, new Vec3d(this.getX(), groundY + 0.1, this.getZ()), 0xFFD36B, 8.0f, MATERIALISE_TICKS + 30).withExtra(1));
-					sw.playSound(null, this.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 2.5f, 0.6f);
+					sw.playSound(null, this.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 2.5f, 1.0f);
+					sw.playSound(null, this.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.2f, 0.9f);
 				}
 				if (phaseAge % 5 == 0) {
 					SkillFx.goldenLight(sw, this.getPos().add(0, -4, 0), 12, 3.0);
@@ -164,7 +165,8 @@ public class HeavenSwordEntity extends Entity {
 		SkillFx.shell(sw, GlowParticleEffect.glow(0xFFE9A8, 1.0f, 24), center.add(0, 1, 0), 1.5, 80, 0.7);
 		SkillFx.rockDebris(sw, center, 60, 1.3);
 		SkillFx.goldenLight(sw, center.add(0, 2, 0), 60, 4.0);
-		sw.playSound(null, this.getBlockPos(), ModSounds.HEAVEN_SWORD_IMPACT, SoundCategory.PLAYERS, 4.0f, 0.8f);
+		sw.playSound(null, this.getBlockPos(), ModSounds.HEAVEN_SWORD_IMPACT, SoundCategory.PLAYERS, 4.0f, 0.95f);
+		sw.playSound(null, this.getBlockPos(), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 3.0f, 1.0f);
 		sw.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.PLAYERS, 2.0f, 0.5f);
 		ModPackets.sendCameraShake(sw, center, 48.0, 1.6f, 22);
 		ModPackets.sendFx(sw, FxData.at(FxType.SCREEN_FLASH, center, 0xFFF1C8, 1.0f, 16));

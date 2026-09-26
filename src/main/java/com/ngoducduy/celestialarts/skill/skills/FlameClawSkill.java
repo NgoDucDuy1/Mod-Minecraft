@@ -101,6 +101,7 @@ public class FlameClawSkill extends Skill {
 					if (target.damage(ModDamageTypes.source(world, ModDamageTypes.FLAME, caster), EMBER_DAMAGE)) {
 						target.setOnFireFor(3);
 						SkillFx.flameBurst(world, target.getPos().add(0, 0.3, 0), 4, 0.1);
+						world.playSound(null, target.getBlockPos(), ModSounds.HIT_FIRE, SoundCategory.PLAYERS, 0.45f, 1.1f);
 					}
 				}
 			}
@@ -125,6 +126,7 @@ public class FlameClawSkill extends Skill {
 				if (target.damage(ModDamageTypes.source(world, ModDamageTypes.FLAME, caster), dmg)) {
 					target.setOnFireFor(4);
 					target.addStatusEffect(new StatusEffectInstance(ModEffects.QI_BURN, 60, 0, false, true, true), caster);
+					world.playSound(null, target.getBlockPos(), ModSounds.HIT_FIRE, SoundCategory.PLAYERS, 0.9f, 0.95f + index * 0.05f);
 					if (index == 2) EntityUtil.knockback(target, caster.getPos(), 0.8, 0.35);
 					SkillFx.flameBurst(world, target.getBoundingBox().getCenter(), 8, 0.15);
 				}

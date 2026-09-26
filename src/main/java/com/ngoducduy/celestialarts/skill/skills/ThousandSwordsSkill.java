@@ -57,6 +57,7 @@ public class ThousandSwordsSkill extends Skill {
 		ModPackets.sendFx(player, FxData.follow(FxType.QI_AURA, player.getId(), player.getPos(), color, 1.0f, FIRST_LAUNCH + 20));
 		ModPackets.sendFx(player, FxData.follow(FxType.RUNE_ORBIT, player.getId(), player.getPos(), color, 2.2f, FIRST_LAUNCH + 10));
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.SWORD_HUM, SoundCategory.PLAYERS, 1.6f, 0.9f);
+		ctx.world().playSound(null, player.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 1.2f, 1.1f);
 		ctx.world().playSound(null, player.getBlockPos(), ModSounds.QI_GATHER, SoundCategory.PLAYERS, 1.0f, 1.2f);
 		return true;
 	}
