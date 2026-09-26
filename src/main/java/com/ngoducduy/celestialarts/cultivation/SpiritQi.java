@@ -4,7 +4,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
@@ -38,7 +38,7 @@ public final class SpiritQi {
 	private SpiritQi() {
 	}
 
-	public static float density(World world, BlockPos pos) {
+	public static float density(ServerWorld world, BlockPos pos) {
 		RegistryEntry<Biome> biome = world.getBiome(pos);
 		float d = biomeFactor(biome);
 		d *= veinFactor(world.getSeed(), pos.getX(), pos.getZ());
