@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "celestialarts:block/herb/dia_tam_hoa_lien_2"
+  }
+}

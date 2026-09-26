@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "celestialarts:block/herb/huyen_nham_chi_2"
+  }
+}

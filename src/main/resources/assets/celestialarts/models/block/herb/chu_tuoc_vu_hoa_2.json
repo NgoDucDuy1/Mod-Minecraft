@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "celestialarts:block/herb/chu_tuoc_vu_hoa_2"
+  }
+}

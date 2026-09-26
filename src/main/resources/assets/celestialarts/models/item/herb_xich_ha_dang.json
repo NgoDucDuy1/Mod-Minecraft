@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "celestialarts:block/herb/xich_ha_dang_2"
+  }
+}

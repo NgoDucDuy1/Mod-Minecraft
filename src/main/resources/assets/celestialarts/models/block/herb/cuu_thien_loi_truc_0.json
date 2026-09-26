@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "celestialarts:block/herb/cuu_thien_loi_truc_0"
+  }
+}

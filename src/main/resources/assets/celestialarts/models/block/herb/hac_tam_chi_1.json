@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "celestialarts:block/herb/hac_tam_chi_1"
+  }
+}

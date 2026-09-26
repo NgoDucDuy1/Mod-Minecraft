@@ -11,6 +11,10 @@ import com.ngoducduy.celestialarts.client.render.fx.ClientFxManager;
 import com.ngoducduy.celestialarts.client.render.post.GlowPass;
 import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
+import com.ngoducduy.celestialarts.registry.ModBlocks;
+import net.minecraft.block.Block;
+import net.minecraft.client.render.RenderLayer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import com.ngoducduy.celestialarts.item.DaoManualItem;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -28,6 +32,9 @@ public final class CelestialArtsClient implements ClientModInitializer {
 		ModModelLayers.register();
 		ModEntityRenderers.register();
 		ModParticleFactories.register();
+		for (Block block : ModBlocks.all()) {
+			BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getCutout());
+		}
 		ClientPackets.register();
 		ModKeybinds.register();
 

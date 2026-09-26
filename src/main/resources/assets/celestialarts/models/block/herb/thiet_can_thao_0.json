@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "celestialarts:block/herb/thiet_can_thao_0"
+  }
+}

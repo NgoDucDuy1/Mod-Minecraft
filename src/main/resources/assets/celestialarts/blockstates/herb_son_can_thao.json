@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "celestialarts:block/herb/son_can_thao_0"
+    },
+    "age=1": {
+      "model": "celestialarts:block/herb/son_can_thao_1"
+    },
+    "age=2": {
+      "model": "celestialarts:block/herb/son_can_thao_2"
+    }
+  }
+}

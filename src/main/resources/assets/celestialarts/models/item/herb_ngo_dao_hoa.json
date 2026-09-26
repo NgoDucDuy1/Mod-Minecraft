@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "celestialarts:block/herb/ngo_dao_hoa_2"
+  }
+}

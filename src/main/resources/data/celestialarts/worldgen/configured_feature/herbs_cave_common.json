@@ -1,0 +1,83 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 20,
+    "xz_spread": 4,
+    "y_spread": 2,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_thiet_can_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_kim_cuong_chi",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_dan_sa_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_tho_linh_chi",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_thach_nhu_hoa",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_tu_quang_chi",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 8,
+    "xz_spread": 4,
+    "y_spread": 2,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "weight": 2,
+                "data": {
+                  "Name": "celestialarts:herb_thai_bach_tinh_hoa",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 1,
+                "data": {
+                  "Name": "celestialarts:herb_thai_am_thuy_tinh_hoa",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "age=0": {
+      "model": "celestialarts:block/herb/tuyet_lien_0"
+    },
+    "age=1": {
+      "model": "celestialarts:block/herb/tuyet_lien_1"
+    },
+    "age=2": {
+      "model": "celestialarts:block/herb/tuyet_lien_2"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "celestialarts:block/herb/thai_bach_tinh_hoa_2"
+  }
+}

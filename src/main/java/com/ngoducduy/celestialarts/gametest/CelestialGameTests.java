@@ -1,6 +1,14 @@
 package com.ngoducduy.celestialarts.gametest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.alchemy.Herb;
+import com.ngoducduy.celestialarts.alchemy.Herbs;
+import com.ngoducduy.celestialarts.block.HerbBlock;
+import com.ngoducduy.celestialarts.registry.ModBlocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.loot.LootTable;
+import net.minecraft.registry.Registries;
 import com.ngoducduy.celestialarts.cultivation.Breakthrough;
 import com.ngoducduy.celestialarts.cultivation.CultivationStats;
 import com.ngoducduy.celestialarts.cultivation.Meditation;
@@ -26,6 +34,7 @@ import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -596,5 +605,44 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.spawnEntity(ModEntities.WIND_DRAGON, 0.5F, 2.0F, 0.5F);
 		ctx.spawnEntity(ModEntities.THUNDER_DRAGON, 0.5F, 3.0F, 0.5F);
 		ctx.runAtTick(250, ctx::complete);
+	}
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 200)
+	public void herbsPlantGrowAndDrop(TestContext ctx) {
+		ServerWorld world = ctx.getWorld();
+		ctx.assertTrue(Herbs.all().size() >= 70, "at least 70 herb species (" + Herbs.all().size() + ")");
+		for (Herb herb : Herbs.all()) {
+			HerbBlock block = ModBlocks.herb(herb);
+			ctx.assertTrue(block != null, "block for " + herb.key());
+			ctx.assertTrue(Registries.ITEM.containsId(CelestialArts.id(herb.blockKey())), "item for " + herb.key());
+			ctx.assertTrue(world.getServer().getLootManager().getLootTable(block.getLootTableId()) != LootTable.EMPTY, "loot table for " + herb.key());
+		}
+		// A meadow herb roots on grass, a fire herb of the Nether does not.
+		BlockPos ground = new BlockPos(0, 1, 0);
+		BlockPos plant = ground.up();
+		ctx.setBlockState(ground, Blocks.GRASS_BLOCK.getDefaultState());
+		HerbBlock meadow = ModBlocks.herb(Herbs.byKey("hoang_tinh_thao"));
+		HerbBlock nether = ModBlocks.herb(Herbs.byKey("hoa_long_thao"));
+		ctx.assertTrue(meadow.getDefaultState().canPlaceAt(world, ctx.getAbsolutePos(plant)), "meadow herb can root on grass");
+		ctx.assertTrue(!nether.getDefaultState().canPlaceAt(world, ctx.getAbsolutePos(plant)), "nether herb cannot root on grass");
+		ctx.setBlockState(plant, meadow.getDefaultState());
+		ctx.expectBlockProperty(plant, HerbBlock.AGE, 0);
+		// Bone meal twice → mature; breaking it drops the herb item.
+		ctx.runAtTick(5, () -> {
+			BlockPos abs = ctx.getAbsolutePos(plant);
+			for (int i = 0; i < 2; i++) {
+				BlockState state = world.getBlockState(abs);
+				ctx.assertTrue(meadow.isFertilizable(world, abs, state, false), "fertilizable before mature");
+				meadow.grow(world, world.getRandom(), abs, state);
+			}
+			ctx.expectBlockProperty(plant, HerbBlock.AGE, HerbBlock.MAX_AGE);
+			ctx.assertTrue(!meadow.isFertilizable(world, abs, world.getBlockState(abs), false), "mature herb takes no more bone meal");
+			world.breakBlock(abs, true);
+		});
+		ctx.runAtTick(15, () -> {
+			Vec3d c = ctx.getAbsolute(new Vec3d(0.5, 2.5, 0.5));
+			List<ItemEntity> drops = world.getEntitiesByType(EntityType.ITEM, new Box(c, c).expand(3.0), e -> e.getStack().isOf(meadow.asItem()));
+			ctx.assertTrue(!drops.isEmpty(), "breaking a mature herb drops the herb");
+			ctx.complete();
+		});
 	}
 }

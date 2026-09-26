@@ -1,6 +1,9 @@
 package com.ngoducduy.celestialarts.registry;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.alchemy.Herb;
+import com.ngoducduy.celestialarts.alchemy.Herbs;
+import com.ngoducduy.celestialarts.item.HerbItem;
 import com.ngoducduy.celestialarts.item.DaoManualItem;
 import com.ngoducduy.celestialarts.item.ImmortalSwordItem;
 import com.ngoducduy.celestialarts.item.SkillScrollItem;
@@ -19,6 +22,7 @@ import java.util.List;
 public final class ModItems {
 	private static final List<Item> ALL = new ArrayList<>();
 	private static final List<SkillScrollItem> SCROLLS = new ArrayList<>();
+	private static final List<HerbItem> HERBS = new ArrayList<>();
 
 	public static final Item DAO_MANUAL = register("dao_manual", new DaoManualItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)));
 	public static final Item IMMORTAL_SWORD = register("immortal_sword", new ImmortalSwordItem(new Item.Settings().rarity(Rarity.RARE).fireproof()));
@@ -40,6 +44,12 @@ public final class ModItems {
 			register(path, item);
 			SCROLLS.add(item);
 		}
+		// One item per herb species, in table order (element, then grade).
+		for (Herb herb : Herbs.all()) {
+			HerbItem item = new HerbItem(ModBlocks.herb(herb), new Item.Settings().maxCount(64).rarity(herb.grade() >= 5 ? Rarity.EPIC : herb.grade() >= 4 ? Rarity.RARE : herb.grade() >= 3 ? Rarity.UNCOMMON : Rarity.COMMON));
+			register(herb.blockKey(), item);
+			HERBS.add(item);
+		}
 	}
 
 	private ModItems() {
@@ -53,6 +63,10 @@ public final class ModItems {
 
 	public static List<Item> all() {
 		return Collections.unmodifiableList(ALL);
+	}
+
+	public static List<HerbItem> herbs() {
+		return Collections.unmodifiableList(HERBS);
 	}
 
 	public static List<SkillScrollItem> scrolls() {

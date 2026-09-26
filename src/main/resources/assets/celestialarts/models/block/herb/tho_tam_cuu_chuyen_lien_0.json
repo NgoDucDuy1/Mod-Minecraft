@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "celestialarts:block/herb/tho_tam_cuu_chuyen_lien_0"
+  }
+}
