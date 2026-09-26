@@ -1,11 +1,13 @@
 package com.ngoducduy.celestialarts.skill.skills;
 
 import com.ngoducduy.celestialarts.cultivation.Realm;
+import com.ngoducduy.celestialarts.entity.RockSpikeEntity;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.network.ModPackets;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEffects;
+import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModSounds;
 import com.ngoducduy.celestialarts.skill.Element;
 import com.ngoducduy.celestialarts.skill.Skill;
@@ -69,6 +71,8 @@ public class HeavenHandSkill extends Skill {
 	public static final int T_SUMMON = 80;
 	public static final int T_SLAM = 240;
 	public static final int T_END = 330;
+	/** Rock spikes heaved up around the print after the slam (two per tick). */
+	private static final int SPIKES = 12;
 	public static final double RING_SPEED = 6.0;
 	public static final int RING_TICKS = (int) Math.ceil(R_DOMAIN / RING_SPEED);
 
@@ -146,6 +150,7 @@ public class HeavenHandSkill extends Skill {
 			}
 			if (age == T_SLAM) slam();
 			if (age > T_SLAM && age <= T_SLAM + RING_TICKS) ring(age - T_SLAM);
+			if (age > T_SLAM) heaveEarth(age - T_SLAM);
 			if (!rumbles.isEmpty()) playRumbles();
 		}
 
@@ -221,6 +226,26 @@ public class HeavenHandSkill extends Skill {
 			world.playSound(null, BlockPos.ofFloored(center), ModSounds.SUB_DROP, SoundCategory.PLAYERS, 6.0f, 0.7f);
 			SkillFx.rockDebris(world, center, 80, 1.6);
 			SkillFx.goldenLight(world, center.add(0, 2.0, 0), 60, R_CORE * 0.6);
+		}
+
+		/**
+		 * The earth heaved up around the palm: a broken ring of rock spikes erupts just outside the
+		 * print (staggered over the ticks after the slam, nearest the fingers first) so the impact
+		 * leaves real geometry behind, not only light.
+		 */
+		private void heaveEarth(int sinceSlam) {
+			int i = sinceSlam - 1;
+			if (i < 0 || i >= SPIKES) return;
+			for (int k = 0; k < 2; k++) {
+				int n = i * 2 + k;
+				double a = Math.atan2(dir.x, dir.z) + n * (Math.PI * 2 / (SPIKES * 2)) + world.random.nextGaussian() * 0.04;
+				double r = HAND_WIDTH * (0.58 + 0.10 * world.random.nextDouble());
+				Vec3d p = center.add(Math.sin(a) * r, 0, Math.cos(a) * r);
+				Vec3d ground = Targeting.snapToGround(world, p.add(0, 2, 0), 12);
+				float height = 4.5f + 3.5f * world.random.nextFloat();
+				RockSpikeEntity.spawn(world, caster, ground, height, 14f, ModEntities.ROCK_SPIKE);
+				ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, ground.add(0, 0.1, 0), 0xC69C5B, 3.0f, 10), FX_RANGE_FAR);
+			}
 		}
 
 		/** Expanding shock ring: hits each entity once when the front passes it. */
