@@ -148,7 +148,7 @@ public final class CelestialAutoTest {
 
 		// Local FX pipeline: one instance of every world effect in front of the player.
 		LOG.info("[AutoTest] spawning every FxType locally");
-		submitAndWait(c -> {
+		int overlays = submitAndWait(c -> {
 			Vec3d base = c.player.getPos();
 			FxType[] types = FxType.values();
 			for (int i = 0; i < types.length; i++) {
@@ -159,13 +159,14 @@ public final class CelestialAutoTest {
 				if (types[i] == FxType.AFTERIMAGE) data = data.withEntity(c.player.getId());
 				ClientFxManager.spawn(data);
 			}
-			return null;
+			// Checked right here: a screen flash is short-lived by design (clamped to ~1 s).
+			return ScreenOverlay.count();
 		});
+		check(overlays >= 1, "screen overlay registered from SCREEN_FLASH fx");
 		waitTicks(5);
 		int fxCount = submitAndWait(c -> ClientFxManager.count());
 		int worldFxTypes = (int) java.util.Arrays.stream(FxType.values()).filter(t -> t != FxType.SCREEN_FLASH).count();
 		check(fxCount >= worldFxTypes, "all FX types alive after spawn (" + fxCount + "/" + worldFxTypes + ")");
-		check(submitAndWait(c -> ScreenOverlay.count()) >= 1, "screen overlay registered from SCREEN_FLASH fx");
 		waitTicks(15);
 		screenshot("04_fx_types");
 
