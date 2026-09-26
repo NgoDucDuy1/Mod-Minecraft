@@ -1,1 +1,345 @@
-# Mod-Minecraft
+# Celestial Arts – Tiên Đạo Thần Thông
+
+Mod **Fabric cho Minecraft 1.20.1** mang hệ thống tu tiên / thần thông phong cách donghua vào game:
+linh lực, cảnh giới, độ kiếp, 21 công pháp với **hiệu ứng hoàn toàn tự dựng** (không dùng particle hay
+hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm thanh tự tổng hợp và giao diện chọn kỹ năng.
+
+> Mod ID: `celestialarts` · Minecraft `1.20.1` · Fabric Loader `≥ 0.15` · Fabric API `0.92.2+1.20.1` · Java 17
+
+---
+
+## Tính năng
+
+### Luyện đan (1.5.0 – đang làm, phần B)
+
+**Linh dược (78 loài)** – 10 loài mỗi hệ Kim/Mộc/Thủy/Hỏa/Thổ/Lôi/Ám (nhất → ngũ phẩm) và 8 loài hệ Đạo. Mỗi loài có *tính* (Hàn/Lương/Bình/Ôn/Nhiệt), *dược lực*, *độc tính* và *nơi mọc* (đồng cỏ, rừng, rừng rậm, đầm lầy, núi, tuyết sơn, sa mạc, bờ biển, rừng anh đào, hang động, vực sâu, hang rêu, Địa Ngục, Tận Thế). Cây có 3 giai đoạn lớn, lớn nhanh hơn ở nơi linh khí dồi dào, bón phân xương được, chỉ bén rễ trên đất đúng môi trường (dược Địa Ngục cần nylium, dược Tận Thế cần end stone). Sinh tự nhiên trong các biome vanilla tương ứng (biome riêng sẽ làm sau).
+
+**Lò luyện đan (12 lò)** – 3 loại × 4 phẩm cấp, chế tạo bằng bàn chế tạo:
+- *Ổn Hỏa Lô* (sai số rộng hơn, hư tổn chậm), *Liệt Diễm Lô* (lên nhiệt nhanh, đan chất cao hơn), *Tụ Linh Lô* (chú linh hiệu quả và giữ lâu hơn).
+- *Phàm cấp* (sắt, luyện tới nhị phẩm), *Linh cấp* (đồng, tam phẩm), *Bảo cấp* (vàng, tứ phẩm), *Tiên cấp* (kim cương, ngũ phẩm).
+
+**Luyện đan là một trò cân bằng** – mỗi đan phương có *đường hỏa hầu* riêng (nhiều pha: hâm nóng, đỉnh nhiệt, hạ hỏa, hai đỉnh, bậc thang, dao động…), *biên sai số* riêng (hẹp dần theo phẩm), *cửa sổ ngưng đan* riêng (phải chú linh khí giữ trên ngưỡng) và *độ bất ổn* riêng (dược liệu độc và lửa bạo liệt làm nhiệt nhảy nhiều hơn). Người luyện điều khiển 4 nút: − Hỏa / + Hỏa (mức lửa 0–4), Chú Linh (tốn linh khí bản thân), Khởi Lô / Dập Lò. Ra ngoài biên sai số thì *hư tổn* tăng; đủ 100 là **hư đan** (ra Đan Tra). Tỉ lệ thành đan = độ chuẩn của cả lượt + phẩm lò + hỏa chủng vượt cấp (Dị Hỏa cộng mạnh nhất) + cảnh giới. Đan chất: Hạ / Trung / Thượng / Cực (Cực ×1.6 hiệu lực, thêm 1 viên).
+
+**Đan dược (75 loại = 15 đan × 5 phẩm, 300 đan phương)** – Hồi Khí, Tụ Khí, Trúc Cơ (tăng tỉ lệ đột phá – hiệu ứng *Đan Vận*), Hồi Xuân, Giải Độc, Kim Cương, Liệt Hỏa, Băng Tâm (chữa tẩu hỏa nhập ma), Thần Hành, Kim Thân, Ngưng Thần (tăng uy lực công pháp – hiệu ứng *Linh Lực*), Tẩy Tủy (cơ hội nâng phẩm linh căn), Ngộ Đạo, Độ Kiếp, Bồi Nguyên. Mỗi đan có 4 đan phương với tổ hợp dược liệu khác nhau; dược liệu nóng/lạnh đẩy đường hỏa hầu lên/xuống.
+
+**Hỏa chủng (8 bậc)** – Phàm Hỏa (chế tạo được: than + đá lửa + kính), Địa Hỏa, Linh Hỏa, Quỷ Hỏa, Nghiệp Hỏa, Dị Hỏa, Tam Muội Chân Hỏa, Thiên Hỏa. Bậc lửa quyết định phẩm đan luyện được; các bậc trên Phàm Hỏa sẽ xuất hiện trong tự nhiên ở phần B3 (Hỏa Nguyên + cơ chế khống chế).
+
+### Hệ thống tu luyện (1.4.0)
+| Cảnh giới | Linh lực cơ bản | Hồi phục / tick | Tu vi mỗi tiểu cảnh giới |
+|---|---|---|---|
+| Luyện Khí | 100 | 0.35 | 100 |
+| Trúc Cơ | 160 | 0.50 | 375 |
+| Kim Đan | 240 | 0.70 | 1 000 |
+| Nguyên Anh | 340 | 0.95 | 2 250 |
+| Hóa Thần | 460 | 1.25 | 4 500 |
+| Độ Kiếp | 620 | 1.70 | 8 000 |
+
+* Mỗi đại cảnh giới chia **Sơ Kỳ → Trung Kỳ → Hậu Kỳ → Viên Mãn** (6 × 4 = 24 bậc). Mỗi bậc cộng thêm
+  linh lực tối đa, hồi phục và sát thương công pháp.
+* **Linh căn** được gieo ngẫu nhiên khi vào thế giới lần đầu: Kim / Mộc / Thủy / Hỏa / Thổ (hiếm hơn: **Lôi**, **Ám** biến dị),
+  1 – 3 thuộc tính (Thiên / Song / Tam linh căn) và 5 phẩm (Phàm → Thiên phẩm). Linh căn tương hợp hệ nào thì công pháp hệ đó
+  mạnh hơn (+4 %/phẩm) và tốn ít linh lực hơn; linh căn càng thuần thì hồi linh lực càng nhanh.
+* **Thiên phú** (15 loại, 5 độ hiếm từ *Tàn khuyết* đến *Truyền thuyết*): Thiết Cốt, Kiếm Cốt, Xích Diễm Tâm, Lôi Thể,
+  Đạo Tâm Bất Động, Tiên Thiên Đạo Thể, Hư Không Linh Thể, Thượng Cổ Thánh Thể, Hỗn Độn Thể, Kinh Mạch Tàn Khuyết…
+  Mỗi loại đổi chỉ số, hệ số sát thương theo hệ, tỉ lệ đột phá hoặc độ nặng của lôi kiếp.
+* **Tư chất** (1 – 100) = linh căn + thiên phú, quyết định *sức mạnh trong cùng cảnh giới* (85 % – 120 %), linh lực tối đa,
+  tốc độ tu luyện và cả độ dữ dội của thiên kiếp.
+* **Thiền định** (`X`, nhấn **một lần**): nhân vật tự ngồi xuống bồ đoàn linh khí, trận pháp mở dưới chân, linh khí xoáy vào
+  đan điền và tu vi tăng theo thời gian. Nhấn `X` lần nữa (hoặc bị đánh trúng) để xuất định.
+* **Linh khí theo địa điểm** (×0.2 – ×3.0): đỉnh núi tuyết, rừng hoa anh đào, hang rêu, đồng cỏ hoa giàu linh khí; sa mạc,
+  đầm lầy, Nether, Deep Dark cằn cỗi. Ngoài ra còn **linh mạch** ẩn dưới đất (mỗi ô 256 khối một mạch, vị trí theo seed)
+  – ngồi lên linh mạch nhân đôi tốc độ tu luyện. Dùng `/celestial spiritqi` để dò.
+* **Đột phá tiểu cảnh giới** (`B` khi đủ tu vi): 6 giây tụ khí rồi quyết định theo tỉ lệ (tư chất, thiên phú, linh khí nơi ngồi).
+  Thất bại → **tẩu hỏa nhập ma**: mất sạch linh lực, mất một phần tu vi, 60 s giảm tốc/giảm sát thương, màn hình viền đen đỏ.
+* **Đại cảnh giới** (Viên Mãn → cảnh giới sau) phải **độ lôi kiếp thật**: mây kiếp phủ trời, 5 – 12 đạo thiên lôi giáng xuống
+  (số lượng và sức mạnh tăng theo tư chất và thiên phú – Hỗn Độn Thể chịu nhiều sét nhất, Lôi Thể chịu ít sát thương hơn).
+  Phải ngồi yên chịu đủ; bỏ chạy hoặc chết giữa kiếp → thất bại, rớt về Hậu Kỳ, tẩu hỏa nhập ma 120 s.
+* **Bảng Đạo Cơ** (`N`): cảnh giới, thanh tu vi/linh lực, tỉ lệ đột phá hoặc thông số lôi kiếp sắp tới, linh khí nơi đứng,
+  linh căn, thiên phú, tư chất và hệ số từng hệ.
+
+### Thể phách theo cảnh giới (bị động)
+Mỗi lần đột phá, thân thể tu sĩ được tôi luyện (áp dụng bằng attribute modifier, không cộng dồn):
+
+| Cảnh giới | Máu | Sát thương | Tốc độ | Độ dẻo giáp | Kháng đẩy lùi | Thần thông bị động |
+|---|---|---|---|---|---|---|
+| Luyện Khí | – | – | – | – | – | – |
+| Trúc Cơ | +2 ♥ | +1 | +6 % | +1 | 0.08 | **Lăng Không Bộ** – nhấn nhảy lần nữa giữa không trung (6 linh lực) |
+| Kim Đan | +4 ♥ | +2 | +12 % | +2 | 0.16 | Miễn sát thương rơi |
+| Nguyên Anh | +6 ♥ | +3 | +18 % | +3 | 0.24 | **Ngự Không** – giữ Shift giữa không trung để lơ lửng hạ chậm; không chết đuối |
+| Hóa Thần | +8 ♥ | +4 | +24 % | +4 | 0.32 | Miễn sát thương lửa / dung nham |
+| Độ Kiếp | +10 ♥ | +5 | +30 % | +5 | 0.40 | Lăng Không Bộ dùng được 2 lần |
+
+Khi thiền định, quanh người xuất hiện **hào quang tụ khí** và các hạt linh khí xoáy vào đan điền; ở nơi linh khí dày các hạt dày hơn.
+
+### 21 công pháp
+| Công pháp | Hệ | Loại | Cảnh giới | Mô tả hiệu ứng |
+|---|---|---|---|---|
+| Kiếm Khí Trảm | Kiếm | Đạn | Luyện Khí | Vung kiếm tạo vòng cung slash, phóng lưỡi kiếm khí có model riêng bay xa và xuyên địch; từ Kim Đan phóng **3 lưỡi hình quạt** |
+| Kim Cương Chưởng | Đạo | Cận chiến | Luyện Khí | Kim ấn lóe lên trước lòng bàn tay, hất văng mọi thứ trong hình nón; địch bị đập vào tường chịu thêm sát thương |
+| Liệt Diễm Trảo | Hỏa | Cận chiến | Luyện Khí | Ba vệt trảo lửa xé không khí, đốt cháy kẻ địch; trảo cuối cào xuống đất để lại 3 rãnh lửa cháy 3 giây |
+| Băng Tiễn | Băng | Đạn | Luyện Khí | 5 mũi băng tinh bay hình quạt, làm chậm & đóng băng mục tiêu |
+| Lôi Bộ | Lôi | Di chuyển | Luyện Khí | Hóa tia chớp dịch chuyển tức thời, để lại vệt lôi quang; khi đáp xuống điện dư **lan dây chuyền** qua tối đa 3 kẻ địch |
+| Phong Nhận Vũ | Phong | Tăng cường | Trúc Cơ | Nhiều lưỡi gió quay quanh người, chém mọi kẻ tới gần |
+| Huyền Vũ Thuẫn | Thổ | Tăng cường | Trúc Cơ | Mai rùa lục giác bao quanh, hấp thụ sát thương, vỡ khi hết độ bền |
+| Địa Liệt | Thổ | Diện rộng | Trúc Cơ | Đập đất – sóng chấn động lan ra, mặt đất nứt phát sáng, gai đá trồi lên hất tung, cuối vết nứt **phun trào** thành quạt 5 gai; người dùng được da đá (Kháng I) |
+| Phong Long Quyển | Phong | Đạn | Trúc Cơ | Phong long cuộn thành **lốc xoáy** có đầu rồng (model riêng) lăn bám theo mặt đất, leo bậc, hút địch vào tâm, nhấc bổng rồi nổ tung |
+| Hỏa Liên | Hỏa | Đạn | Kim Đan | Đóa sen lửa bay chậm, nở bung khi trúng: cột lửa, cánh sen văng, cháy diện rộng |
+| Thái Cực Trận | Đạo | Trận pháp | Kim Đan | Trận đồ âm dương – bát quái xoay dưới chân, hồi máu + hấp thụ cho đồng minh; nhịp **âm** hút địch vào tâm, nhịp **dương** đẩy văng ra |
+| Ngự Kiếm Phi Hành | Kiếm | Di chuyển | Kim Đan | Triệu phi kiếm đứng lên bay tự do (điều khiển như thuyền bay, không bị kick fly) |
+| Băng Phong Lĩnh Vực | Băng | Diện rộng | Kim Đan | Vòm băng, gai băng trồi lên, tuyết rơi; mọi kẻ địch trong vùng bị đóng băng |
+| Vạn Kiếm Quy Tông | Kiếm | Triệu hồi | Nguyên Anh | Hàng chục linh kiếm hiện quanh người rồi lần lượt lao xuống mục tiêu |
+| Tử Tiêu Thần Lôi | Lôi | Chùm tia | Nguyên Anh | Giữ phím để bắn chùm tia sét tím liên tục, có lõi trắng, vỏ xoáy, tia điện lan |
+| Thôn Phệ Hư Không | Hư Không | Kênh | Nguyên Anh | Xoáy hư không hút kẻ địch vào tâm, rút máu & hồi linh lực |
+| Đại Nhật Kim Thân | Đạo | Tăng cường | Nguyên Anh | Kim thân 10 giây: hóa giải & phản lại một nửa mỗi đòn, miễn lửa, Sức mạnh, hào quang mặt trời + phù văn xoay |
+| Cửu Thiên Lôi Kiếp | Lôi | Diện rộng | Hóa Thần | Gọi mây kiếp, 9 tia lôi lần lượt giáng xuống vùng nhắm |
+| Lôi Long Phá | Lôi | Đạn | Hóa Thần | Tụ lôi rồi phóng **lôi long** tím: đầu rồng model riêng, thân là dải sét vẽ theo vệt bay, tự săn địch, xuyên 3 mục tiêu, phân nhánh sang kẻ bên cạnh và nổ ở cuối đường |
+| Thiên Kiếm | Đạo | Tuyệt kỹ | Độ Kiếp | Thiên kiếm khổng lồ giáng từ trời, cột sáng vàng, vết nứt & sóng xung kích hủy diệt |
+| **Thiên Đạo Chi Thủ** | Đạo | Siêu tuyệt kỹ | Độ Kiếp | Mượn ý chí Thiên Đạo 16,5 giây: trận bát quái ~200 khối mở trên trời, **bàn tay rộng 110 khối** (model khớp ngón, 3 đốt/ngón) từ từ hạ xuống **trấn áp** mọi sinh linh trong bán kính **220 khối** (hiệu ứng Trấn Áp: không nhảy, không bay, bị kéo xuống, nghiền dần), rồi giáng chưởng: tâm 40 khối gần như tử vong, sóng xung kích 6 khối/tick lan tới rìa trận, màn hình trắng xoá, rung camera, tiếng ầm đến trễ theo tốc độ âm thanh, dấu bàn tay 110 khối cháy trên mặt đất 2 phút. Người thi triển bất động, gần bất tử, không dùng được kỹ năng khác |
+
+### Hiệu ứng client tự dựng
+* Hệ thống **FX** riêng (`render/fx`): 18 loại hiệu ứng thế giới (vòng xung kích, trận đồ, chùm tia, cột lửa,
+  vòm băng, mây kiếp, vết nứt, xoáy, hào quang khí, cột sáng, sen nở, phù văn xoay…), render ở
+  `WorldRenderEvents.AFTER_TRANSLUCENT` với **RenderLayer additive tự định nghĩa**.
+* **Particle** riêng (15 loại, sprite sheet riêng qua mixin `ParticleManager`), có màu tùy chỉnh.
+* **Model + renderer** cho mọi thực thể: kiếm khí, băng tiễn, hỏa liên, linh kiếm, phi kiếm, gai đá, thiên kiếm,
+  phong long (phễu lốc + đầu rồng) và lôi long (đầu rồng + thân sét theo lịch sử vị trí).
+* Rung camera theo cường độ, HUD (thanh linh lực, thanh tu vi, 6 ô kỹ năng với hồi chiêu), màn hình
+  **Đạo Thư** để gán kỹ năng vào ô.
+* 29 sự kiện âm thanh: 19 sự kiện dùng **bản thu thật** (sét, lửa, pháo, kiếm thép, gió, băng, đá lở, hồ quang, chiêng, đàn –
+  36 bản ghi CC0, xem `tools/SOUND_CREDITS.md`), phần còn lại tổng hợp từ "vật liệu" vật lý; âm hay lặp có 2–4 biến thể.
+* Mọi texture đều ≥ 32×32 (item 32², icon kỹ năng 32², trận đồ 256², thực thể tới 128²).
+
+### Vật phẩm & lệnh
+* **Bí tịch công pháp** (20 cuộn) – chuột phải để lĩnh ngộ, **Linh thạch / Linh thạch thượng phẩm** – hồi linh lực + kinh nghiệm,
+  **Trúc Cơ Đan / Nguyên Anh Đan / Hồi Linh Đan / Thăng Thiên Đan**, **Đạo Thư** (mở màn hình kỹ năng, có lật trang), **Tiên Kiếm**.
+* Lệnh `/celestial info|learn|forget|realm|stage|root|talent|reroll|qi|exp|breakthrough|meditate|spiritqi|chance` (đa số cần quyền OP).
+* **Công thức chế tạo**: linh thạch (thạch anh tím + lapis), linh thạch thượng phẩm, đạo thư, đan dược, tiên kiếm và
+  9 bí tịch cảnh giới thấp (Luyện Khí / Trúc Cơ). Bí tịch cảnh giới cao chỉ tìm thấy trong **rương công trình**
+  (stronghold, mansion, bastion, ancient city, end city…) – độ hiếm tăng theo cảnh giới yêu cầu.
+* **Thành tựu** riêng (tab *Tiên Lộ*): nhặt linh thạch, lĩnh ngộ công pháp đầu tiên, từng lần đột phá cảnh giới,
+  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 21 công pháp.
+
+### Phím mặc định
+`R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `N` – bảng Đạo Cơ · `X` – thiền định (nhấn một lần) · `B` – đột phá / độ kiếp.
+Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
+
+---
+
+## Nhật ký cập nhật
+
+### 1.5.0 – Luyện đan (phần B, đang làm)
+- B1: 78 linh dược (block 3 giai đoạn, item, texture 32×32 ×3, loot, 22 feature sinh thế giới theo 14 môi trường, gametest + ảnh autotest).
+- B2: 12 lò luyện đan (3 loại × 4 phẩm, model 3D riêng, texture sáng khi đốt), GUI luyện đan với đồ thị hỏa hầu và minigame cân bằng, 75 đan dược, 300 đan phương JSON (`data/celestialarts/recipes/alchemy`, sinh bằng `tools/gen_alchemy.py`), 8 hỏa chủng, hiệu ứng Đan Vận / Linh Lực, gametest chạy trọn một lượt luyện đan, autotest mở GUI và luyện thật bằng nút bấm.
+
+### 1.4.0 – Đại tu hệ thống tu luyện (phần A)
+- **24 bậc cảnh giới**: mỗi đại cảnh giới chia Sơ / Trung / Hậu Kỳ / Viên Mãn; mỗi bậc tăng linh lực, hồi phục, sát thương.
+- **Linh căn** (Kim/Mộc/Thủy/Hỏa/Thổ + Lôi/Ám biến dị, 1–3 thuộc tính, 5 phẩm) gieo ngẫu nhiên khi vào thế giới, hiện màn hình *Linh Căn Thức Tỉnh*;
+  quyết định hệ công pháp mạnh, tiêu hao linh lực và tốc độ hồi linh lực.
+- **15 thiên phú** với 5 độ hiếm; **tư chất** 1–100 làm cùng cảnh giới mạnh yếu khác nhau (85–120 %).
+- **Thiền định một chạm** (`X`): thực thể *bồ đoàn linh khí* (model + texture 256²) đặt nhân vật ngồi xuống, tự tu luyện; không cần yên tĩnh.
+- **Linh khí theo địa điểm**: hệ số theo quần xã + **linh mạch** ẩn theo seed (thay cho quần xã mới – Fabric 1.20.1 không có API thêm quần xã
+  Overworld nếu không dùng TerraBlender; sẽ cân nhắc ở phần sau). HUD hiển thị mức linh khí nơi đứng.
+- **Đột phá tiểu cảnh giới có tỉ lệ**; thất bại → hiệu ứng **Tẩu Hỏa Nhập Ma** mới (icon, sát thương âm ỉ, giảm tốc, khói đen đỏ,
+  viền màn hình đen đỏ đập theo nhịp tim).
+- **Lôi kiếp thật** khi vượt đại cảnh giới: số tia và sát thương theo tư chất/thiên phú, loại sát thương `tribulation` riêng, bỏ chạy = thất bại.
+- **Bảng Đạo Cơ** (`N`) và nút *Đạo Cơ* trong Đạo Kinh; icon linh căn (7) và ấn thiên phú (5) 32×32 tự sinh.
+- Lệnh mới `/celestial stage|root|talent|reroll|meditate|spiritqi|chance`; 4 gametest mới (lôi kiếp, thiền định, chỉ số, NBT); 6 ảnh autotest mới.
+
+### 1.3.11 – Không còn hiệu ứng che mắt người thi triển
+- Ở góc nhìn thứ nhất, các hiệu ứng *bao quanh thân* người chơi (hào quang QI_AURA, trụ sáng HEAVEN_PILLAR, phù văn xoay RUNE_ORBIT) không còn được vẽ cho chính người đó – nhìn từ bên trong chúng chỉ là một bức tường sáng che kín màn hình. Người chơi khác và camera góc nhìn thứ ba vẫn thấy bình thường; chiêu chiếu ra ngoài (tia, chém, phong nhận, trận pháp dưới chân) vẫn hiện.
+- Hạt gần camera mờ theo *kích thước*: hạt càng to càng phải ở xa mới hiện (hạt 0,3 khối mờ trong 1,3–5 khối, tia lửa nhỏ trong 0,5–3,5 khối) – triệt để hết đốm sáng loé quanh người thi triển ở góc nhìn thứ nhất.
+- Thiên Đạo Chi Thủ: trụ sáng và hào quang chỉ bám người thi triển trong tư thế triệu hồi (~5 s) thay vì suốt 16,5 s; sau đó có thể chạy đi và ngắm bàn tay rơi xuống. Màn tối bầu trời giảm 0,55 → 0,30 để cảnh giáng xuống luôn rõ.
+
+### 1.3.10
+- Thiên Đạo Chi Thủ – hoàn thiện lần cuối: mũi đá đứng 10–13 s đồng bộ server/client, dòng thời gian theo đồng hồ thế giới, bảng màu ngọc-vàng sáng hơn, đĩa trời tím-đen sau trận pháp, trận pháp vẽ bằng vàng/hổ phách thay vì trắng, hạt quanh camera mờ dần (hết quầng sáng trắng ở góc nhìn thứ nhất), linh quang của người thi triển toả từ thân thay vì tầm mắt.
+
+### 1.3.9 – Sửa lỗi hiệu ứng Thiên Đạo Chi Thủ che kín màn hình
+- **Lỗi nghiêm trọng đã sửa**: trụ sáng `HEAVEN_PILLAR` và hào quang `QI_AURA` bám trên *chính người thi triển* suốt 330 tick có một sprite hướng camera rộng ~15 khối đặt ngang tầm mắt – ở góc nhìn thứ nhất (và khi camera người thứ ba bị ép sát đất) nó phủ trắng toàn bộ màn hình, nên người thi triển **không hề nhìn thấy** trận trời, bàn tay hay cú giáng. Mọi shell rộng và sprite hướng camera của hai hiệu ứng này giờ mờ dần theo khoảng cách camera (`ClientFx.nearFade`) – đứng trong trụ sáng vẫn thấy vòng phù văn rơi và ánh sáng quanh mình, nhưng không còn bị "loá mù".
+- **Bàn tay là vật thể thật**: vẽ bằng layer entity có đổ bóng theo mặt (`entityFar`, không fog) thay vì tấm sáng cộng màu trong suốt; texture ngọc vàng mới **1024×512** (vân khoáng, cạnh vát, ấn văn lòng bàn tay, ấn mặt trời trên mu tay); chỉ rực sáng khi tan thành ánh sáng. Trận trời và vòng phù văn cổ tay vẽ bằng layer cộng màu **không qua bloom** (`additiveCrisp`) nên nét vẽ sắc, không còn "sương sữa" phủ cả bầu trời. Sau cú giáng, **24 mũi đá** (`RockSpikeEntity`, có model) trồi lên thành vòng gãy quanh dấu bàn tay – va chạm để lại địa hình thật, không chỉ ánh sáng.
+- **Đồng bộ thời gian**: dòng thời gian hình ảnh của bàn tay chạy theo *đồng hồ thế giới* (đồng bộ từ server) thay vì đếm tick client – máy render chậm vẫn thấy tay giáng đúng khoảnh khắc màn hình loá và camera rung, không trễ hàng chục tick như trước.
+- **Bầu trời tối lại nơi trận mở**: một đĩa tím-đen mờ phía sau trận pháp để nét vàng đọc ra vàng trên nền trời trưa (trước đây bạc trắng), trận trông như một lỗ xé vào thiên không.
+- **Hạt (particle) mờ dần trong 3,5 khối quanh camera** (`BaseParticle.buildGeometry`): hạt linh khí quanh chính người thi triển từng nằm sát ống kính ở góc nhìn thứ nhất và phình thành quầng sáng khổng lồ vì bloom; áp dụng cho toàn bộ 18 loại hạt của mod.
+- `RockSpikeEntity` có thời gian đứng đồng bộ (`HOLD`), render tới 256 khối, mũi đá cao thì to ngang tương ứng.
+- Autotest quay Thiên Đạo Chi Thủ như một đoạn phim: góc nhìn thứ nhất từ người thi triển (trận mở, tay xuyên trận), góc rộng từ 130 khối bên cạnh mục tiêu (hạ xuống, giáng, vòng xung kích, tan) và góc cao trên dấu bàn tay; mọi khung được hẹn theo **đồng hồ thế giới** thay vì cộng dồn thời gian chờ (mỗi ảnh chụp bằng phần mềm mất gần 1 giây, 8 ảnh làm trôi cả chuỗi ~100 tick nên 4 khung cuối trước đây chụp sau khi nghi thức đã kết thúc).
+
+### 1.3.8 – Thiên Đạo Chi Thủ (siêu tuyệt kỹ, bán kính 220 khối)
+- **Kỹ năng thứ 21 – Thiên Đạo Chi Thủ** (`heaven_hand`, hệ Đạo, Độ Kiếp, 520 linh lực, hồi 5 phút): không phải một đòn ném ra mà là một *nghi thức* 330 tick không thể huỷ – **Khai Thiên** (trận bát quái mở ở độ cao 120 khối, trời tối lại cho mọi người chơi trong trận), **Giáng Lâm** (bàn tay hạ dần theo đường cong `u^2.4` – chậm rồi nhanh dần, cột áp lực nối lòng bàn tay và mặt đất, bóng đen phủ dần, vòng phù văn quanh cổ tay, cánh tay ánh sáng nối lên trận), **Trấn Áp** (chưởng giáng: 60–220 sát thương Thiên tại tâm 40 khối + đẩy văng; vòng xung kích 6 khối/tick tới 220 khối, mỗi mục tiêu trúng đúng một lần 10–60 sát thương; **flash trắng, rung camera 45 tick, tiếng ầm tới trễ `d/17` tick** như âm thanh thật), **Quy Thiên** (tay tan thành ánh sáng bay lên, dấu bàn tay 110 khối cháy vàng 2 phút rồi nguội dần).
+- **Hiệu ứng trạng thái mới `Trấn Áp` (`suppressed`)**: không nhảy (mixin), −25 % tốc độ, −20 % tốc độ đánh, bị kéo xuống khi ở trên không (thắng elytra/levitation, tắt bay creative-fly của người chơi thường), không nhận sát thương rơi do bị ép xuống; cấp độ 0–3 theo khoảng cách tới tâm.
+- **Hạ tầng render tầm xa**: `FarLayer` bọc các RenderLayer (`additiveFar`, `translucentGlowFar`, `solidGlowFar`) đẩy fog ra vô cực trong lúc vẽ – bàn tay 110 khối và trận trên trời không bị sương mù nuốt; `ModPackets.sendFx(world, fx, range)` (520 khối) và `sendFxTo(player, fx)` gửi flash/darken theo từng người chơi (không suy giảm theo khoảng cách).
+- **Model `HeavenHandModel`** (lòng bàn tay 32×6×36, 4 ngón × 3 đốt, ngón cái 2 đốt, texture 256×128 vẽ thủ tục – ngọc vàng, vân đạo văn, khớp tối), tư thế ngón thay đổi theo pha (thả lỏng → dập phẳng → co lại khi tan). Texture mới: `circle_heaven` 512², `palm_print` 256², icon kỹ năng, biểu tượng hiệu ứng `mob_effect/*` 32² cho cả 4 hiệu ứng.
+- 4 âm thanh mới `heaven_hand_summon / pressure / slam / rumble` (bản thu thật CC0 + synth), gametest `heavenHandSuppressesAndSlams` chạy ở batch riêng, autotest chụp 8 khung theo pha.
+
+### 1.3.7 – Lớp âm thanh phản hồi & mastering
+- **Lớp âm thanh phản hồi mới (feedback layer)** – 9 sự kiện âm thanh mới: `cast_qi` (mọi kỹ năng thi triển thành công đều mở đầu bằng một tiếng linh khí bộc phát ngắn, phát tập trung tại `SkillManager`), `hit_slash` / `hit_blunt` / `hit_fire` / `hit_ice` / `hit_shock` (tiếng đòn trúng thân theo từng hệ – trước đây phần lớn kỹ năng trúng mục tiêu mà **không có tiếng va chạm**, chỉ phát lại tiếng vung), `riser` (tiếng dâng 2 giây trước Cửu Thiên Lôi Kiếp, Thiên Kiếm, Vạn Kiếm, Tử Lôi Quang, đột phá), `sub_drop` (tiếng nện siêu trầm điện ảnh cho những cú va chạm lớn nhất: Thiên Kiếm, Hỏa Liên Hoa nổ, Hư Không sụp, Địa Liệt, đột phá) và `dragon_flyby` (phong long lướt qua).
+- **Bản thu thật cho các event từng là synth chán nhất:** đòn trúng thân dùng bản thu kiếm chém + đấm thật (CC0), Kim Cang Chưởng và hộ thuẫn nay có cú đấm thật phía dưới, Long Ngâm lồng thêm tiếng gầm thu thật + sấm, Hư Không hút/sụp dùng sấm đảo ngược, Kim Thân có tiếng cồng thật, Tụ Khí có gió đảo ngược.
+- **Mastering thống nhất** cho toàn bộ 60+ file (cả synth lẫn bản thu): chuẩn hoá độ lớn ngắn hạn A-weighted theo nhóm (đòn lớn −10.5 dB, va chạm −12.5, thi triển −15.5, vòng lặp −21), transient shaper làm đanh phần đầu của các đòn đánh, thêm "air" trên 6 kHz, giới hạn mềm tanh – hết tình trạng tiếng to nhỏ lệch nhau và tiếng đục.
+- **Bỏ pitch-down cực đoan** trên bản thu thật (0.5–0.7 khiến âm thanh đục và "chậm"): Phong Long, Thiên Kiếm, Băng Nhận, Địa Liệt, Cửu Thiên Lôi Kiếp, Kiếm Ngự đều phát ở pitch ≈ 0.9–1.0 với event chuyên dụng.
+
+### 1.3.6 – Âm thanh thật từ đời thực
+* **19 sự kiện dùng bản thu thật** (36 bản ghi Freesound, tất cả giấy phép **CC0**, liệt kê trong `tools/SOUND_CREDITS.md`):
+  sét thật cho `thunder_strike` (Cửu Thiên Lôi Kiếp, Lôi Long, Tử Lôi, Lôi Bộ, đột phá – 4 bản), lửa thật (`fire_whoosh` ×3),
+  pháo/pháo hoa thật + đuôi sét cho `fire_explosion` và Thiên kiếm chạm đất, vung kiếm thật + tiếng rút kiếm thép cho
+  `sword_qi`/`sword_launch`, gió giật thật nén thành `wind_slash` ×4 và loop `sword_flight`, băng nứt thật (`ice_cast`,
+  `ice_shatter`, `freeze_field`), vách đá đổ thật (`earth_quake`), hồ quang cao thế/taser/tia lửa thật (`thunder_charge`,
+  `lightning_step`, `beam_loop`), chiêng thật (`formation`, `breakthrough`), dây đàn tranh thật đổi cao độ ngũ cung (`learn_skill`).
+* Những gì không tồn tại ngoài đời (khí, hư không, khiên, kim thân, long ngâm, linh thạch, kiếm ngân…) vẫn là bản tổng hợp 1.3.5.
+* Quy trình: `tools/fetch_real_sounds.py` tải preview, cắt tự động quanh điểm nổ, lọc/ghép/đổi cao độ; workflow
+  `fetch-sounds.yml` chạy trên GitHub Actions và commit file `.ogg` vào `sounds/real/`; `sounds.json` ghép hai manifest
+  (`tools/sounds_synth.json`, `tools/sounds_real.json`), ưu tiên bản thật, thiếu file thì tự rơi về bản tổng hợp.
+
+### 1.3.5 – Làm lại toàn bộ âm thanh
+* **Tất cả 24 âm thanh cũ bị thay** – bản cũ dựng từ các sóng sin tắt dần nên cái gì cũng nghe như chuông. Bộ mới trong
+  `tools/gen_sounds.py` tổng hợp từ thành phần vật lý: nhiễu lọc cộng hưởng quét tần (tiếng rít gió), va đập (sub-bass + tiếng
+  nổ + thân cộng hưởng + bão hòa), kim loại modal ngắn (tiếng "keng" lưỡi kiếm), Karplus-Strong (đàn tranh), hồ quang điện
+  (răng cưa/vuông ngắt quãng + tia lách tách), đất đá (nhiễu nâu + tiếng nứt cộng hưởng thấp + sỏi), chiêng chùa (chỉ dùng
+  cho trận pháp/đột phá), reverb Schroeder, nén bus, cắt đuôi im lặng.
+* Mỗi kỹ năng có âm đúng chất: kiếm khí = xé gió + keng thép; hỏa = gầm lửa rối + lách tách; băng = tinh thể lớn dần + nứt;
+  lôi = tiếng nổ tức thời + xé + ầm kéo dài; phong = rít gió cộng hưởng; thổ = rung nền + đá nứt; hư không = hút ngược +
+  drone vực sâu; khiên = "vwoom" khóa lại; đột phá = dồn nén → va đập → chiêng nở → dư âm.
+* **5 sự kiện mới** gắn cho kỹ năng trước đây phải mượn âm khác: `palm_strike` (Kim Cang Chưởng), `golden_body` (Kim Thân),
+  `dragon_roar` (Lôi Long / Phong Long – tiếng gầm formant thật), `void_collapse` (Thôn Phệ Vực nổ sập), `freeze_field`
+  (Băng Phong Vực). Có phụ đề vi/en.
+* Âm hay lặp (kiếm khí, phóng kiếm, lửa, gió, sét, địa chấn, băng vỡ, khiên đỡ, chưởng, long ngâm) có 2–3 biến thể ngẫu nhiên.
+* Script có `--analyse` in RMS, trọng tâm phổ (A-weighted), tỉ lệ năng lượng theo dải và độ phẳng phổ để kiểm tra cân bằng.
+
+### 1.3.4 – Vạn Kiếm Quy Tông diện rộng
+* Theo góp ý: **72 phi kiếm** (6 hàng × 12), giãn cách >1 ô, bán kính 3 → 7,5 ô và cao 1,2 → 5,7 ô sau lưng, xòe ±85° – một
+  "bầu trời kiếm" thay vì bức tường sát người. Phóng 2 kiếm/tick, truy kích chia đều tới 6 mục tiêu trong nón 40 ô; không
+  có địch thì rải xuống vùng 7×7 ô quanh điểm nhìn.
+
+### 1.3.3 – Vạn Kiếm Quy Tông mới, sửa trận pháp bị xéo, Liệt Diễm Trảo xa hơn
+* **Sửa lỗi hình học quan trọng**: `ClientFx.alignY/alignZ` dùng góc yaw kiểu Minecraft (`atan2(-x, z)`) với phép quay
+  thuận tay phải nên **mọi hiệu ứng có hướng bị lật gương theo trục X** khi người chơi không nhìn dọc ±Z – trận pháp của
+  Kim Cang Chưởng / Hàn Băng Tiễn nhìn "bị xéo", tia/luồng lệch hướng. Ảnh CI không lộ vì bài test luôn nhìn +Z.
+* **Vạn Kiếm Quy Tông** làm lại: người chơi đứng yên, **48 phi kiếm** ngưng tụ thành 4 hàng cánh mở rộng dần **sau lưng**,
+  mũi kiếm hướng về phía trước, hàng trong bung ra trước; sau ~1,7 s kiếm lần lượt lao thẳng qua người chơi rồi truy kích
+  (chia đều tối đa 4 mục tiêu trong nón 36 ô), không có địch thì bay tới điểm đang nhìn và nổ kiếm khí.
+* **Liệt Diễm Trảo**: tầm 4,2 → 7 ô, thêm lưỡi trảo lửa lớn bay ra giữa tầm, than hồng dài 6 ô.
+
+### 1.3.2 – Phế bỏ công pháp ngay trong Đạo Kinh
+* Người chơi thường giờ có thể **gỡ công pháp đã học**: mở Đạo Kinh (phím mặc định), chọn công pháp → nút **Phế bỏ** → bấm
+  lần nữa trong 3 giây để xác nhận. Server hủy chiêu đang chạy, gỡ khỏi mọi ô kỹ năng và **trả lại Bí Tịch** vào túi (rơi
+  xuống chân nếu túi đầy) nên có thể học lại hoặc trao cho người khác.
+* Gói tin mới `forget_skill`; `/celestial forget` dùng chung đường xử lý (không hoàn Bí Tịch, im lặng).
+* Game test mới `forgetSkillRefundsScrollAndClearsSlot` (13 test).
+
+### 1.3.1 – Sửa lỗi crash khi chạy jar phát hành (mixin client không tìm thấy target)
+* Jar 1.3.0 tải về chạy ngoài môi trường dev bị lỗi `CameraMixin ... could not find any targets matching 'update'`
+  (và tương tự cho `ParticleManagerMixin`, `BipedEntityModelMixin`). Nguyên nhân: với `splitEnvironmentSourceSets()`
+  Loom sinh refmap riêng cho source set `client` (`client-celestialarts-refmap.json`), nhưng `celestialarts.client.mixins.json`
+  nằm ở `src/main/resources` nên bị gắn refmap của `main` – không có entry cho các mixin client. Đã chuyển file cấu hình
+  sang `src/client/resources`.
+* CI có thêm bước `tools/check_jar.py` kiểm tra **jar thật sau remap**: mọi mixin config phải có refmap, mọi lớp mixin phải
+  có entry trong refmap và target phải là tên intermediary – lỗi kiểu này sẽ chặn build ngay thay vì lọt ra bản phát hành.
+
+### 1.3.0 – Đại tu hình ảnh: bloom thật, tàn ảnh, vết tích mặt đất, hiệu ứng màn hình
+* **Bloom (hào quang) thật sự** cho *mọi* hiệu ứng phát sáng: lớp render cộng màu, tia sét và hạt phát sáng được vẽ thêm vào một
+  framebuffer riêng (`GlowPass`), làm mờ Gaussian 3 cấp bằng core shader `celestialarts:glow_blur` rồi cộng ngược lên khung
+  hình. Ánh sáng "tràn" ra ngoài hình học như phim donghua thay vì chỉ là mảng màu sáng. Tự tắt khi bật đồ hoạ Fabulous.
+* **Hiệu ứng màn hình** (`SCREEN_FLASH`): chớp sáng cộng màu khi đòn lớn chạm đất (Thiên Kiếm, Hỏa Liên, Lôi Long, Lôi Bộ…)
+  và **màn trời tối sầm** với vignette tím suốt Cửu Thiên Lôi Kiếp / độ kiếp đột phá. Suy giảm theo khoảng cách (24 ô).
+* **Tàn ảnh** (`AFTERIMAGE`): Lôi Bộ để lại 6 bóng ma của chính người chơi (da, giáp, vật cầm) dọc đường dịch chuyển, tan dần.
+* **Vết tích mặt đất** (`GROUND_DECAL`): đất cháy đen còn than hồng sau Hỏa Liên/Hỏa Trảo/Thiên Kiếm/Lôi Kiếp/Địa Liệt,
+  mảng băng dưới Băng Vực và nơi Băng Tiễn vỡ – tồn tại 15–40 giây rồi mờ dần.
+* **Tụ khí trước chiêu lớn**: hạt linh khí hội tụ vào tay khi gồng Hỏa Liên, Lôi Long, Cửu Thiên Lôi Kiếp và khi thiền đột phá.
+* Tia Tử Tiêu nhìn dọc trục (góc nhìn thứ ba phía sau) được vuốt mảnh dần như góc nhìn thứ nhất, không còn là đĩa sáng chói.
+* Cân chỉnh lại độ sáng chung (gain lớp cộng màu 0.62, bloom 0.30/0.26/0.22) để không cháy trắng sau khi có bloom.
+
+### 1.2.1 – Sửa lỗi & tinh chỉnh hiệu ứng (không thêm nội dung mới)
+* **Sửa lỗi render quan trọng**: bộ đệm hiệu ứng chỉ có một buffer dự phòng nên khi một hiệu ứng lấy 2 lớp render rồi vẽ
+  đan xen, hình học bị đẩy nhầm sang lớp/texture khác (tia Tử Tiêu vẽ bằng texture lõi, mây lôi kiếp vẽ bằng texture vòng…).
+  Nay mỗi lớp hiệu ứng có buffer riêng.
+* **Đạn kỹ năng không còn quay lại đánh chủ nhân/thú cưng/đồng đội** (Hỏa Liên, Kiếm Khí, Vạn Kiếm…) – dùng chung bộ lọc
+  `EntityUtil.isValidTarget`.
+* **Huyền Vũ Thuẫn chỉ hấp thụ đòn mà vanilla thật sự áp dụng** – không còn bị rút cạn (và kêu/nổ hạt) bởi mỗi tick bốc cháy
+  trong 10 tick miễn thương, hay khi người chơi bất tử/kháng lửa.
+* **Kỹ năng đang chạy được đóng đúng cách khi chết, đổi chiều, thoát game** (Ngự Kiếm không còn bỏ lại kiếm bay, khiên/vùng
+  không "treo").
+* Lôi Long Phá: thân rồng liền mạch (không còn đứt khúc), uốn lượn, vỏ tím dùng lớp mờ nên vẫn tím trên nền trời sáng.
+* Mây lôi kiếp có khối (vành mây hướng camera, vòm trên) + tia sét bò dưới đáy mây.
+* Thái Cực Trận đọc được âm-dương (nửa âm tối thật, không còn bị nhân đôi/mờ).
+* Phong Nhận Vũ: lưỡi gió có "cánh buồm" đứng nên nhìn thấy cả từ góc nhìn thứ nhất; Kim Cương Chưởng bớt chói khi tự thi triển;
+  mảnh đá Địa Liệt nhỏ và đa dạng hơn.
+
+### 1.2.0 – "Siêu cập nhật"
+* **4 công pháp mới**: Kim Cương Chưởng, Phong Long Quyển, Đại Nhật Kim Thân, Lôi Long Phá – kèm 2 thực thể mới có model
+  (`DragonHeadModel` dùng chung), renderer riêng, icon, bí tịch, công thức.
+* **Sát thương thần thông tăng theo cảnh giới** (+6 %/cảnh giới) qua `RealmPassives.skillDamageMultiplier`.
+* Nâng cấp hầu hết công pháp cũ: Kiếm Khí Trảm 3 lưỡi, Băng Tiễn vỡ mảnh khi trúng mục tiêu đóng băng, Phong Nhận Vũ
+  kết thúc bằng bão lưỡi gió, Huyền Vũ Thuẫn phản chấn khi vỡ + Hấp thụ khi hết hạn, Hỏa Liên để lại **biển lửa**,
+  Thiên Kiếm để lại **phong ấn** làm chậm/suy yếu địch & hồi máu đồng minh, Ngự Kiếm đâm xuyên & **giáng địa** khi bổ nhào,
+  Băng Phong Lĩnh Vực đóng băng lại theo chu kỳ, Thôn Phệ nổ tung theo lượng đã nuốt, Tử Tiêu Thần Lôi có 3 cấp dày dần
+  và phân nhánh, Cửu Thiên Lôi Kiếp **đóng dấu lôi ấn** (mỗi 3 dấu nổ), Vạn Kiếm bay theo hướng nhìn khi không có mục tiêu.
+* Lớp `ZoneCast` dùng chung cho vùng hiệu ứng theo thời gian; Đạo Thư lật trang; 2 đan dược mới; thêm gametest.
+
+## Build
+
+```bash
+./gradlew build
+# file jar nằm ở build/libs/celestialarts-1.2.1.jar
+```
+
+Yêu cầu JDK 17. Chạy client dev: `./gradlew runClient`.
+
+### Kiểm thử tự động (GameTest) & CI
+
+Mod kèm bộ **game test chạy trên server headless** (`gametest/CelestialGameTests.java`, entrypoint
+`fabric-gametest`), chạy bằng:
+
+```bash
+./gradlew runGametest      # báo cáo JUnit tại build/junit.xml
+```
+
+Các bài test hiện có (tất cả đều **pass** trên GitHub Actions):
+
+| Test | Kiểm tra |
+|---|---|
+| `castEverySkill` | 21 công pháp đều thi triển được ở cảnh giới Độ Kiếp, không ném exception |
+| `projectileSkillsSpawnEntities` | Kiếm khí / băng tiễn / hoả liên / vạn kiếm / thiên kiếm sinh đúng entity |
+| `swordFlightMountsPlayer` | Ngự kiếm phi hành: người chơi cưỡi kiếm, bấm lần nữa thì hạ xuống |
+| `channelSkillStopsOnSecondPress` | Kỹ năng niệm (tử lôi quang trụ) chặn kỹ năng khác và dừng khi bấm lại |
+| `qiCostAndCooldownApplied` | Trừ linh lực, đặt hồi chiêu, từ chối khi thiếu linh lực / đang hồi chiêu |
+| `realmPassivesScaleWithRealm` | Thể phách theo cảnh giới: +máu đúng mức, không cộng dồn, miễn rơi/lửa/đuối đúng cảnh giới, Lăng Không Bộ trừ linh lực |
+| `breakthroughAdvancesRealm` | Đột phá Luyện Khí → Trúc Cơ sau khi độ kiếp 140 tick |
+| `qiNbtRoundTrip` | Lưu / đọc NBT dữ liệu tu luyện |
+| `fxDataRoundTrip` | Gói tin FX serialize / deserialize chính xác |
+| `dataPackContentLoaded` | Công thức, advancement, entity, item của mod được đăng ký và nạp |
+| `skillEntitiesTickWithoutCrashing` | Mọi entity kỹ năng tick 100 tick không crash |
+
+Ngoài ra còn có **client auto-test** (`client/autotest/CelestialAutoTest.java`, bật bằng
+`-Dcelestialarts.autotest`, task `./gradlew runAutoTestClient`): mở client thật (trong CI chạy dưới xvfb),
+audit mixin, tạo thế giới superflat, học toàn bộ công pháp qua `/celestial`, thi triển cả 16 công pháp qua gói tin
+thật, spawn đủ 18 loại FX + 15 loại particle, mở Đạo Thư, kiểm tra ngự kiếm cưỡi/hạ, chụp ~25 ảnh màn hình rồi thoát.
+
+Workflow `.github/workflows/build.yml` build jar, chạy game test server + client auto-test và ghi log (lỗi biên
+dịch, báo cáo JUnit, cảnh báo, ảnh chụp thu nhỏ) vào issue theo dõi #1 sau mỗi lần push; ảnh gốc nằm trong
+artifact `client-screenshots`.
+
+## Cấu trúc mã
+
+```
+src/main/java/com/ngoducduy/celestialarts
+├── cultivation/   Realm, PlayerQi, QiHolder, Breakthrough (thiên kiếp), CultivationEvents
+├── skill/         Skill, SkillRegistry, SkillManager, SkillContext, cast/ (kỹ năng kéo dài), skills/ (16 công pháp)
+├── entity/        7 thực thể kỹ năng (đạn, phi kiếm, gai đá, thiên kiếm)
+├── network/       FxType, FxData, ModPackets (C2S cast/release/slot/breakthrough, S2C sync/fx/shake)
+├── registry/      ModEntities, ModItems, ModParticles, ModSounds, ModEffects, ModDamageTypes, ModLootTables, ModAdvancements
+├── effect/        Hiệu ứng trạng thái (Đóng băng, Linh hỏa thiêu đốt, Kiếm ý)
+├── item/          Bí tịch, linh thạch, đan dược, đạo thư, tiên kiếm
+└── command/       /celestial
+
+src/client/java/com/ngoducduy/celestialarts/client
+├── render/layer/  RenderLayer additive / glow tự định nghĩa
+├── render/fx/     ClientFxManager + 18 loại hiệu ứng thế giới
+├── render/entity/ Model + renderer cho từng thực thể
+├── particle/      15 particle riêng + sprite sheet riêng
+├── gui/           SkillHud, SkillBookScreen
+└── mixin/         Camera (rung), BipedEntityModel (đứng trên kiếm), ParticleManager (sheet riêng)
+
+tools/  gen_fx_textures.py · gen_entity_textures.py · gen_gui_textures.py · gen_sounds.py (Pillow, numpy, scipy, soundfile)
+```
+
+Tất cả texture và âm thanh được sinh bằng các script trong `tools/`, có thể chỉnh sửa và chạy lại bất cứ lúc nào.
+
+## Giấy phép
+MIT – xem `LICENSE`.

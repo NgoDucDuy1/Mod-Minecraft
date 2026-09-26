@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		{
+			"item": "celestialarts:high_spirit_stone"
+		},
+		{
+			"item": "minecraft:glistering_melon_slice"
+		},
+		{
+			"item": "minecraft:blaze_powder"
+		},
+		{
+			"item": "minecraft:honey_bottle"
+		}
+	],
+	"result": {
+		"item": "celestialarts:foundation_pill",
+		"count": 1
+	}
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "celestialarts:block/furnace/base",
+  "textures": {
+    "particle": "celestialarts:block/furnace/spirit_immortal_plain",
+    "side": "celestialarts:block/furnace/spirit_immortal_side",
+    "top": "celestialarts:block/furnace/spirit_immortal_top",
+    "plain": "celestialarts:block/furnace/spirit_immortal_plain"
+  }
+}

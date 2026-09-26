@@ -1,0 +1,21 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" S ",
+		"SDS",
+		" S "
+	],
+	"key": {
+		"S": {
+			"item": "celestialarts:spirit_stone"
+		},
+		"D": {
+			"item": "minecraft:diamond"
+		}
+	},
+	"result": {
+		"item": "celestialarts:high_spirit_stone",
+		"count": 1
+	}
+}

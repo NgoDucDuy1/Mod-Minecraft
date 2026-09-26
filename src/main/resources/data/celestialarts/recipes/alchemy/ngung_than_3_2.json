@@ -1,0 +1,42 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_cuu_thien_loi_truc",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_tich_loi_moc_nha",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_canh_kim_nha",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_ngung_than_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.6,
+      "target": 60,
+      "tol": 8
+    },
+    {
+      "span": 0.4,
+      "target": 77,
+      "tol": 8
+    }
+  ],
+  "qi": {
+    "start": 0.75,
+    "end": 1.0,
+    "min": 68
+  },
+  "volatility": 0.45
+}

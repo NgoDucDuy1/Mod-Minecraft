@@ -1,0 +1,92 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 20,
+    "xz_spread": 4,
+    "y_spread": 2,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_kim_tuyen_lan",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_thanh_diep_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_thanh_moc_chi",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 3,
+                "data": {
+                  "Name": "celestialarts:herb_van_nien_duong_sam",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_hoang_ngoc_sam",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_tich_loi_moc_nha",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_da_anh_hoa",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    }
+  }
+}

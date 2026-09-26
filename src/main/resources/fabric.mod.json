@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "celestialarts",
+	"version": "${version}",
+	"name": "Celestial Arts - Tiên Đạo Thần Thông",
+	"description": "Donghua-style cultivation skills for Minecraft: sword qi, fire lotus, heavenly tribulation, sword flight and more, with fully custom effects.",
+	"authors": [
+		"NgoDucDuy1"
+	],
+	"contact": {
+		"sources": "https://github.com/NgoDucDuy1/Mod-Minecraft"
+	},
+	"license": "MIT",
+	"icon": "assets/celestialarts/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.ngoducduy.celestialarts.CelestialArts"
+		],
+		"client": [
+			"com.ngoducduy.celestialarts.client.CelestialArtsClient"
+		],
+		"fabric-gametest": [
+			"com.ngoducduy.celestialarts.gametest.CelestialGameTests"
+		]
+	},
+	"mixins": [
+		"celestialarts.mixins.json",
+		{
+			"config": "celestialarts.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"fabric-api": "*",
+		"minecraft": "~1.20.1",
+		"java": ">=17"
+	}
+}

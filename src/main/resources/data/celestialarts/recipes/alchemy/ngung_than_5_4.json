@@ -1,0 +1,46 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thien_loi_tu_lien",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_loi_kiep_hoa",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_thai_duong_kim_lien",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_truc_co_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_ngung_than_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.48,
+      "target": 64,
+      "tol": 5
+    },
+    {
+      "span": 0.52,
+      "target": 82,
+      "tol": 5
+    }
+  ],
+  "qi": {
+    "start": 0.75,
+    "end": 1.0,
+    "min": 76
+  },
+  "volatility": 0.65
+}

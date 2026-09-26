@@ -1,0 +1,51 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_kien_moc_linh_nha",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_thanh_long_moc_nha",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_truc_co_thao",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_nguyen_anh_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_hoi_khi_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.24,
+      "target": 40,
+      "tol": 8
+    },
+    {
+      "span": 0.5,
+      "target": 55,
+      "tol": 8
+    },
+    {
+      "span": 0.26,
+      "target": 35,
+      "tol": 8
+    }
+  ],
+  "qi": {
+    "start": 0.55,
+    "end": 0.85,
+    "min": 51
+  },
+  "volatility": 0.45
+}

@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_ngan_long_tu",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_kim_tuyen_lan",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_huyen_nham_chi",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_kim_than_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.24,
+      "target": 64,
+      "tol": 9
+    },
+    {
+      "span": 0.4,
+      "target": 90,
+      "tol": 9
+    },
+    {
+      "span": 0.36,
+      "target": 62,
+      "tol": 9
+    }
+  ],
+  "qi": {
+    "start": 0.5,
+    "end": 0.85,
+    "min": 58
+  },
+  "volatility": 0.5
+}

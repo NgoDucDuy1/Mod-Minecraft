@@ -1,0 +1,147 @@
+{
+	"skill/hit_slash": [
+		"real/skill/hit_slash_1",
+		"real/skill/hit_slash_2",
+		"real/skill/hit_slash_3"
+	],
+	"skill/hit_blunt": [
+		"real/skill/hit_blunt_1",
+		"real/skill/hit_blunt_2",
+		"real/skill/hit_blunt_3"
+	],
+	"skill/hit_fire": [
+		"real/skill/hit_fire_1",
+		"real/skill/hit_fire_2"
+	],
+	"skill/hit_ice": [
+		"real/skill/hit_ice_1",
+		"real/skill/hit_ice_2"
+	],
+	"skill/hit_shock": [
+		"real/skill/hit_shock_1",
+		"real/skill/hit_shock_2"
+	],
+	"skill/dragon_flyby": [
+		"real/skill/dragon_flyby_1",
+		"real/skill/dragon_flyby_2"
+	],
+	"skill/cast_qi": [
+		"real/skill/cast_qi_1",
+		"real/skill/cast_qi_2",
+		"real/skill/cast_qi_3"
+	],
+	"skill/riser": [
+		"real/skill/riser"
+	],
+	"skill/sub_drop": [
+		"real/skill/sub_drop"
+	],
+	"skill/palm_strike": [
+		"real/skill/palm_strike_1",
+		"real/skill/palm_strike_2"
+	],
+	"skill/shield_hit": [
+		"real/skill/shield_hit_1",
+		"real/skill/shield_hit_2"
+	],
+	"skill/dragon_roar": [
+		"real/skill/dragon_roar_1",
+		"real/skill/dragon_roar_2"
+	],
+	"skill/qi_gather": [
+		"real/skill/qi_gather"
+	],
+	"skill/void_drain": [
+		"real/skill/void_drain"
+	],
+	"skill/void_collapse": [
+		"real/skill/void_collapse"
+	],
+	"skill/golden_body": [
+		"real/skill/golden_body"
+	],
+	"skill/thunder_strike": [
+		"real/skill/thunder_strike_1",
+		"real/skill/thunder_strike_2",
+		"real/skill/thunder_strike_3",
+		"real/skill/thunder_strike_4"
+	],
+	"skill/fire_whoosh": [
+		"real/skill/fire_whoosh_1",
+		"real/skill/fire_whoosh_2",
+		"real/skill/fire_whoosh_3"
+	],
+	"skill/fire_explosion": [
+		"real/skill/fire_explosion_1",
+		"real/skill/fire_explosion_2"
+	],
+	"skill/heaven_sword_impact": [
+		"real/skill/heaven_sword_impact"
+	],
+	"skill/heaven_hand_summon": [
+		"real/skill/heaven_hand_summon"
+	],
+	"skill/heaven_hand_pressure": [
+		"real/skill/heaven_hand_pressure"
+	],
+	"skill/heaven_hand_slam": [
+		"real/skill/heaven_hand_slam"
+	],
+	"skill/heaven_hand_rumble": [
+		"real/skill/heaven_hand_rumble"
+	],
+	"skill/sword_qi": [
+		"real/skill/sword_qi_1",
+		"real/skill/sword_qi_2",
+		"real/skill/sword_qi_3"
+	],
+	"skill/sword_launch": [
+		"real/skill/sword_launch_1",
+		"real/skill/sword_launch_2",
+		"real/skill/sword_launch_3"
+	],
+	"skill/wind_slash": [
+		"real/skill/wind_slash_1",
+		"real/skill/wind_slash_2",
+		"real/skill/wind_slash_3",
+		"real/skill/wind_slash_4"
+	],
+	"skill/sword_flight": [
+		"real/skill/sword_flight"
+	],
+	"skill/ice_cast": [
+		"real/skill/ice_cast"
+	],
+	"skill/ice_shatter": [
+		"real/skill/ice_shatter_1",
+		"real/skill/ice_shatter_2"
+	],
+	"skill/freeze_field": [
+		"real/skill/freeze_field"
+	],
+	"skill/earth_quake": [
+		"real/skill/earth_quake_1",
+		"real/skill/earth_quake_2"
+	],
+	"skill/thunder_charge": [
+		"real/skill/thunder_charge"
+	],
+	"skill/lightning_step": [
+		"real/skill/lightning_step"
+	],
+	"skill/beam_loop": [
+		"real/skill/beam_loop"
+	],
+	"skill/formation": [
+		"real/skill/formation"
+	],
+	"skill/breakthrough": [
+		"real/skill/breakthrough"
+	],
+	"skill/heaven_sword_fall": [
+		"real/skill/heaven_sword_fall"
+	],
+	"item/learn_skill": [
+		"real/item/learn_skill"
+	]
+}

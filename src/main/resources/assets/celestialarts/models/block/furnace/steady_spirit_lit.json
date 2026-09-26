@@ -1,0 +1,9 @@
+{
+  "parent": "celestialarts:block/furnace/base",
+  "textures": {
+    "particle": "celestialarts:block/furnace/steady_spirit_plain",
+    "side": "celestialarts:block/furnace/steady_spirit_side_lit",
+    "top": "celestialarts:block/furnace/steady_spirit_top_lit",
+    "plain": "celestialarts:block/furnace/steady_spirit_plain"
+  }
+}

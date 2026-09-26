@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MTM",
+    "MCM",
+    "SSS"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:gold_ingot"
+    },
+    "T": {
+      "item": "celestialarts:spirit_stone"
+    },
+    "C": {
+      "item": "minecraft:gold_block"
+    },
+    "S": {
+      "item": "minecraft:polished_deepslate"
+    }
+  },
+  "result": {
+    "item": "celestialarts:alchemy_furnace_spirit_treasure",
+    "count": 1
+  }
+}

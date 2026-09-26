@@ -1,0 +1,51 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thai_duong_kim_lien",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_chu_tuoc_vu_hoa",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_thai_bach_tinh_hoa",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_nguyen_anh_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_liet_hoa_5",
+    "count": 1
+  },
+  "grade": 5,
+  "fire_tier": 4,
+  "time": 2300,
+  "heat": [
+    {
+      "span": 0.16,
+      "target": 68,
+      "tol": 5
+    },
+    {
+      "span": 0.6,
+      "target": 95,
+      "tol": 5
+    },
+    {
+      "span": 0.24,
+      "target": 78,
+      "tol": 5
+    }
+  ],
+  "qi": {
+    "start": 0.4,
+    "end": 0.8,
+    "min": 61
+  },
+  "volatility": 1.0
+}

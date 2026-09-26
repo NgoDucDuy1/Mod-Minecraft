@@ -1,0 +1,152 @@
+{
+	"skill/heaven_hand_summon": [
+		"synth/skill/heaven_hand_summon"
+	],
+	"skill/heaven_hand_pressure": [
+		"synth/skill/heaven_hand_pressure"
+	],
+	"skill/heaven_hand_slam": [
+		"synth/skill/heaven_hand_slam"
+	],
+	"skill/heaven_hand_rumble": [
+		"synth/skill/heaven_hand_rumble"
+	],
+	"skill/hit_slash": [
+		"synth/skill/hit_slash_1",
+		"synth/skill/hit_slash_2",
+		"synth/skill/hit_slash_3"
+	],
+	"skill/hit_blunt": [
+		"synth/skill/hit_blunt_1",
+		"synth/skill/hit_blunt_2",
+		"synth/skill/hit_blunt_3"
+	],
+	"skill/hit_fire": [
+		"synth/skill/hit_fire_1",
+		"synth/skill/hit_fire_2"
+	],
+	"skill/hit_ice": [
+		"synth/skill/hit_ice_1",
+		"synth/skill/hit_ice_2"
+	],
+	"skill/hit_shock": [
+		"synth/skill/hit_shock_1",
+		"synth/skill/hit_shock_2"
+	],
+	"skill/dragon_flyby": [
+		"synth/skill/dragon_flyby_1",
+		"synth/skill/dragon_flyby_2"
+	],
+	"skill/cast_qi": [
+		"synth/skill/cast_qi_1",
+		"synth/skill/cast_qi_2",
+		"synth/skill/cast_qi_3"
+	],
+	"skill/riser": [
+		"synth/skill/riser"
+	],
+	"skill/sub_drop": [
+		"synth/skill/sub_drop"
+	],
+	"skill/sword_qi": [
+		"synth/skill/sword_qi_1",
+		"synth/skill/sword_qi_2",
+		"synth/skill/sword_qi_3"
+	],
+	"skill/sword_hum": [
+		"synth/skill/sword_hum"
+	],
+	"skill/sword_launch": [
+		"synth/skill/sword_launch_1",
+		"synth/skill/sword_launch_2",
+		"synth/skill/sword_launch_3"
+	],
+	"skill/fire_whoosh": [
+		"synth/skill/fire_whoosh_1",
+		"synth/skill/fire_whoosh_2",
+		"synth/skill/fire_whoosh_3"
+	],
+	"skill/fire_explosion": [
+		"synth/skill/fire_explosion"
+	],
+	"skill/ice_cast": [
+		"synth/skill/ice_cast"
+	],
+	"skill/ice_shatter": [
+		"synth/skill/ice_shatter_1",
+		"synth/skill/ice_shatter_2"
+	],
+	"skill/thunder_strike": [
+		"synth/skill/thunder_strike_1",
+		"synth/skill/thunder_strike_2"
+	],
+	"skill/thunder_charge": [
+		"synth/skill/thunder_charge"
+	],
+	"skill/lightning_step": [
+		"synth/skill/lightning_step"
+	],
+	"skill/wind_slash": [
+		"synth/skill/wind_slash_1",
+		"synth/skill/wind_slash_2",
+		"synth/skill/wind_slash_3"
+	],
+	"skill/earth_quake": [
+		"synth/skill/earth_quake_1",
+		"synth/skill/earth_quake_2"
+	],
+	"skill/void_drain": [
+		"synth/skill/void_drain"
+	],
+	"skill/void_collapse": [
+		"synth/skill/void_collapse"
+	],
+	"skill/shield_up": [
+		"synth/skill/shield_up"
+	],
+	"skill/shield_hit": [
+		"synth/skill/shield_hit_1",
+		"synth/skill/shield_hit_2"
+	],
+	"skill/formation": [
+		"synth/skill/formation"
+	],
+	"skill/beam_loop": [
+		"synth/skill/beam_loop"
+	],
+	"skill/qi_gather": [
+		"synth/skill/qi_gather"
+	],
+	"skill/breakthrough": [
+		"synth/skill/breakthrough"
+	],
+	"skill/heaven_sword_fall": [
+		"synth/skill/heaven_sword_fall"
+	],
+	"skill/heaven_sword_impact": [
+		"synth/skill/heaven_sword_impact"
+	],
+	"skill/sword_flight": [
+		"synth/skill/sword_flight"
+	],
+	"skill/palm_strike": [
+		"synth/skill/palm_strike_1",
+		"synth/skill/palm_strike_2"
+	],
+	"skill/golden_body": [
+		"synth/skill/golden_body"
+	],
+	"skill/dragon_roar": [
+		"synth/skill/dragon_roar_1",
+		"synth/skill/dragon_roar_2"
+	],
+	"skill/freeze_field": [
+		"synth/skill/freeze_field"
+	],
+	"item/learn_skill": [
+		"synth/item/learn_skill"
+	],
+	"item/spirit_stone": [
+		"synth/item/spirit_stone"
+	]
+}

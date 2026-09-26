@@ -1,0 +1,217 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle wrapper
+        # Needs services.gradle.org; do not fail the whole pipeline on runner network hiccups.
+        continue-on-error: true
+        uses: gradle/actions/wrapper-validation@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        id: build
+        shell: bash
+        run: |
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+
+      - name: Check production jar (refmaps / remapping)
+        id: jarcheck
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          JAR=$(ls build/libs/celestialarts-*.jar | grep -v -- '-sources' | head -n1)
+          echo "Checking $JAR"
+          python3 tools/check_jar.py "$JAR"
+
+      - name: Run game tests (headless server)
+        id: gametest
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          set -o pipefail
+          timeout 25m ./gradlew runGametest --no-daemon 2>&1 | tee gametest.log
+
+      - name: Run client smoke test (real client under xvfb)
+        id: clienttest
+        if: steps.build.outcome == 'success'
+        shell: bash
+        run: |
+          set -o pipefail
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq xvfb libgl1-mesa-dri mesa-utils >/dev/null
+          xvfb-run -a -s "-screen 0 1280x720x24" glxinfo -B 2>/dev/null | grep -E "renderer|version" || true
+          timeout 35m xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutoTestClient --no-daemon 2>&1 | tee client.log
+          grep -q "\[AutoTest\] RESULT: PASSED" client.log
+
+      - name: Upload client screenshots
+        if: always() && steps.build.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-screenshots
+          path: build/autotest/screenshots/*.png
+          if-no-files-found: ignore
+
+      - name: Publish build log to tracking issue
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTCOME: ${{ steps.build.outcome }}
+          GAMETEST_OUTCOME: ${{ steps.gametest.outcome }}
+          CLIENT_OUTCOME: ${{ steps.clienttest.outcome }}
+        run: |
+          set +e
+          TITLE="CI build log: ${GITHUB_REF_NAME}"
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
+          {
+            echo "**Build:** \`$OUTCOME\` · **Game tests:** \`$GAMETEST_OUTCOME\` · **Client test:** \`$CLIENT_OUTCOME\` · commit \`${GITHUB_SHA}\` · run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo '### Compiler errors / warnings'
+            echo '```'
+            grep -E "error:|warning:|\.java:[0-9]+:|What went wrong|Could not|FAILURE|BUILD" build.log | head -n 300 | cut -c1-400
+            echo '```'
+            if [ -f build/junit.xml ]; then
+              echo '### Game test report (junit.xml)'
+              echo '```xml'
+              head -c 20000 build/junit.xml
+              echo
+              echo '```'
+            fi
+            if [ -f gametest.log ]; then
+              echo '### Game test summary'
+              echo '```'
+              grep -E "GameTest|gametest|Test .* (passed|failed)|FAILED|failed|Exception|Caused by|at com\.ngoducduy|Mixin|ERROR|WARN.*celestialarts|Couldn't|Failed to|What went wrong|BUILD" gametest.log | grep -v "^\s*at java\." | head -n 400 | cut -c1-400
+              echo '```'
+              echo '### Server warnings / errors (excluding server.properties + eula noise)'
+              echo '```'
+              grep -E "/(WARN|ERROR)\]" gametest.log | grep -vE "server.properties|eula.txt|Failed to load properties" | head -n 150 | cut -c1-400
+              echo '```'
+              echo '### Game test log tail'
+              echo '```'
+              tail -n 80 gametest.log | cut -c1-400
+              echo '```'
+            fi
+            if [ -f client.log ]; then
+              echo '### Client auto test'
+              echo '```'
+              grep -E "AutoTest|Exception|Caused by|at com\.ngoducduy|/(WARN|ERROR)\]|What went wrong|BUILD" client.log | grep -vE "^\s*at (java|jdk|sun)\." | head -n 300 | cut -c1-400
+              echo '```'
+              echo '### Client log tail'
+              echo '```'
+              tail -n 40 client.log | cut -c1-400
+              echo '```'
+            fi
+            echo '### Build log tail'
+            echo '```'
+            tail -n 60 build.log | cut -c1-400
+            echo '```'
+          } > body.md
+          # Keep well below the 65536 character limit.
+          python3 - <<'PY'
+          p='body.md'; s=open(p,encoding='utf-8',errors='replace').read()
+          if len(s) > 60000: s = s[:60000] + "\n```\n(truncated)"
+          open(p,'w',encoding='utf-8').write(s)
+          PY
+          if [ -z "$NUM" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --body-file body.md
+            NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "in:title \"$TITLE\"" --json number,title --jq ".[] | select(.title == \"$TITLE\") | .number" | head -n1)
+          else
+            gh issue edit "$NUM" --repo "$GITHUB_REPOSITORY" --body-file body.md
+            gh issue reopen "$NUM" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+          fi
+          # Screenshots: replace previous screenshot comments with small base64 JPEG thumbnails.
+          if ls build/autotest/screenshots/*.png >/dev/null 2>&1 && [ -n "$NUM" ]; then
+            for cid in $(gh api "repos/$GITHUB_REPOSITORY/issues/$NUM/comments" --paginate --jq '.[] | select(.body | startswith("<!-- autotest-screenshot -->")) | .id'); do
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$cid" >/dev/null 2>&1 || true
+            done
+            python3 -m pip install --quiet pillow >/dev/null 2>&1 || true
+            python3 - <<'PY'
+          import base64, glob, io, os
+          from PIL import Image
+          wanted = ["02_in_game", "03_skill_book", "04_fx_types", "05_particles", "06_sword_flight_third_person",
+                    "08_meditation", "09_cultivation_screen", "10_tribulation_cloud", "11_tribulation_bolt", "12_tribulation_success", "13_qi_deviation", "14_herb_garden", "15_herb_closeup", "16_alchemy_furnace_block", "17_alchemy_gui_idle", "18_alchemy_refining", "19_alchemy_result",
+                    "skill_sword_qi_slash", "skill_fire_lotus", "skill_taiji_formation", "skill_frozen_domain",
+                    "skill_thousand_swords", "skill_purple_thunder_beam", "skill_purple_thunder_beam_fp", "skill_tortoise_shield_fp",
+                    "skill_nine_tribulations", "skill_heaven_sword", "skill_earth_shatter", "skill_devouring_vortex",
+                    "skill_sword_qi_slash_fp", "skill_flame_claw_fp", "skill_ice_arrows_fp", "skill_thousand_swords_fp", "skill_wind_blade_dance_fp",
+                    "skill_vajra_palm_fp", "skill_vajra_palm", "skill_wind_dragon", "skill_golden_body", "skill_thunder_dragon_fp", "skill_thunder_dragon",
+                    "skill_heaven_hand_1_formation", "skill_heaven_hand_2_descent", "skill_heaven_hand_3_approach", "skill_heaven_hand_4_impact",
+                    "skill_heaven_hand", "skill_heaven_hand_6_shock_ring", "skill_heaven_hand_7_dissolve", "skill_heaven_hand_8_palm_print", "07_final"]
+          files = {os.path.splitext(os.path.basename(f))[0]: f for f in glob.glob("build/autotest/screenshots/*.png")}
+          os.makedirs("shots", exist_ok=True)
+          n = 0
+          for name in wanted:
+              f = files.get(name)
+              if not f: continue
+              img = Image.open(f).convert("RGB")
+              img.thumbnail((640, 360))
+              buf = io.BytesIO(); img.save(buf, "JPEG", quality=55, optimize=True)
+              b64 = base64.b64encode(buf.getvalue()).decode()
+              body = "<!-- autotest-screenshot -->\n**Screenshot `%s`** (%dx%d, %d bytes JPEG, base64):\n\n```\n%s\n```\n" % (name, img.width, img.height, len(buf.getvalue()), b64)
+              if len(body) > 64000: continue
+              open("shots/%02d.md" % n, "w").write(body); n += 1
+          print("prepared", n, "screenshot comments of", len(files))
+          PY
+            for f in shots/*.md; do
+              [ -f "$f" ] && gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file "$f" >/dev/null || true
+            done
+          fi
+
+      - name: Upload mod jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: celestialarts
+          path: build/libs/*.jar
+
+      - name: Publish release with the mod jar
+        # Only fully verified builds (compile + server game tests + client auto test) are released.
+        if: success() && github.event_name != 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          VERSION=$(grep -E '^mod_version=' gradle.properties | cut -d= -f2)
+          JAR=$(ls build/libs/celestialarts-*.jar | grep -v -- '-sources' | head -n1)
+          SHORT=${GITHUB_SHA::7}
+          TAG="v${VERSION}"
+          NOTES="Celestial Arts ${VERSION} · Minecraft 1.20.1 · Fabric Loader ≥0.15.11 · Fabric API 0.92.2+1.20.1
+
+          Bản build tự động từ commit ${GITHUB_SHA} (nhánh ${GITHUB_REF_NAME}).
+          Đã qua: biên dịch, game test server, client auto-test (xem issue #1).
+
+          Cài đặt: chép \`$(basename "$JAR")\` cùng Fabric API vào thư mục \`mods\`."
+          # Re-point the version tag at this commit: delete any previous release of the same version.
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release delete "$TAG" --repo "$GITHUB_REPOSITORY" --cleanup-tag -y || true
+          fi
+          gh release create "$TAG" "$JAR" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Celestial Arts ${VERSION} (${SHORT})" --notes "$NOTES" --latest
+          echo "Released $JAR as $TAG"

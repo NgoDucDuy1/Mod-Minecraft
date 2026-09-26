@@ -1,0 +1,110 @@
+{
+  "type": "minecraft:random_patch",
+  "config": {
+    "tries": 20,
+    "xz_spread": 4,
+    "y_spread": 2,
+    "feature": {
+      "feature": {
+        "type": "minecraft:simple_block",
+        "config": {
+          "to_place": {
+            "type": "minecraft:weighted_state_provider",
+            "entries": [
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_bach_kim_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_bach_nhan_cuc",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 3,
+                "data": {
+                  "Name": "celestialarts:herb_ngan_long_tu",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_phong_linh_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 3,
+                "data": {
+                  "Name": "celestialarts:herb_thien_son_tuyet_lien",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_son_can_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 12,
+                "data": {
+                  "Name": "celestialarts:herb_tu_dien_thao",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 7,
+                "data": {
+                  "Name": "celestialarts:herb_tu_tieu_lan",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              },
+              {
+                "weight": 3,
+                "data": {
+                  "Name": "celestialarts:herb_cuu_thien_loi_truc",
+                  "Properties": {
+                    "age": "2"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "placement": [
+        {
+          "type": "minecraft:block_predicate_filter",
+          "predicate": {
+            "type": "minecraft:matching_blocks",
+            "blocks": "minecraft:air"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:item/generated",
+	"textures": {
+		"layer0": "celestialarts:item/scroll_base",
+		"layer1": "celestialarts:item/scroll_seal_thousand_swords"
+	}
+}

@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_huyen_nham_chi",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_hoang_ngoc_sam",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_linh_khi_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_boi_nguyen_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.28,
+      "target": 56,
+      "tol": 10
+    },
+    {
+      "span": 0.3,
+      "target": 42,
+      "tol": 10
+    },
+    {
+      "span": 0.42,
+      "target": 66,
+      "tol": 10
+    }
+  ],
+  "qi": {
+    "start": 0.4,
+    "end": 0.8,
+    "min": 53
+  },
+  "volatility": 0.4
+}

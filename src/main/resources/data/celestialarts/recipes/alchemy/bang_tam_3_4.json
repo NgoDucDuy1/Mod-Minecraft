@@ -1,0 +1,42 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_bang_phach_lan",
+      "count": 3
+    },
+    {
+      "item": "celestialarts:herb_hai_nguyet_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_thuy_luc_tam_lan",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_bang_tam_3",
+    "count": 1
+  },
+  "grade": 3,
+  "fire_tier": 2,
+  "time": 1700,
+  "heat": [
+    {
+      "span": 0.4,
+      "target": 10,
+      "tol": 7
+    },
+    {
+      "span": 0.6,
+      "target": 10,
+      "tol": 7
+    }
+  ],
+  "qi": {
+    "start": 0.2,
+    "end": 0.7,
+    "min": 48
+  },
+  "volatility": 0.55
+}

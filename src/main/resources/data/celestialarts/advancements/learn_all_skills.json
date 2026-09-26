@@ -1,0 +1,31 @@
+{
+	"display": {
+		"icon": {
+			"item": "celestialarts:scroll_heaven_hand"
+		},
+		"title": {
+			"translate": "advancements.celestialarts.learn_all_skills.title"
+		},
+		"description": {
+			"translate": "advancements.celestialarts.learn_all_skills.description"
+		},
+		"frame": "challenge",
+		"show_toast": true,
+		"announce_to_chat": true,
+		"hidden": false
+	},
+	"criteria": {
+		"granted": {
+			"trigger": "minecraft:impossible"
+		}
+	},
+	"requirements": [
+		[
+			"granted"
+		]
+	],
+	"parent": "celestialarts:learn_first_skill",
+	"rewards": {
+		"experience": 500
+	}
+}

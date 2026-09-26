@@ -1,0 +1,47 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_thanh_diep_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_xuan_phong_hoa",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_linh_khi_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_hoi_khi_1",
+    "count": 1
+  },
+  "grade": 1,
+  "fire_tier": 1,
+  "time": 1100,
+  "heat": [
+    {
+      "span": 0.24,
+      "target": 40,
+      "tol": 16
+    },
+    {
+      "span": 0.5,
+      "target": 55,
+      "tol": 16
+    },
+    {
+      "span": 0.26,
+      "target": 35,
+      "tol": 16
+    }
+  ],
+  "qi": {
+    "start": 0.55,
+    "end": 0.85,
+    "min": 35
+  },
+  "volatility": 0.25
+}

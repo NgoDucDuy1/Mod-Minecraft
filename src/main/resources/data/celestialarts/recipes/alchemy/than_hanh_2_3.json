@@ -1,0 +1,57 @@
+{
+  "type": "celestialarts:alchemy",
+  "ingredients": [
+    {
+      "item": "celestialarts:herb_loi_trach_thao",
+      "count": 2
+    },
+    {
+      "item": "celestialarts:herb_tu_quang_chi",
+      "count": 1
+    },
+    {
+      "item": "celestialarts:herb_u_minh_thao",
+      "count": 1
+    }
+  ],
+  "result": {
+    "item": "celestialarts:pill_than_hanh_2",
+    "count": 1
+  },
+  "grade": 2,
+  "fire_tier": 1,
+  "time": 1400,
+  "heat": [
+    {
+      "span": 0.12,
+      "target": 68,
+      "tol": 11
+    },
+    {
+      "span": 0.15,
+      "target": 38,
+      "tol": 11
+    },
+    {
+      "span": 0.15,
+      "target": 68,
+      "tol": 11
+    },
+    {
+      "span": 0.15,
+      "target": 38,
+      "tol": 11
+    },
+    {
+      "span": 0.43,
+      "target": 54,
+      "tol": 11
+    }
+  ],
+  "qi": {
+    "start": 0.6,
+    "end": 0.9,
+    "min": 44
+  },
+  "volatility": 0.7
+}

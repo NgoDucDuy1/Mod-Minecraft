@@ -1,0 +1,22 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [
+		{
+			"item": "celestialarts:spirit_stone"
+		},
+		{
+			"item": "celestialarts:spirit_stone"
+		},
+		{
+			"item": "minecraft:sugar"
+		},
+		{
+			"item": "minecraft:glow_berries"
+		}
+	],
+	"result": {
+		"item": "celestialarts:qi_pill",
+		"count": 2
+	}
+}

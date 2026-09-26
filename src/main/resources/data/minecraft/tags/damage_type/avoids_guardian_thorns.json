@@ -1,0 +1,10 @@
+{
+	"replace": false,
+	"values": [
+		"celestialarts:flame",
+		"celestialarts:frost",
+		"celestialarts:thunder",
+		"celestialarts:void_drain",
+		"celestialarts:heaven"
+	]
+}

@@ -1,0 +1,41 @@
+package com.ngoducduy.celestialarts.registry;
+
+import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.effect.FrozenEffect;
+import com.ngoducduy.celestialarts.effect.QiBurnEffect;
+import com.ngoducduy.celestialarts.effect.PillFortuneEffect;
+import com.ngoducduy.celestialarts.effect.QiDeviationEffect;
+import com.ngoducduy.celestialarts.effect.SpiritPowerEffect;
+import com.ngoducduy.celestialarts.effect.SuppressedEffect;
+import com.ngoducduy.celestialarts.effect.SwordIntentEffect;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+
+public final class ModEffects {
+	/** Target is encased in ice: cannot move or jump, takes bonus damage. */
+	public static final StatusEffect FROZEN = register("frozen", new FrozenEffect());
+	/** Burning with spirit fire: damage over time that ignores fire resistance of mobs. */
+	public static final StatusEffect QI_BURN = register("qi_burn", new QiBurnEffect());
+	/** Caster buff after sword skills: attack damage & speed. */
+	public static final StatusEffect SWORD_INTENT = register("sword_intent", new SwordIntentEffect());
+	/** Trấn Áp – pinned to the ground beneath Thiên Đạo Chi Thủ; cannot jump or fly, dragged down when airborne. */
+	public static final StatusEffect SUPPRESSED = register("suppressed", new SuppressedEffect());
+	/** Tẩu hỏa nhập ma – qi running wild after a failed breakthrough: no regen, no skills, slow internal burn. */
+	public static final StatusEffect QI_DEVIATION = register("qi_deviation", new QiDeviationEffect());
+
+	/** Đan Vận – from pills: raises breakthrough chance. */
+	public static final StatusEffect PILL_FORTUNE = register("pill_fortune", new PillFortuneEffect());
+	/** Linh Lực – from pills: skill damage bonus. */
+	public static final StatusEffect SPIRIT_POWER = register("spirit_power", new SpiritPowerEffect());
+
+	private ModEffects() {
+	}
+
+	private static StatusEffect register(String path, StatusEffect effect) {
+		return Registry.register(Registries.STATUS_EFFECT, CelestialArts.id(path), effect);
+	}
+
+	public static void register() {
+	}
+}

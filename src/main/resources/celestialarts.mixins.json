@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "com.ngoducduy.celestialarts.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"LivingEntityMixin",
+		"PlayerEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

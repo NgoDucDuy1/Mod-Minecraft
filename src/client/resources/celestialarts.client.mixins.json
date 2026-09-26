@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "com.ngoducduy.celestialarts.client.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"BipedEntityModelMixin",
+		"CameraMixin",
+		"ParticleManagerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
