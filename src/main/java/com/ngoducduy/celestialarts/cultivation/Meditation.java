@@ -146,9 +146,14 @@ public final class Meditation {
 		if (med > 10 && med % every == 0) {
 			double a = med * 0.35;
 			double r = 1.2 + 0.6 * Math.min(1.0, density / 2.0);
+			// Two motes on opposite sides of the spiral so the trance reads from any angle.
+			for (int side = 0; side < 2; side++) {
+				double as = a + side * Math.PI;
+				Vec3d p = player.getPos().add(Math.cos(as) * r, 0.1 + ((med + side * 30) % 60) / 60.0 * 1.4, Math.sin(as) * r);
+				Vec3d v = player.getPos().add(0, 0.9, 0).subtract(p).multiply(0.07);
+				SkillFx.single(world, GlowParticleEffect.glow(color, 0.55F, 22), p, v);
+			}
 			Vec3d p = player.getPos().add(Math.cos(a) * r, 0.1 + (med % 60) / 60.0 * 1.4, Math.sin(a) * r);
-			Vec3d v = player.getPos().add(0, 0.9, 0).subtract(p).multiply(0.07);
-			SkillFx.single(world, GlowParticleEffect.glow(color, 0.55F, 22), p, v);
 			if (med % 48 == 0) SkillFx.single(world, ModParticles.RUNE, p.add(0, 0.4, 0), new Vec3d(0, 0.02, 0));
 		}
 		if (med % 200 == 100 && !deviating) {

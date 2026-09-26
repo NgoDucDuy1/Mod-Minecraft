@@ -806,13 +806,13 @@ def gui_cultivation():
     # title bar
     d.rectangle([6, 6, 249, 24], fill=(30, 22, 44, 220), outline=(230, 195, 110, 255))
     # left column (realm / progress / spirit qi) and right column (root / talent / aptitude)
-    d.rectangle([8, 27, 127, 190], fill=(24, 18, 36, 190), outline=(160, 130, 80, 255))
-    d.rectangle([130, 27, 249, 190], fill=(24, 18, 36, 190), outline=(160, 130, 80, 255))
+    d.rectangle([8, 27, 127, 190], fill=(24, 18, 36, 240), outline=(160, 130, 80, 255))
+    d.rectangle([130, 27, 249, 190], fill=(24, 18, 36, 240), outline=(160, 130, 80, 255))
     # column header strips
     d.rectangle([9, 28, 126, 39], fill=(40, 32, 58, 255))
     d.rectangle([131, 28, 248, 39], fill=(40, 32, 58, 255))
     # button row
-    d.rectangle([8, 193, 249, 218], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    d.rectangle([8, 193, 249, 218], fill=(24, 18, 36, 240), outline=(160, 130, 80, 255))
     gold = (230, 195, 110, 255)
     for (cx, cy, sx, sy) in [(6, 6, 1, 1), (249, 6, -1, 1), (6, PH - 7, 1, -1), (249, PH - 7, -1, -1)]:
         d.line([(cx, cy), (cx + sx * 10, cy)], fill=gold, width=2)

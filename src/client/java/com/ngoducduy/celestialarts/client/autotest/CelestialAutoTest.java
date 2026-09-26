@@ -475,19 +475,21 @@ public final class CelestialAutoTest {
 
 		// Sit down. Third-person front so the seat, the array under it and the motes are all visible.
 		submitAndWait(c -> {
+			c.inGameHud.getChatHud().clear(false); // the seat sits exactly where the chat lines are
 			c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
-			c.player.setPitch(12.0F);
-			c.player.prevPitch = 12.0F;
+			c.player.setPitch(22.0F);
+			c.player.prevPitch = 22.0F;
 			ClientPackets.sendMeditate();
 			return null;
 		});
-		waitTicks(50);
+		waitTicks(70);
 		check(submitAndWait(c -> c.player.getVehicle() != null && c.player.getVehicle().getType() == ModEntities.MEDITATION_SEAT), "one press seats the player on a meditation seat");
 		check(submitAndWait(c -> QiHolder.get(c.player).isMeditating()), "meditating flag synced to the client");
 		screenshot("08_meditation");
 
 		// The cultivation panel over the seated player.
 		submitAndWait(c -> {
+			c.inGameHud.getChatHud().clear(false);
 			c.setScreen(new CultivationScreen());
 			return null;
 		});
