@@ -94,9 +94,16 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.10
+- Thiên Đạo Chi Thủ – hoàn thiện lần cuối: mũi đá đứng 10–13 s đồng bộ server/client, dòng thời gian theo đồng hồ thế giới, bảng màu ngọc-vàng sáng hơn, đĩa trời tím-đen sau trận pháp, trận pháp vẽ bằng vàng/hổ phách thay vì trắng, hạt quanh camera mờ dần (hết quầng sáng trắng ở góc nhìn thứ nhất), linh quang của người thi triển toả từ thân thay vì tầm mắt.
+
 ### 1.3.9 – Sửa lỗi hiệu ứng Thiên Đạo Chi Thủ che kín màn hình
 - **Lỗi nghiêm trọng đã sửa**: trụ sáng `HEAVEN_PILLAR` và hào quang `QI_AURA` bám trên *chính người thi triển* suốt 330 tick có một sprite hướng camera rộng ~15 khối đặt ngang tầm mắt – ở góc nhìn thứ nhất (và khi camera người thứ ba bị ép sát đất) nó phủ trắng toàn bộ màn hình, nên người thi triển **không hề nhìn thấy** trận trời, bàn tay hay cú giáng. Mọi shell rộng và sprite hướng camera của hai hiệu ứng này giờ mờ dần theo khoảng cách camera (`ClientFx.nearFade`) – đứng trong trụ sáng vẫn thấy vòng phù văn rơi và ánh sáng quanh mình, nhưng không còn bị "loá mù".
 - **Bàn tay là vật thể thật**: vẽ bằng layer entity có đổ bóng theo mặt (`entityFar`, không fog) thay vì tấm sáng cộng màu trong suốt; texture ngọc vàng mới **1024×512** (vân khoáng, cạnh vát, ấn văn lòng bàn tay, ấn mặt trời trên mu tay); chỉ rực sáng khi tan thành ánh sáng. Trận trời và vòng phù văn cổ tay vẽ bằng layer cộng màu **không qua bloom** (`additiveCrisp`) nên nét vẽ sắc, không còn "sương sữa" phủ cả bầu trời. Sau cú giáng, **24 mũi đá** (`RockSpikeEntity`, có model) trồi lên thành vòng gãy quanh dấu bàn tay – va chạm để lại địa hình thật, không chỉ ánh sáng.
+- **Đồng bộ thời gian**: dòng thời gian hình ảnh của bàn tay chạy theo *đồng hồ thế giới* (đồng bộ từ server) thay vì đếm tick client – máy render chậm vẫn thấy tay giáng đúng khoảnh khắc màn hình loá và camera rung, không trễ hàng chục tick như trước.
+- **Bầu trời tối lại nơi trận mở**: một đĩa tím-đen mờ phía sau trận pháp để nét vàng đọc ra vàng trên nền trời trưa (trước đây bạc trắng), trận trông như một lỗ xé vào thiên không.
+- **Hạt (particle) mờ dần trong 3,5 khối quanh camera** (`BaseParticle.buildGeometry`): hạt linh khí quanh chính người thi triển từng nằm sát ống kính ở góc nhìn thứ nhất và phình thành quầng sáng khổng lồ vì bloom; áp dụng cho toàn bộ 18 loại hạt của mod.
+- `RockSpikeEntity` có thời gian đứng đồng bộ (`HOLD`), render tới 256 khối, mũi đá cao thì to ngang tương ứng.
 - Autotest quay Thiên Đạo Chi Thủ như một đoạn phim: góc nhìn thứ nhất từ người thi triển (trận mở, tay xuyên trận), góc rộng từ 130 khối bên cạnh mục tiêu (hạ xuống, giáng, vòng xung kích, tan) và góc cao trên dấu bàn tay; mọi khung được hẹn theo **đồng hồ thế giới** thay vì cộng dồn thời gian chờ (mỗi ảnh chụp bằng phần mềm mất gần 1 giây, 8 ảnh làm trôi cả chuỗi ~100 tick nên 4 khung cuối trước đây chụp sau khi nghi thức đã kết thúc).
 
 ### 1.3.8 – Thiên Đạo Chi Thủ (siêu tuyệt kỹ, bán kính 220 khối)

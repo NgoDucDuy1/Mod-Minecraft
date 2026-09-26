@@ -49,6 +49,7 @@ public class HeavenHandFx extends ClientFx {
 
 	private static final int GOLD = 0xFFD86B;
 	private static final int PALE = 0xFFF3CC;
+	private static final int AMBER = 0xF2B03C;
 	private static final int DUST = 0xC9A66B;
 	private static final int SHADOW = 0x000000;
 
@@ -141,11 +142,11 @@ public class HeavenHandFx extends ClientFx {
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 0.12F));
 		VertexConsumer circle = consumers.getBuffer(ModRenderLayers.additiveCrispFar(FxTextures.CIRCLE_HEAVEN));
-		RenderUtil.flatQuad(circle, matrices.peek(), radius, PALE, env * 0.9F);
+		RenderUtil.flatQuad(circle, matrices.peek(), radius, GOLD, env * 0.8F);
 		matrices.pop();
 		// Counter-rotating glyph bands.
 		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveCrispFar(FxTextures.GLYPHS));
-		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, PALE, env * 0.8F, env * 0.8F);
+		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, AMBER, env * 0.8F, env * 0.8F);
 		RenderUtil.annulus(glyphs, flat, radius * 0.50F, radius * 0.56F, 96, 32.0F, t * 0.006F, GOLD, env * 0.7F, env * 0.7F);
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
 		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.25F);
