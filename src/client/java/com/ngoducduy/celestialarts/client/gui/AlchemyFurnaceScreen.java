@@ -47,10 +47,10 @@ public class AlchemyFurnaceScreen extends HandledScreen<AlchemyFurnaceScreenHand
 	protected void init() {
 		super.init();
 		int bx = x + 60, by = y + 108;
-		addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.less"), b -> click(BTN_LESS)).dimensions(bx, by, 30, 14).build());
-		addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.more"), b -> click(BTN_MORE)).dimensions(bx + 32, by, 30, 14).build());
-		qiButton = addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.qi"), b -> click(BTN_QI)).dimensions(bx + 64, by, 30, 14).build());
-		startButton = addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.start"), b -> click(handler.isRefining() ? BTN_ABORT : BTN_START)).dimensions(bx + 96, by, 32, 14).build());
+		addDrawableChild(ButtonWidget.builder(Text.literal("−"), b -> click(BTN_LESS)).dimensions(bx, by, 20, 14).build());
+		addDrawableChild(ButtonWidget.builder(Text.literal("+"), b -> click(BTN_MORE)).dimensions(bx + 22, by, 20, 14).build());
+		qiButton = addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.qi"), b -> click(BTN_QI)).dimensions(bx + 44, by, 42, 14).build());
+		startButton = addDrawableChild(ButtonWidget.builder(Text.translatable("furnace.celestialarts.btn.start"), b -> click(handler.isRefining() ? BTN_ABORT : BTN_START)).dimensions(bx + 88, by, 40, 14).build());
 	}
 
 	private void click(int id) {

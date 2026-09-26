@@ -10,6 +10,20 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 
 ## Tính năng
 
+### Luyện đan (1.5.0 – đang làm, phần B)
+
+**Linh dược (78 loài)** – 10 loài mỗi hệ Kim/Mộc/Thủy/Hỏa/Thổ/Lôi/Ám (nhất → ngũ phẩm) và 8 loài hệ Đạo. Mỗi loài có *tính* (Hàn/Lương/Bình/Ôn/Nhiệt), *dược lực*, *độc tính* và *nơi mọc* (đồng cỏ, rừng, rừng rậm, đầm lầy, núi, tuyết sơn, sa mạc, bờ biển, rừng anh đào, hang động, vực sâu, hang rêu, Địa Ngục, Tận Thế). Cây có 3 giai đoạn lớn, lớn nhanh hơn ở nơi linh khí dồi dào, bón phân xương được, chỉ bén rễ trên đất đúng môi trường (dược Địa Ngục cần nylium, dược Tận Thế cần end stone). Sinh tự nhiên trong các biome vanilla tương ứng (biome riêng sẽ làm sau).
+
+**Lò luyện đan (12 lò)** – 3 loại × 4 phẩm cấp, chế tạo bằng bàn chế tạo:
+- *Ổn Hỏa Lô* (sai số rộng hơn, hư tổn chậm), *Liệt Diễm Lô* (lên nhiệt nhanh, đan chất cao hơn), *Tụ Linh Lô* (chú linh hiệu quả và giữ lâu hơn).
+- *Phàm cấp* (sắt, luyện tới nhị phẩm), *Linh cấp* (đồng, tam phẩm), *Bảo cấp* (vàng, tứ phẩm), *Tiên cấp* (kim cương, ngũ phẩm).
+
+**Luyện đan là một trò cân bằng** – mỗi đan phương có *đường hỏa hầu* riêng (nhiều pha: hâm nóng, đỉnh nhiệt, hạ hỏa, hai đỉnh, bậc thang, dao động…), *biên sai số* riêng (hẹp dần theo phẩm), *cửa sổ ngưng đan* riêng (phải chú linh khí giữ trên ngưỡng) và *độ bất ổn* riêng (dược liệu độc và lửa bạo liệt làm nhiệt nhảy nhiều hơn). Người luyện điều khiển 4 nút: − Hỏa / + Hỏa (mức lửa 0–4), Chú Linh (tốn linh khí bản thân), Khởi Lô / Dập Lò. Ra ngoài biên sai số thì *hư tổn* tăng; đủ 100 là **hư đan** (ra Đan Tra). Tỉ lệ thành đan = độ chuẩn của cả lượt + phẩm lò + hỏa chủng vượt cấp (Dị Hỏa cộng mạnh nhất) + cảnh giới. Đan chất: Hạ / Trung / Thượng / Cực (Cực ×1.6 hiệu lực, thêm 1 viên).
+
+**Đan dược (75 loại = 15 đan × 5 phẩm, 300 đan phương)** – Hồi Khí, Tụ Khí, Trúc Cơ (tăng tỉ lệ đột phá – hiệu ứng *Đan Vận*), Hồi Xuân, Giải Độc, Kim Cương, Liệt Hỏa, Băng Tâm (chữa tẩu hỏa nhập ma), Thần Hành, Kim Thân, Ngưng Thần (tăng uy lực công pháp – hiệu ứng *Linh Lực*), Tẩy Tủy (cơ hội nâng phẩm linh căn), Ngộ Đạo, Độ Kiếp, Bồi Nguyên. Mỗi đan có 4 đan phương với tổ hợp dược liệu khác nhau; dược liệu nóng/lạnh đẩy đường hỏa hầu lên/xuống.
+
+**Hỏa chủng (8 bậc)** – Phàm Hỏa (chế tạo được: than + đá lửa + kính), Địa Hỏa, Linh Hỏa, Quỷ Hỏa, Nghiệp Hỏa, Dị Hỏa, Tam Muội Chân Hỏa, Thiên Hỏa. Bậc lửa quyết định phẩm đan luyện được; các bậc trên Phàm Hỏa sẽ xuất hiện trong tự nhiên ở phần B3 (Hỏa Nguyên + cơ chế khống chế).
+
 ### Hệ thống tu luyện (1.4.0)
 | Cảnh giới | Linh lực cơ bản | Hồi phục / tick | Tu vi mỗi tiểu cảnh giới |
 |---|---|---|---|
@@ -112,6 +126,10 @@ Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
 ---
 
 ## Nhật ký cập nhật
+
+### 1.5.0 – Luyện đan (phần B, đang làm)
+- B1: 78 linh dược (block 3 giai đoạn, item, texture 32×32 ×3, loot, 22 feature sinh thế giới theo 14 môi trường, gametest + ảnh autotest).
+- B2: 12 lò luyện đan (3 loại × 4 phẩm, model 3D riêng, texture sáng khi đốt), GUI luyện đan với đồ thị hỏa hầu và minigame cân bằng, 75 đan dược, 300 đan phương JSON (`data/celestialarts/recipes/alchemy`, sinh bằng `tools/gen_alchemy.py`), 8 hỏa chủng, hiệu ứng Đan Vận / Linh Lực, gametest chạy trọn một lượt luyện đan, autotest mở GUI và luyện thật bằng nút bấm.
 
 ### 1.4.0 – Đại tu hệ thống tu luyện (phần A)
 - **24 bậc cảnh giới**: mỗi đại cảnh giới chia Sơ / Trung / Hậu Kỳ / Viên Mãn; mỗi bậc tăng linh lực, hồi phục, sát thương.

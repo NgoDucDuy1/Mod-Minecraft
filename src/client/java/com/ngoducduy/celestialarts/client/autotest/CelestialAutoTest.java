@@ -653,7 +653,7 @@ public final class CelestialAutoTest {
 			c.interactionManager.clickButton(handler.syncId, AlchemyFurnaceBlockEntity.BTN_START);
 			return null;
 		});
-		waitTicks(5);
+		waitFor("refining state synced to the GUI", c -> handler.isRefining(), Duration.ofSeconds(5), true);
 		check(handler.isRefining(), "refining started from the GUI button");
 		// Steer: one button press per tick at most, like a quick-fingered player.
 		int total = recipe.time();
