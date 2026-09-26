@@ -47,7 +47,10 @@ public class MagicCircleFx extends ClientFx {
 
 	@Override
 	protected Vec3d anchor(net.minecraft.entity.Entity e) {
-		return e.getPos().add(0, 0.06, 0);
+		// A seated cultivator's own feet are below the ground plane (mount offset −0.25); the
+		// array belongs under whatever they sit on.
+		net.minecraft.entity.Entity base = e.getVehicle() != null ? e.getVehicle() : e;
+		return base.getPos().add(0, 0.06, 0);
 	}
 
 	@Override
