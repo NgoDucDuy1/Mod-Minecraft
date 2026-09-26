@@ -2,9 +2,12 @@ package com.ngoducduy.celestialarts.client.particle;
 
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Shared behaviour for all Celestial Arts particles: explicit velocity (vanilla's 6-arg constructor
@@ -56,6 +59,34 @@ public abstract class BaseParticle extends SpriteBillboardParticle {
 	public void tick() {
 		super.tick();
 		this.alpha = baseAlpha * envelope();
+	}
+
+	/** Particles closer than this to the camera fade out instead of filling the screen as a blob. */
+	protected static final double NEAR_FADE = 1.8;
+
+	/**
+	 * Own-body particles (the golden light around a channelling caster, sword glints, embers) end up
+	 * centimetres from a first-person camera, where a 0.3-block sprite covers a quarter of the
+	 * screen. They fade to nothing inside {@link #NEAR_FADE} blocks; the remaining alpha handling
+	 * is untouched.
+	 */
+	@Override
+	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+		Vec3d cam = camera.getPos();
+		double dx = MathHelper.lerp(tickDelta, this.prevPosX, this.x) - cam.x;
+		double dy = MathHelper.lerp(tickDelta, this.prevPosY, this.y) - cam.y;
+		double dz = MathHelper.lerp(tickDelta, this.prevPosZ, this.z) - cam.z;
+		double d2 = dx * dx + dy * dy + dz * dz;
+		if (d2 >= NEAR_FADE * NEAR_FADE) {
+			super.buildGeometry(vertexConsumer, camera, tickDelta);
+			return;
+		}
+		float near = (float) MathHelper.clamp((Math.sqrt(d2) - 0.5) / (NEAR_FADE - 0.5), 0.0, 1.0);
+		if (near <= 0.01F) return;
+		float saved = this.alpha;
+		this.alpha = saved * near;
+		super.buildGeometry(vertexConsumer, camera, tickDelta);
+		this.alpha = saved;
 	}
 
 	@Override

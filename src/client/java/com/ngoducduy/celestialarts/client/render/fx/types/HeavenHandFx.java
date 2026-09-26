@@ -126,6 +126,14 @@ public class HeavenHandFx extends ClientFx {
 		matrices.push();
 		matrices.translate(0.0F, SKY_HEIGHT, 0.0F);
 		MatrixStack.Entry flat = matrices.peek();
+		// The sky darkens where the array opens: a soft violet-black disc behind the lines, so the
+		// gold reads as gold against a noon sky instead of bleaching to white, and the array feels
+		// like a hole torn into the heavens rather than a drawing on them.
+		VertexConsumer sky = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.GLOW));
+		matrices.push();
+		matrices.translate(0.0F, 0.6F, 0.0F);
+		RenderUtil.flatQuad(sky, matrices.peek(), radius * 1.45F, 0x140C26, env * 0.62F);
+		matrices.pop();
 		// Soft golden haze so the array reads against a bright sky as well as a dark one.
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
 		RenderUtil.flatQuad(glow, flat, radius * 1.1F, GOLD, env * 0.015F);
@@ -312,7 +320,7 @@ public class HeavenHandFx extends ClientFx {
 			float rise = Math.min(1.0F, s / 25.0F);
 			VertexConsumer cloud = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.CLOUD));
 			RenderUtil.cylinder(cloud, e, w * 0.18F, w * (0.26F + 0.1F * (1.0F - colLife)), 70.0F * rise, 48, 8.0F, 2.0F, -s * 0.02F, DUST, colLife * 0.55F, 0.0F);
-			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.12F, 0.0F);
+			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.05F, 0.0F);
 		}
 		matrices.pop();
 	}
