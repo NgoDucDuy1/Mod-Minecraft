@@ -55,7 +55,7 @@ public class QiAuraFx extends ClientFx {
 		RenderUtil.flatQuad(ring, matrices.peek(), 1.25F * s * pulse, color, alpha * 0.6F);
 		float rise = (t * 0.03F) % 1.0F;
 		matrices.translate(0, rise * 2.5F * s, 0);
-		RenderUtil.flatQuad(ring, matrices.peek(), (1.1F - rise * 0.6F) * s, white, alpha * (1.0F - rise) * 0.5F * (0.3F + 0.7F * near));
+		RenderUtil.flatQuad(ring, matrices.peek(), (1.1F - rise * 0.6F) * s, white, alpha * (1.0F - rise) * 0.5F * near);
 		matrices.pop();
 		// Soft glow around the body.
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additive(FxTextures.GLOW));

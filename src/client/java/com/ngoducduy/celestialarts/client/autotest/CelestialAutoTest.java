@@ -400,7 +400,7 @@ public final class CelestialAutoTest {
 		// front-left diagonal, hovering 6 blocks up, looking +X+Z – the hand (110 wide, ~180 long
 		// with the fingers) is seen three-quarter on instead of edge-on, 175 blocks out and 28 up.
 		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -45 -6", home.x - 124.0, home.y + 28.0, home.z + 72.0 - 124.0);
-		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
+		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 58", home.x - 60.0, home.y + 110.0, home.z + 72.0);
 		String back = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z);
 
 		// From the caster, looking up: the eight-trigram array unfolding 120 blocks up.
@@ -425,17 +425,18 @@ public final class CelestialAutoTest {
 		screenshot("skill_heaven_hand", false);
 		lookAt(t0 + 266, -2.0F);
 		screenshot("skill_heaven_hand_6_shock_ring", false);
-		lookAt(t0 + 296, -6.0F);
+		lookAt(t0 + 288, -6.0F);
 		screenshot("skill_heaven_hand_7_dissolve", false);
 
-		// High angle over the palm print while the hand lifts away and fades.
-		waitUntil(t0 + 300);
+		// High angle over the palm print and the ring of heaved rock once the hand has gone (the
+		// teleport happens 50 ticks early so the chunks around the print are loaded by then).
+		waitUntil(t0 + 291);
 		command(high);
-		lookAt(t0 + 326, 50.0F);
+		lookAt(t0 + 342, 58.0F);
 		screenshot("skill_heaven_hand_8_palm_print", false);
 
-		// Let the ritual end (330 ticks + packet slack), return home on foot and drop the two-minute
-		// palm print so it does not leak into the following screenshots.
+		// Return home on foot and drop the two-minute palm print so it does not leak into the
+		// following screenshots.
 		waitUntil(t0 + 352);
 		command(back);
 		submitAndWait(c -> {

@@ -63,6 +63,20 @@ public class HeavenHandFx extends ClientFx {
 		this.yawDeg = d.lengthSquared() < 1.0E-6 ? 0.0F : (float) Math.toDegrees(Math.atan2(d.x, d.z));
 		this.handScale = Math.max(1.0F, scale) / (HeavenHandModel.WIDTH_UNITS / 16.0F);
 		this.domain = data.extra() > 0 ? data.extra() : Math.max(1.0F, scale) * 2.0F;
+		this.startTime = world.getTime();
+	}
+
+	/**
+	 * World time at creation. The ritual's server side (suppression, slam damage, flash, shake,
+	 * sounds) runs on server ticks, so the visual timeline follows the synced world clock rather
+	 * than client ticks: a client that renders slowly still slams its hand at the exact moment the
+	 * screen flashes and the ground shakes, instead of drifting seconds behind.
+	 */
+	private final long startTime;
+
+	@Override
+	protected float time(float tickDelta) {
+		return (float) (world.getTime() - startTime) + tickDelta;
 	}
 
 	private HeavenHandModel model() {

@@ -62,7 +62,7 @@ public class HeavenPillarFx extends ClientFx {
 		for (int i = 0; i < RINGS; i++) {
 			float f = ((t * 0.02F) + (float) i / RINGS) % 1.0F;
 			float y = (1.0F - f) * 30.0F;
-			float a = env * (1.0F - f) * 0.7F * (0.15F + 0.85F * near);
+			float a = env * (1.0F - f) * 0.7F * near;
 			matrices.push();
 			matrices.translate(0, y, 0);
 			RenderUtil.flatQuad(ring, matrices.peek(), r * (3.0F - 1.2F * f), i % 2 == 0 ? white : color, a);
