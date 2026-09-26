@@ -316,7 +316,9 @@ public final class CelestialAutoTest {
 		});
 		// Fast projectiles are gone within ~20 ticks: first-person shot early, third-person shortly after.
 		if (fp) {
-			waitTicks(3);
+			// Projectiles must be caught before they leave; a channelled beam needs a couple of ticks for
+			// the cast packet round trip plus its fade-in, otherwise the shot may show nothing at all.
+			waitTicks(skill.isChannel() ? 6 : 3);
 			screenshot("skill_" + skill.getId().getPath() + "_fp", false);
 			submitAndWait(c -> {
 				c.options.setPerspective(Perspective.THIRD_PERSON_BACK);

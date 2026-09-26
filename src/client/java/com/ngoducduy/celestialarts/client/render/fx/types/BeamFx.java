@@ -57,8 +57,8 @@ public class BeamFx extends ClientFx {
 		Vec3d end = hit.getType() == HitResult.Type.MISS ? far : hit.getPos();
 		// In first person the beam is fired from the hand (bottom right of the view) and converges on the
 		// aim point, like a hand-cast beam; looking straight down a parallel tube would flood the viewport.
-		Vec3d from = firstPerson ? eye.add(dir.multiply(0.9)).add(right.multiply(0.45)).add(0, -0.42, 0) : aimFrom;
-		if (firstPerson) dir = end.subtract(from).normalize();
+		Vec3d from = eye.add(dir.multiply(0.9)).add(right.multiply(0.45)).add(0, -0.42, 0);
+		dir = end.subtract(from).normalize();
 		float length = (float) end.distanceTo(from);
 		// Beam extends quickly on cast.
 		length *= RenderUtil.easeOutQuint(Math.min(1.0F, t / 3.0F));
@@ -111,15 +111,21 @@ public class BeamFx extends ClientFx {
 
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM));
 		VertexConsumer core = consumers.getBuffer(ModRenderLayers.additive(FxTextures.BEAM_CORE));
+		// Looking straight down the tube every ring of every layer projects onto the same disc and the
+		// additive sum saturates, so the tube's opacity is damped by how axial the view is (a camera right
+		// behind the caster sees ~30 %, a side view the full beam). The hand offset in first person
+		// already breaks the alignment, so this mostly affects the third-person back camera.
+		float axialK = along > 0.8 ? MathHelper.lerp((float) ((along - 0.8) / 0.2), 1.0F, 0.3F) : 1.0F;
+		float ea = env * axialK;
 		// Lead segment: the beam gathers from a thin point at the hand to full width over the first blocks.
 		float lead = axial ? Math.min(4.0F, length) : Math.min(1.0F, length);
 		float startK = axial ? 0.12F : 0.6F;
 		float startA = axial ? 0.2F : 0.8F;
 		float hazeK = axial ? 1.4F : 2.4F;
 		if (lead > 0.05F) {
-			RenderUtil.cylinder(beam, en, r * 1.05F * startK, r * 1.05F, lead, 16, 2.0F, lead / 3.0F, -t * 0.25F, color, env * 0.85F * startA, env * 0.85F);
-			RenderUtil.cylinder(glow, en, r * hazeK * startK, r * hazeK, lead, 12, 1.0F, 0.0F, color, env * 0.22F * startA, env * 0.22F);
-			RenderUtil.cylinder(core, en, r * 0.45F * startK, r * 0.45F, lead, 10, 1.0F, lead / 3.0F, -t * 0.6F, white, env * startA, env);
+			RenderUtil.cylinder(beam, en, r * 1.05F * startK, r * 1.05F, lead, 16, 2.0F, lead / 3.0F, -t * 0.25F, color, ea * 0.85F * startA, ea * 0.85F);
+			RenderUtil.cylinder(glow, en, r * hazeK * startK, r * hazeK, lead, 12, 1.0F, 0.0F, color, ea * 0.22F * startA, ea * 0.22F);
+			RenderUtil.cylinder(core, en, r * 0.45F * startK, r * 0.45F, lead, 10, 1.0F, lead / 3.0F, -t * 0.6F, white, ea * startA, ea);
 		}
 		float rest = length - lead;
 		if (rest > 0.05F) {
@@ -127,16 +133,16 @@ public class BeamFx extends ClientFx {
 			en = matrices.peek();
 			float vRep = Math.max(1.0F, rest / 3.0F);
 			// Outer energy sheath, scrolling.
-			RenderUtil.cylinder(beam, en, r * 1.05F, r * 1.05F, rest, 16, 2.0F, vRep, -t * 0.25F, color, env * 0.85F, env * 0.85F);
+			RenderUtil.cylinder(beam, en, r * 1.05F, r * 1.05F, rest, 16, 2.0F, vRep, -t * 0.25F, color, ea * 0.85F, ea * 0.85F);
 			// Second sheath, offset & scrolling faster, rotating around the axis.
 			matrices.push();
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 9.0F));
-			RenderUtil.cylinder(beam, matrices.peek(), r * 1.35F, r * 1.35F, rest, 16, 3.0F, vRep * 0.7F, -t * 0.45F, color, env * 0.35F, env * 0.35F);
+			RenderUtil.cylinder(beam, matrices.peek(), r * 1.35F, r * 1.35F, rest, 16, 3.0F, vRep * 0.7F, -t * 0.45F, color, ea * 0.35F, ea * 0.35F);
 			matrices.pop();
 			// Wide soft haze.
-			RenderUtil.cylinder(glow, en, r * hazeK, r * hazeK, rest, 12, 1.0F, 0.0F, color, env * 0.22F, env * 0.22F);
+			RenderUtil.cylinder(glow, en, r * hazeK, r * hazeK, rest, 12, 1.0F, 0.0F, color, ea * 0.22F, ea * 0.22F);
 			// White-hot core.
-			RenderUtil.cylinder(core, en, r * 0.45F, r * 0.45F, rest, 10, 1.0F, vRep, -t * 0.6F, white, env, env);
+			RenderUtil.cylinder(core, en, r * 0.45F, r * 0.45F, rest, 10, 1.0F, vRep, -t * 0.6F, white, env, ea);
 		}
 	}
 }
