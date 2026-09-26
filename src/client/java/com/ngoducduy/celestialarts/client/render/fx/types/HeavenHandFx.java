@@ -114,21 +114,21 @@ public class HeavenHandFx extends ClientFx {
 		MatrixStack.Entry flat = matrices.peek();
 		// Soft golden haze so the array reads against a bright sky as well as a dark one.
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
-		RenderUtil.flatQuad(glow, flat, radius * 1.1F, GOLD, env * 0.07F);
+		RenderUtil.flatQuad(glow, flat, radius * 1.1F, GOLD, env * 0.015F);
 
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 0.12F));
 		VertexConsumer circle = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.CIRCLE_HEAVEN));
-		RenderUtil.flatQuad(circle, matrices.peek(), radius, PALE, env * 0.85F);
+		RenderUtil.flatQuad(circle, matrices.peek(), radius, PALE, env * 0.42F);
 		matrices.pop();
 		// Counter-rotating glyph bands.
 		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLYPHS));
-		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, PALE, env * 0.7F, env * 0.7F);
-		RenderUtil.annulus(glyphs, flat, radius * 0.50F, radius * 0.56F, 96, 32.0F, t * 0.006F, GOLD, env * 0.6F, env * 0.6F);
+		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, PALE, env * 0.4F, env * 0.4F);
+		RenderUtil.annulus(glyphs, flat, radius * 0.50F, radius * 0.56F, 96, 32.0F, t * 0.006F, GOLD, env * 0.35F, env * 0.35F);
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
-		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.5F);
+		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.3F);
 		// Light bleeding down from the array.
-		float veil = env * (t < T_SUMMON ? 0.07F : 0.035F);
+		float veil = env * (t < T_SUMMON ? 0.03F : 0.015F);
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
 		matrices.push();
 		matrices.translate(0.0F, -SKY_HEIGHT, 0.0F);
@@ -197,9 +197,9 @@ public class HeavenHandFx extends ClientFx {
 			matrices.push();
 			matrices.translate(0.0F, 0.0F, -0.95F * handScale);
 			VertexConsumer arm = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
-			RenderUtil.cylinder(arm, matrices.peek(), 0.42F * handScale, 0.30F * handScale, armTop, 40, 4.0F, 3.0F, t * 0.05F, GOLD, body * 0.32F, body * 0.05F);
+			RenderUtil.cylinder(arm, matrices.peek(), 0.42F * handScale, 0.30F * handScale, armTop, 40, 4.0F, 3.0F, t * 0.05F, GOLD, body * 0.14F, body * 0.02F);
 			VertexConsumer core = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM_CORE));
-			RenderUtil.cylinder(core, matrices.peek(), 0.22F * handScale, 0.12F * handScale, armTop, 24, 1.0F, 4.0F, t * 0.09F, PALE, body * 0.4F, 0.0F);
+			RenderUtil.cylinder(core, matrices.peek(), 0.22F * handScale, 0.12F * handScale, armTop, 24, 1.0F, 4.0F, t * 0.09F, PALE, body * 0.18F, 0.0F);
 			matrices.pop();
 		}
 
@@ -208,18 +208,20 @@ public class HeavenHandFx extends ClientFx {
 		matrices.translate(0.0F, 0.0F, -0.98F * handScale);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLYPHS));
-		RenderUtil.annulus(glyphs, matrices.peek(), 0.62F * handScale, 0.70F * handScale, 64, 24.0F, t * 0.01F, PALE, body * 0.75F, body * 0.75F);
-		RenderUtil.annulus(glyphs, matrices.peek(), 0.78F * handScale, 0.84F * handScale, 64, 32.0F, -t * 0.007F, GOLD, body * 0.6F, body * 0.6F);
+		RenderUtil.annulus(glyphs, matrices.peek(), 0.62F * handScale, 0.70F * handScale, 64, 24.0F, t * 0.01F, PALE, body * 0.5F, body * 0.5F);
+		RenderUtil.annulus(glyphs, matrices.peek(), 0.78F * handScale, 0.84F * handScale, 64, 32.0F, -t * 0.007F, GOLD, body * 0.4F, body * 0.4F);
 		matrices.pop();
 
 		// The hand model, in blocks (ModelPart divides cuboid units by 16 itself).
 		matrices.push();
 		matrices.scale(handScale, handScale, handScale);
-		float solidA = body * (0.92F - 0.5F * dissolve);
-		VertexConsumer solid = consumers.getBuffer(ModRenderLayers.solidGlowFar(FxTextures.HEAVEN_HAND));
-		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, solidA);
-		// Emissive pass: brighter while descending, blazing as the hand returns to light.
-		float glowA = body * (0.22F + 0.18F * u + 0.6F * dissolve);
+		// Lit, opaque golden jade (vanilla entity shading gives the palm and fingers real volume);
+		// only the dissolution thins it out.
+		float solidA = appear * (1.0F - dissolve * dissolve);
+		VertexConsumer solid = consumers.getBuffer(ModRenderLayers.entityFar(FxTextures.HEAVEN_HAND));
+		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.98F, 0.92F, solidA);
+		// Faint emissive rim while descending; blazing only as the hand returns to light.
+		float glowA = body * (0.05F + 0.05F * u) + appear * dissolve * (1.0F - dissolve) * 0.9F;
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.HEAVEN_HAND));
 		matrices.scale(1.015F, 1.015F, 1.015F);
 		m.render(matrices, glow, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.9F, 0.6F, glowA);
@@ -257,36 +259,36 @@ public class HeavenHandFx extends ClientFx {
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
 		if (s < 16.0F) {
 			float f = 1.0F - s / 16.0F;
-			RenderUtil.flatQuad(glow, e, w * 0.6F, 0xFFFFFF, f * f * 0.7F);
+			RenderUtil.flatQuad(glow, e, w * 0.6F, 0xFFFFFF, f * f * 0.5F);
 		}
 		float ringR = s * RING_SPEED;
 		if (ringR < domain + 12.0F) {
 			float f = MathHelper.clamp(ringR / domain, 0.0F, 1.0F);
 			float a = (1.0F - f) * (1.0F - f);
 			VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
-			RenderUtil.flatQuad(ring, e, ringR * 1.12F, GOLD, a * 0.9F + 0.05F);
-			RenderUtil.flatQuad(ring, e, ringR * 1.03F, 0xFFFFFF, a * 0.5F);
+			RenderUtil.flatQuad(ring, e, ringR * 1.12F, GOLD, a * 0.55F + 0.03F);
+			RenderUtil.flatQuad(ring, e, ringR * 1.03F, 0xFFFFFF, a * 0.3F);
 			// Wall of dust and light lifted by the shock.
 			VertexConsumer wall = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.CLOUD));
 			float wallH = 14.0F + 30.0F * (1.0F - f);
-			RenderUtil.cylinder(wall, e, ringR * 0.90F, ringR * 1.05F, wallH, 96, 40.0F, 1.0F, s * 0.01F, DUST, (0.65F - 0.45F * f), 0.0F);
+			RenderUtil.cylinder(wall, e, ringR * 0.90F, ringR * 1.05F, wallH, 96, 40.0F, 1.0F, s * 0.01F, DUST, (0.45F - 0.3F * f), 0.0F);
 			VertexConsumer wallGlow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
-			RenderUtil.cylinder(wallGlow, e, ringR * 0.93F, ringR * 1.0F, wallH * 0.6F, 96, 1.0F, 0.0F, GOLD, a * 0.45F, 0.0F);
+			RenderUtil.cylinder(wallGlow, e, ringR * 0.93F, ringR * 1.0F, wallH * 0.6F, 96, 1.0F, 0.0F, GOLD, a * 0.16F, 0.0F);
 		}
 		// Slower second wave of pure light.
 		float ring2 = s * 3.5F;
 		if (ring2 < domain) {
 			float f = ring2 / domain;
 			VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
-			RenderUtil.flatQuad(ring, e, ring2 * 1.1F, PALE, (1.0F - f) * 0.45F);
+			RenderUtil.flatQuad(ring, e, ring2 * 1.1F, PALE, (1.0F - f) * 0.3F);
 		}
 		// Dust column at the centre of the print.
 		float colLife = MathHelper.clamp(1.0F - s / 90.0F, 0.0F, 1.0F);
 		if (colLife > 0.0F) {
 			float rise = Math.min(1.0F, s / 25.0F);
 			VertexConsumer cloud = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.CLOUD));
-			RenderUtil.cylinder(cloud, e, w * 0.18F, w * (0.26F + 0.1F * (1.0F - colLife)), 70.0F * rise, 48, 8.0F, 2.0F, -s * 0.02F, DUST, colLife * 0.7F, 0.0F);
-			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.35F, 0.0F);
+			RenderUtil.cylinder(cloud, e, w * 0.18F, w * (0.26F + 0.1F * (1.0F - colLife)), 70.0F * rise, 48, 8.0F, 2.0F, -s * 0.02F, DUST, colLife * 0.55F, 0.0F);
+			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.2F, 0.0F);
 		}
 		matrices.pop();
 	}

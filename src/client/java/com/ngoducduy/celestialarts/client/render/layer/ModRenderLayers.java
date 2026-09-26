@@ -163,6 +163,17 @@ public abstract class ModRenderLayers extends RenderLayer {
 		return SOLID_GLOW_FAR.apply(texture);
 	}
 
+	private static final Function<Identifier, RenderLayer> ENTITY_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_entity_far", RenderLayer.getEntityTranslucentCull(texture)));
+
+	/**
+	 * Vanilla lit entity layer (directional face shading, depth-writing, alpha-blended) without
+	 * distance fog – for world-scale <em>solid</em> props such as the 110-block hand of heaven, which
+	 * must read as a shaded object rather than a flat sheet of light.
+	 */
+	public static RenderLayer entityFar(Identifier texture) {
+		return ENTITY_FAR.apply(texture);
+	}
+
 	public static RenderLayer translucentGlow(Identifier texture) {
 		return TRANSLUCENT_GLOW.apply(texture);
 	}
@@ -195,6 +206,8 @@ public abstract class ModRenderLayers extends RenderLayer {
 	 */
 	public static Map<RenderLayer, BufferBuilder> createFxBuffers() {
 		Map<RenderLayer, BufferBuilder> map = new Object2ObjectLinkedOpenHashMap<>();
+		// Lit solid props first: they write depth and everything luminous blends over them.
+		map.put(entityFar(FxTextures.HEAVEN_HAND), new BufferBuilder(256));
 		for (Field field : FxTextures.class.getFields()) {
 			if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
 			Identifier texture;
