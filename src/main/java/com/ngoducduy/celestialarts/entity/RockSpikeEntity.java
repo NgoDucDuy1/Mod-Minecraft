@@ -25,6 +25,8 @@ import net.minecraft.world.World;
 public class RockSpikeEntity extends Entity {
 	private static final TrackedData<Float> HEIGHT = DataTracker.registerData(RockSpikeEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> OWNER_ID = DataTracker.registerData(RockSpikeEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	/** Ticks the spike stays up before sinking (synced so the client animation matches). */
+	private static final TrackedData<Integer> HOLD = DataTracker.registerData(RockSpikeEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
 	private static final int RISE_TICKS = 6;
 	private static final int HOLD_TICKS = 26;
@@ -43,16 +45,22 @@ public class RockSpikeEntity extends Entity {
 	}
 
 	public void init(LivingEntity owner, float height, float damage) {
+		init(owner, height, damage, HOLD_TICKS);
+	}
+
+	public void init(LivingEntity owner, float height, float damage, int holdTicks) {
 		this.owner = owner;
 		this.damage = damage;
 		this.dataTracker.set(OWNER_ID, owner.getId());
 		this.dataTracker.set(HEIGHT, height);
+		this.dataTracker.set(HOLD, Math.max(1, holdTicks));
 	}
 
 	@Override
 	protected void initDataTracker() {
 		this.dataTracker.startTracking(HEIGHT, 2.2f);
 		this.dataTracker.startTracking(OWNER_ID, -1);
+		this.dataTracker.startTracking(HOLD, HOLD_TICKS);
 	}
 
 	public float getSpikeHeight() {
@@ -67,8 +75,9 @@ public class RockSpikeEntity extends Entity {
 	public float getRise(float tickDelta) {
 		float a = this.age + tickDelta;
 		if (a < RISE_TICKS) return easeOut(a / RISE_TICKS);
-		if (a < RISE_TICKS + HOLD_TICKS) return 1f;
-		return 1f - MathHelper.clamp((a - RISE_TICKS - HOLD_TICKS) / SINK_TICKS, 0f, 1f);
+		int hold = this.dataTracker.get(HOLD);
+		if (a < RISE_TICKS + hold) return 1f;
+		return 1f - MathHelper.clamp((a - RISE_TICKS - hold) / SINK_TICKS, 0f, 1f);
 	}
 
 	private static float easeOut(float t) {
@@ -104,14 +113,14 @@ public class RockSpikeEntity extends Entity {
 			}
 		}
 
-		if (this.age > RISE_TICKS + HOLD_TICKS + SINK_TICKS) {
+		if (this.age > RISE_TICKS + this.dataTracker.get(HOLD) + SINK_TICKS) {
 			this.discard();
 		}
 	}
 
 	@Override
 	public boolean shouldRender(double distance) {
-		return distance < 128 * 128;
+		return distance < 256 * 256;
 	}
 
 	@Override
@@ -134,8 +143,12 @@ public class RockSpikeEntity extends Entity {
 	}
 
 	public static void spawn(ServerWorld world, LivingEntity owner, Vec3d pos, float height, float damage, EntityType<RockSpikeEntity> type) {
+		spawn(world, owner, pos, height, damage, HOLD_TICKS, type);
+	}
+
+	public static void spawn(ServerWorld world, LivingEntity owner, Vec3d pos, float height, float damage, int holdTicks, EntityType<RockSpikeEntity> type) {
 		RockSpikeEntity spike = new RockSpikeEntity(type, world);
-		spike.init(owner, height, damage);
+		spike.init(owner, height, damage, holdTicks);
 		spike.refreshPositionAndAngles(pos.x, pos.y, pos.z, world.random.nextFloat() * 360f, 0);
 		world.spawnEntity(spike);
 	}

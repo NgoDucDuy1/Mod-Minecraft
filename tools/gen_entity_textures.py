@@ -271,11 +271,11 @@ def heaven_hand():
     the 'top' UV region (-Y) is the palm surface that faces the ground."""
     import texlib as T
     t = Tex(256, 128, density=4)
-    base = (244, 202, 112)
-    deep = (160, 104, 36)
-    dark = (98, 58, 18)
-    hot = (255, 240, 190)
-    seam = (255, 226, 130)
+    base = (252, 220, 138)
+    deep = (176, 118, 44)
+    dark = (104, 62, 20)
+    hot = (255, 246, 206)
+    seam = (255, 228, 136)
     # Painters also accumulate an emissive amount in EMIT[0]; a second pass writes only that into
     # heaven_hand_glow.png (the seams/seals that burn from within on the client).
     EMIT = [0.0]
@@ -300,7 +300,7 @@ def heaven_hand():
         n = sample(tone, fx, fy, ox, oy)
         g = sample(grain, fx, fy, ox, oy, 2.0)
         c = mix(mix(base, deep, 0.28), mix(base, hot, 0.35), n)
-        c = mix(c, deep, (g - 0.5) * 0.18 + 0.09)
+        c = mix(c, deep, (g - 0.5) * 0.08 + 0.04)
         # Ridged veins: thin dark mineral lines with a faint bright halo (jade inclusions).
         v = abs(sample(vein, fx, fy, ox, oy, 1.5) - 0.5)
         if v < 0.012:

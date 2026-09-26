@@ -219,7 +219,7 @@ public class HeavenHandFx extends ClientFx {
 		// only the dissolution thins it out.
 		float solidA = appear * (1.0F - dissolve) * (1.0F - dissolve);
 		VertexConsumer solid = consumers.getBuffer(ModRenderLayers.entityFar(FxTextures.HEAVEN_HAND));
-		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.94F, 0.78F, solidA);
+		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.96F, 0.84F, solidA);
 		// Dao seams and seals burn from within (emissive mask), pulsing faster as the palm nears the
 		// ground; the whole hand only blazes as it returns to light.
 		float pulse = 0.8F + 0.2F * MathHelper.sin(t * (0.25F + 0.5F * u));
