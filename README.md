@@ -92,6 +92,15 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.3 – Vạn Kiếm Quy Tông mới, sửa trận pháp bị xéo, Liệt Diễm Trảo xa hơn
+* **Sửa lỗi hình học quan trọng**: `ClientFx.alignY/alignZ` dùng góc yaw kiểu Minecraft (`atan2(-x, z)`) với phép quay
+  thuận tay phải nên **mọi hiệu ứng có hướng bị lật gương theo trục X** khi người chơi không nhìn dọc ±Z – trận pháp của
+  Kim Cang Chưởng / Hàn Băng Tiễn nhìn "bị xéo", tia/luồng lệch hướng. Ảnh CI không lộ vì bài test luôn nhìn +Z.
+* **Vạn Kiếm Quy Tông** làm lại: người chơi đứng yên, **48 phi kiếm** ngưng tụ thành 4 hàng cánh mở rộng dần **sau lưng**,
+  mũi kiếm hướng về phía trước, hàng trong bung ra trước; sau ~1,7 s kiếm lần lượt lao thẳng qua người chơi rồi truy kích
+  (chia đều tối đa 4 mục tiêu trong nón 36 ô), không có địch thì bay tới điểm đang nhìn và nổ kiếm khí.
+* **Liệt Diễm Trảo**: tầm 4,2 → 7 ô, thêm lưỡi trảo lửa lớn bay ra giữa tầm, than hồng dài 6 ô.
+
 ### 1.3.2 – Phế bỏ công pháp ngay trong Đạo Kinh
 * Người chơi thường giờ có thể **gỡ công pháp đã học**: mở Đạo Kinh (phím mặc định), chọn công pháp → nút **Phế bỏ** → bấm
   lần nữa trong 3 giây để xác nhận. Server hủy chiêu đang chạy, gỡ khỏi mọi ô kỹ năng và **trả lại Bí Tịch** vào túi (rơi

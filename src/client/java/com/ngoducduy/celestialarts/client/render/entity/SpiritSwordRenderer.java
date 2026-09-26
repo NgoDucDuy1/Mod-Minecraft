@@ -47,8 +47,9 @@ public class SpiritSwordRenderer extends GlowEntityRenderer<SpiritSwordEntity> {
 
 		applyProjectileRotation(matrices, lerpYaw(entity, tickDelta), lerpPitch(entity, tickDelta));
 		if (phase == SpiritSwordEntity.PHASE_ORBIT) {
-			// Slow roll while orbiting so the blade catches the light.
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(age * 0.12F + entity.getOrbitOffset()) * 25.0F));
+			// Slow roll while orbiting so the blade catches the light; the sword wall only shimmers.
+			float roll = entity.getMode() == SpiritSwordEntity.MODE_FORMATION ? 7.0F : 25.0F;
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(age * 0.12F + entity.getOrbitOffset()) * roll));
 		} else if (phase == SpiritSwordEntity.PHASE_LAUNCH) {
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(age * 30.0F));
 			matrices.push();

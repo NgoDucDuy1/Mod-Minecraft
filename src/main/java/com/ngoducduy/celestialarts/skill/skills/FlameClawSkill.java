@@ -29,11 +29,11 @@ import net.minecraft.util.math.Vec3d;
  * final claw rakes the ground, leaving three furrows of spirit fire for three seconds.
  */
 public class FlameClawSkill extends Skill {
-	private static final double RANGE = 4.2;
+	private static final double RANGE = 7.0;
 	private static final double HALF_ANGLE = 45;
 	private static final float DAMAGE = 6.5f;
 	private static final int EMBER_TICKS = 60;
-	private static final double EMBER_REACH = 4.0;
+	private static final double EMBER_REACH = 6.0;
 	private static final float EMBER_DAMAGE = 1.5f;
 
 	public FlameClawSkill() {
@@ -112,9 +112,12 @@ public class FlameClawSkill extends Skill {
 			int style = index == 0 ? 1 : (index == 1 ? 2 : 0);
 
 			caster.swingHand(index % 2 == 0 ? Hand.MAIN_HAND : Hand.OFF_HAND, true);
-			ModPackets.sendFx(caster, FxData.follow(FxType.SLASH_ARC, caster.getId(), caster.getPos(), 0xFF7A1A, 1.5f, 7).withExtra(style));
-			SkillFx.cone(world, ModParticles.FLAME_WISP, origin.add(dir.multiply(0.8)), dir, 30, 18, 0.45);
-			SkillFx.cone(world, ModParticles.EMBER, origin.add(dir.multiply(0.8)), dir, 35, 10, 0.6);
+			ModPackets.sendFx(caster, FxData.follow(FxType.SLASH_ARC, caster.getId(), caster.getPos(), 0xFF7A1A, 1.6f, 7).withExtra(style));
+			// The claw's flame projects forward: a second, larger crescent tears through the air
+			// halfway down the reach so the strike visibly covers its whole range.
+			ModPackets.sendFx(caster, FxData.at(FxType.SLASH_ARC, origin.add(dir.multiply(RANGE * 0.55)), 0xFF9A3A, 2.4f, 8).withExtra(style).withTarget(dir));
+			SkillFx.cone(world, ModParticles.FLAME_WISP, origin.add(dir.multiply(0.8)), dir, 28, 22, 0.9);
+			SkillFx.cone(world, ModParticles.EMBER, origin.add(dir.multiply(0.8)), dir, 32, 12, 1.1);
 			world.playSound(null, caster.getBlockPos(), ModSounds.FIRE_WHOOSH, SoundCategory.PLAYERS, 1.0f, 1.1f + index * 0.1f);
 
 			for (LivingEntity target : EntityUtil.inCone(world, caster, origin, dir, RANGE, HALF_ANGLE)) {

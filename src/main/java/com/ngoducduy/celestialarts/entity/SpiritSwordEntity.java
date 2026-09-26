@@ -37,6 +37,11 @@ public class SpiritSwordEntity extends Entity {
 	private static final TrackedData<Integer> PHASE = DataTracker.registerData(SpiritSwordEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> OWNER_ID = DataTracker.registerData(SpiritSwordEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Float> ORBIT_OFFSET = DataTracker.registerData(SpiritSwordEntity.class, TrackedDataHandlerRegistry.FLOAT);
+	/** 0 = ring around the owner (Kiếm Trận), 1 = wall behind the owner's back, tips forward (Vạn Kiếm Quy Tông). */
+	private static final TrackedData<Integer> MODE = DataTracker.registerData(SpiritSwordEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+	public static final int MODE_ORBIT = 0;
+	public static final int MODE_FORMATION = 1;
 
 	public static final int PHASE_ORBIT = 0;
 	public static final int PHASE_LAUNCH = 1;
@@ -49,6 +54,11 @@ public class SpiritSwordEntity extends Entity {
 	private double orbitHeight = 1.4;
 	private int targetId = -1;
 	private Vec3d targetPos;
+	/** Formation offset in the owner's frame: x = right, y = up, z = behind. */
+	private Vec3d formOffset = Vec3d.ZERO;
+	private float formPitch;
+	/** Index in the formation, used to spread the swords over several targets. */
+	private int formIndex;
 	private boolean launched;
 	private int lifeAfterLaunch = 0;
 	private int stuckTicks = 0;
@@ -68,8 +78,25 @@ public class SpiritSwordEntity extends Entity {
 		this.dataTracker.set(ORBIT_OFFSET, orbitOffsetDeg);
 	}
 
+	/**
+	 * Formation variant: the sword hangs at {@code offset} (right, up, behind) relative to the owner,
+	 * always pointing where the owner faces, and launches forward after {@code launchDelay} ticks.
+	 */
+	public void initFormation(LivingEntity owner, int index, Vec3d offset, float pitchDeg, int launchDelay, float damage) {
+		init(owner, index * 37.0f, launchDelay, damage);
+		this.formIndex = index;
+		this.formOffset = offset;
+		this.formPitch = pitchDeg;
+		this.dataTracker.set(MODE, MODE_FORMATION);
+	}
+
+	public int getMode() {
+		return this.dataTracker.get(MODE);
+	}
+
 	@Override
 	protected void initDataTracker() {
+		this.dataTracker.startTracking(MODE, MODE_ORBIT);
 		this.dataTracker.startTracking(PHASE, PHASE_ORBIT);
 		this.dataTracker.startTracking(OWNER_ID, -1);
 		this.dataTracker.startTracking(ORBIT_OFFSET, 0.0f);
@@ -117,6 +144,10 @@ public class SpiritSwordEntity extends Entity {
 	}
 
 	private void tickOrbit(LivingEntity own) {
+		if (getMode() == MODE_FORMATION) {
+			tickFormation(own);
+			return;
+		}
 		double angle = Math.toRadians(getOrbitOffset() + this.age * 4.0);
 		double bob = Math.sin((this.age + getOrbitOffset()) * 0.15) * 0.15;
 		Vec3d target = own.getPos().add(Math.cos(angle) * orbitRadius, orbitHeight + bob, Math.sin(angle) * orbitRadius);
@@ -149,6 +180,58 @@ public class SpiritSwordEntity extends Entity {
 		}
 	}
 
+	/** Vạn Kiếm Quy Tông: hold position in the wall behind the owner, then shoot forward. */
+	private void tickFormation(LivingEntity own) {
+		float yaw = own.getYaw();
+		Vec3d forward = Vec3d.fromPolar(0.0f, yaw);
+		Vec3d right = new Vec3d(-forward.z, 0, forward.x);
+		double bob = Math.sin((this.age + formIndex * 1.7) * 0.2) * 0.06;
+		Vec3d target = own.getPos()
+				.add(right.multiply(formOffset.x))
+				.add(0, formOffset.y + bob, 0)
+				.subtract(forward.multiply(formOffset.z));
+		Vec3d cur = this.getPos();
+		// Unfold from the owner's back over the first ticks, then track rigidly.
+		Vec3d next = this.age < 8 ? cur.lerp(target, 0.35) : target;
+		this.setPosition(next.x, next.y, next.z);
+		this.prevYaw = this.getYaw();
+		this.prevPitch = this.getPitch();
+		// Tip forward: projectile yaw convention is atan2(x, z) of the direction.
+		this.setYaw((float) Math.toDegrees(MathHelper.atan2(forward.x, forward.z)));
+		this.setPitch(formPitch);
+
+		if (this.age >= launchDelay) {
+			LivingEntity t = pickTargetSpread(own, formIndex);
+			Vec3d launchDir = own.getRotationVec(1.0f);
+			if (t != null) {
+				targetId = t.getId();
+			} else {
+				// Nobody ahead: the wall of swords flies to the spot the owner is looking at.
+				Vec3d aim = Targeting.lookPoint(own, 36);
+				targetPos = aim.add((random.nextDouble() - 0.5) * 4.0, random.nextDouble() * 1.5, (random.nextDouble() - 0.5) * 4.0);
+			}
+			setPhase(PHASE_LAUNCH);
+			// Every sword first shoots straight ahead past the owner, then homes in on its target.
+			this.setVelocity(launchDir.multiply(1.3));
+			faceVelocity(this.getVelocity());
+			if (formIndex % 3 == 0) {
+				this.getWorld().playSound(null, this.getBlockPos(), ModSounds.SWORD_LAUNCH, SoundCategory.PLAYERS, 0.8f, 1.0f + random.nextFloat() * 0.4f);
+			}
+		}
+	}
+
+	/** Like {@link #pickTarget} but rotates through the candidates so a volley is shared out. */
+	private LivingEntity pickTargetSpread(LivingEntity own, int index) {
+		Vec3d look = own.getRotationVec(1.0f);
+		var cone = EntityUtil.inCone(this.getWorld(), own, own.getEyePos(), look, 36, 40);
+		if (!cone.isEmpty()) {
+			var list = EntityUtil.prioritised(cone, own.getPos());
+			// Nearer targets take a bigger share: index modulo min(size, 4).
+			return list.get(index % Math.min(list.size(), 4));
+		}
+		return null;
+	}
+
 	private LivingEntity pickTarget(LivingEntity own) {
 		Vec3d look = own.getRotationVec(1.0f);
 		// Prefer targets in front of the owner, then any nearby.
@@ -164,8 +247,10 @@ public class SpiritSwordEntity extends Entity {
 		Entity t = this.getWorld().getEntityById(targetId);
 		Vec3d vel = this.getVelocity();
 		if (t instanceof LivingEntity target && target.isAlive()) {
-			Vec3d want = target.getBoundingBox().getCenter().subtract(this.getPos()).normalize().multiply(1.25);
-			vel = vel.lerp(want, 0.22);
+			Vec3d want = target.getBoundingBox().getCenter().subtract(this.getPos()).normalize().multiply(getMode() == MODE_FORMATION ? 1.5 : 1.25);
+			// Formation swords fly straight for the first few ticks (past the caster), then curve in.
+			double steer = getMode() == MODE_FORMATION ? (lifeAfterLaunch < 4 ? 0.05 : 0.25) : 0.22;
+			vel = vel.lerp(want, steer);
 		} else if (targetPos != null) {
 			Vec3d toPoint = targetPos.subtract(this.getPos());
 			if (toPoint.lengthSquared() < 1.0) {
@@ -175,7 +260,7 @@ public class SpiritSwordEntity extends Entity {
 				setPhase(PHASE_STUCK);
 				return;
 			}
-			vel = vel.lerp(toPoint.normalize().multiply(1.25), 0.3);
+			vel = vel.lerp(toPoint.normalize().multiply(getMode() == MODE_FORMATION ? 1.5 : 1.25), lifeAfterLaunch < 4 && getMode() == MODE_FORMATION ? 0.08 : 0.3);
 		}
 		this.setVelocity(vel);
 		launched = true;

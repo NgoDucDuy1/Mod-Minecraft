@@ -161,7 +161,10 @@ public abstract class ClientFx {
 		double len = dir.length();
 		if (len < 1.0E-6) return;
 		Vec3d d = dir.multiply(1.0 / len);
-		float yawDeg = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+		// RotationAxis.POSITIVE_Y is right-handed: R_y(a)·(0,0,1) = (sin a, 0, cos a), so the angle is
+		// atan2(x, z) - NOT Minecraft's entity yaw atan2(-x, z), which would mirror the effect in X
+		// (visible as arrays and beams skewing whenever the caster does not face ±Z).
+		float yawDeg = (float) Math.toDegrees(Math.atan2(d.x, d.z));
 		float pitchDeg = (float) Math.toDegrees(Math.acos(MathHelper.clamp(d.y, -1.0, 1.0)));
 		matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(yawDeg));
 		matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_X.rotationDegrees(pitchDeg));
@@ -172,7 +175,7 @@ public abstract class ClientFx {
 		double len = dir.length();
 		if (len < 1.0E-6) return;
 		Vec3d d = dir.multiply(1.0 / len);
-		float yawDeg = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+		float yawDeg = (float) Math.toDegrees(Math.atan2(d.x, d.z)); // see alignY
 		float pitchDeg = (float) -Math.toDegrees(Math.asin(MathHelper.clamp(d.y, -1.0, 1.0)));
 		matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_Y.rotationDegrees(yawDeg));
 		matrices.multiply(net.minecraft.util.math.RotationAxis.POSITIVE_X.rotationDegrees(pitchDeg));

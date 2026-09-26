@@ -144,7 +144,9 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.runAtTick(12, () -> ctx.assertTrue(count(world, ModEntities.FIRE_LOTUS, player.getPos(), 16) >= 1, "fire lotus entity spawned"));
 
 		ctx.runAtTick(14, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.THOUSAND_SWORDS), "thousand swords cast"));
-		ctx.runAtTick(60, () -> ctx.assertTrue(count(world, ModEntities.SPIRIT_SWORD, player.getPos(), 24) >= 1, "spirit swords summoned"));
+		// The wall unfolds over 12 ticks and starts launching at tick 34: at 14+30 it must be complete.
+		ctx.runAtTick(44, () -> ctx.assertTrue(count(world, ModEntities.SPIRIT_SWORD, player.getPos(), 12) >= com.ngoducduy.celestialarts.skill.skills.ThousandSwordsSkill.SWORDS - 2, "sword wall complete (" + count(world, ModEntities.SPIRIT_SWORD, player.getPos(), 12) + ")"));
+		ctx.runAtTick(60, () -> ctx.assertTrue(count(world, ModEntities.SPIRIT_SWORD, player.getPos(), 48) >= 1, "spirit swords summoned"));
 
 		ctx.runAtTick(62, () -> ctx.assertTrue(SkillManager.cast(player, qi, SkillRegistry.EARTH_SHATTER), "earth shatter cast"));
 		ctx.runAtTick(80, () -> ctx.assertTrue(count(world, ModEntities.ROCK_SPIKE, player.getPos(), 24) >= 1, "rock spikes raised"));
