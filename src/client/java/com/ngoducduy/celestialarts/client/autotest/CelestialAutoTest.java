@@ -43,6 +43,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -375,47 +376,89 @@ public final class CelestialAutoTest {
 	}
 
 	/**
-	 * Thiên Đạo Chi Thủ is a 16.5-second world-scale ritual that cannot be released: the camera follows
-	 * its phases (formation in the sky, descent, impact, shock ring, dissolution / palm print) with the
-	 * pitch adjusted per phase, then waits for the cast to finish so the next skill is not locked out.
+	 * Thiên Đạo Chi Thủ is a 16.5-second world-scale ritual that cannot be released. The camera is
+	 * directed like a film: first person from the caster for the sky formation and the hand breaking
+	 * through it, a wide shot from 130 blocks beside the target for the descent / impact / shock ring,
+	 * and a high angle over the palm print at the end. Every shot is scheduled on the world clock
+	 * (not on accumulated waits) because a software-rendered screenshot costs the better part of a
+	 * second and eight of them would otherwise drift the whole sequence by ~100 ticks.
 	 */
 	private static void castHeavenHand(int slot) {
-		submitAndWait(c -> {
+		Vec3d home = submitAndWait(c -> c.player.getPos());
+		long t0 = submitAndWait(c -> {
 			c.player.setYaw(0.0F);
 			c.player.setHeadYaw(0.0F);
 			c.player.setBodyYaw(0.0F);
 			c.player.setPitch(0.0F);
-			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+			c.options.setPerspective(Perspective.FIRST_PERSON);
 			ClientPackets.sendCast(slot);
+			return Objects.requireNonNull(c.world).getTime();
+		});
+		// Wide vantage: beside the target point (72 blocks ahead of the caster, hand 110 wide), looking +X.
+		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 -16", home.x - 130.0, home.y, home.z + 72.0);
+		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 -50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
+		String back = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z);
+
+		// From the caster, looking up: the eight-trigram array unfolding 120 blocks up.
+		lookAt(t0 + 45, -60.0F);
+		screenshot("skill_heaven_hand_1_formation", false);
+		// The hand has pushed through the array and begins its descent.
+		lookAt(t0 + 125, -46.0F);
+		screenshot("skill_heaven_hand_2_descent", false);
+
+		waitUntil(t0 + 135);
+		command(wide);
+		lookAt(t0 + 200, -16.0F);
+		screenshot("skill_heaven_hand_3_approach", false);
+		lookAt(t0 + 243, -14.0F);
+		screenshot("skill_heaven_hand_4_impact", false);
+		lookAt(t0 + 253, -12.0F);
+		screenshot("skill_heaven_hand", false);
+		lookAt(t0 + 266, -10.0F);
+		screenshot("skill_heaven_hand_6_shock_ring", false);
+		lookAt(t0 + 296, -12.0F);
+		screenshot("skill_heaven_hand_7_dissolve", false);
+
+		// High angle over the palm print while the hand lifts away and fades.
+		waitUntil(t0 + 300);
+		submitAndWait(c -> {
+			c.player.getAbilities().flying = true;
+			c.player.sendAbilitiesUpdate();
 			return null;
 		});
-		int elapsed = 0;
-		int[][] shots = {{55, -55}, {150, -50}, {205, -35}, {236, -8}, {249, -4}, {262, -3}, {300, -14}, {332, -2}};
-		String[] names = {"skill_heaven_hand_1_formation", "skill_heaven_hand_2_descent", "skill_heaven_hand_3_approach", "skill_heaven_hand_4_impact",
-				"skill_heaven_hand", "skill_heaven_hand_6_shock_ring", "skill_heaven_hand_7_dissolve", "skill_heaven_hand_8_palm_print"};
-		for (int i = 0; i < shots.length; i++) {
-			final float pitch = shots[i][1];
-			waitTicks(Math.max(1, shots[i][0] - 2 - elapsed));
-			elapsed = shots[i][0] - 2;
-			submitAndWait(c -> {
-				c.player.setPitch(pitch);
-				c.player.prevPitch = pitch;
-				return null;
-			});
-			waitTicks(2);
-			elapsed += 2;
-			screenshot(names[i], false);
-		}
-		// Let the ritual end (330 ticks + packet slack), then drop the two-minute palm print so it does
-		// not leak into the following screenshots.
-		waitTicks(Math.max(5, 352 - elapsed));
+		command(high);
+		lookAt(t0 + 326, -50.0F);
+		screenshot("skill_heaven_hand_8_palm_print", false);
+
+		// Let the ritual end (330 ticks + packet slack), return home on foot and drop the two-minute
+		// palm print so it does not leak into the following screenshots.
+		waitUntil(t0 + 352);
+		command(back);
 		submitAndWait(c -> {
+			c.player.getAbilities().flying = false;
+			c.player.sendAbilitiesUpdate();
 			c.player.setPitch(4.0F);
 			c.player.prevPitch = 4.0F;
+			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
 			ClientFxManager.clear();
 			return null;
 		});
-		waitTicks(5);
+		waitTicks(8);
+	}
+
+	/** Waits for the world clock, then points the camera two ticks before the shot so interpolation has settled. */
+	private static void lookAt(long worldTick, float pitch) {
+		waitUntil(worldTick - 2);
+		submitAndWait(c -> {
+			c.player.setPitch(pitch);
+			c.player.prevPitch = pitch;
+			return null;
+		});
+		waitUntil(worldTick);
+	}
+
+	private static void waitUntil(long worldTick) {
+		waitFor("world tick " + worldTick, c -> c.world == null || c.world.getTime() >= worldTick, Duration.ofMinutes(2));
 	}
 
 	private static boolean modEntitiesPresent(MinecraftClient c) {

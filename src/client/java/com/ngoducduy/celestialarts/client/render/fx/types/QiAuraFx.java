@@ -57,7 +57,8 @@ public class QiAuraFx extends ClientFx {
 		matrices.push();
 		matrices.translate(0, 1.0F * s, 0);
 		faceCamera(matrices, camera);
-		RenderUtil.billboardQuad(glow, matrices.peek(), 1.6F * s * pulse, color, alpha * 0.25F);
+		// Fades when the camera stands inside the aura (own first-person view) so it never veils the screen.
+		RenderUtil.billboardQuad(glow, matrices.peek(), 1.6F * s * pulse, color, alpha * 0.25F * nearFade(camera, o.add(0.0, 1.0, 0.0), 0.8F * s, 2.5F * s));
 		matrices.pop();
 	}
 }

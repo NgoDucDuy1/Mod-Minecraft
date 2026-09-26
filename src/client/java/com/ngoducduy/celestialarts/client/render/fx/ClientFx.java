@@ -130,6 +130,16 @@ public abstract class ClientFx {
 		return MathHelper.clamp(a, 0.0F, 1.0F);
 	}
 
+	/**
+	 * 0 while the camera is within {@code inner} blocks of {@code p}, 1 beyond {@code outer}. Used to
+	 * fade out camera-facing sprites and wide shells that would otherwise fill the whole screen when the
+	 * camera stands inside them (first person on the caster, third-person camera clipped into the ground).
+	 */
+	protected static float nearFade(Camera camera, Vec3d p, float inner, float outer) {
+		float d = (float) camera.getPos().distanceTo(p);
+		return MathHelper.clamp((d - inner) / Math.max(0.01F, outer - inner), 0.0F, 1.0F);
+	}
+
 	protected float rand(int salt) {
 		return RenderUtil.hash(seed, salt);
 	}
