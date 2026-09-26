@@ -20,6 +20,41 @@ public final class SkillManager {
 	}
 
 	/** Attempts to cast the skill bound to the given slot. */
+	/**
+	 * "Phế bỏ công pháp": the player gives up a learned art. Any running cast of it is cancelled, it is
+	 * removed from every slot and, when {@code refund} is set, the matching Bí Tịch is handed back so
+	 * the art can be re-learned or passed on. Returns false if the art was not known.
+	 */
+	public static boolean forget(ServerPlayerEntity player, Identifier skillId, boolean refund) {
+		return forget(player, skillId, refund, true);
+	}
+
+	/** As {@link #forget(ServerPlayerEntity, Identifier, boolean)}; {@code announce} = false keeps it silent (commands). */
+	public static boolean forget(ServerPlayerEntity player, Identifier skillId, boolean refund, boolean announce) {
+		Skill skill = SkillRegistry.get(skillId);
+		PlayerQi qi = QiHolder.get(player);
+		if (skill == null || !qi.hasLearned(skillId)) return false;
+		ActiveCast running = qi.getActiveCast(skillId);
+		if (running != null) running.cancel();
+		qi.forget(skillId);
+		if (refund) {
+			for (com.ngoducduy.celestialarts.item.SkillScrollItem scroll : com.ngoducduy.celestialarts.registry.ModItems.scrolls()) {
+				if (scroll.getSkill() == skill) {
+					// Into the inventory, or dropped at the feet when it is full (never lost).
+					player.getInventory().offerOrDrop(new net.minecraft.item.ItemStack(scroll));
+					break;
+				}
+			}
+		}
+		if (announce) {
+			player.sendMessage(Text.translatable(refund ? "message.celestialarts.forgot" : "message.celestialarts.forgot_plain", skill.getName()).formatted(Formatting.GRAY), false);
+			player.getServerWorld().playSound(null, player.getBlockPos(), com.ngoducduy.celestialarts.registry.ModSounds.LEARN_SKILL, net.minecraft.sound.SoundCategory.PLAYERS, 0.8f, 0.6f);
+			ModPackets.sendFx(player, com.ngoducduy.celestialarts.network.FxData.follow(com.ngoducduy.celestialarts.network.FxType.QI_AURA, player.getId(), player.getPos(), 0x777788, 0.7f, 30));
+		}
+		ModPackets.sendSync(player, qi);
+		return true;
+	}
+
 	public static void castSlot(ServerPlayerEntity player, int slot) {
 		PlayerQi qi = QiHolder.get(player);
 		Skill skill = qi.getSlotSkill(slot);

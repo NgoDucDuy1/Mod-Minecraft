@@ -27,6 +27,8 @@ public final class ModPackets {
 	public static final Identifier RELEASE_SKILL = CelestialArts.id("release_skill");
 	/** C2S: bind a skill to a slot from the skill book. [varint slot, boolean hasSkill, identifier skill] */
 	public static final Identifier SET_SLOT = CelestialArts.id("set_slot");
+	/** C2S: player gives up a learned art from the skill book. [identifier skill] */
+	public static final Identifier FORGET_SKILL = CelestialArts.id("forget_skill");
 	/** C2S: player asks to break through to the next realm. */
 	public static final Identifier BREAKTHROUGH = CelestialArts.id("breakthrough");
 	/** C2S: player performed an air jump (Lăng Không Bộ); server validates realm and charges qi. */
@@ -65,6 +67,10 @@ public final class ModPackets {
 					sendSync(player, qi);
 				}
 			});
+		});
+		ServerPlayNetworking.registerGlobalReceiver(FORGET_SKILL, (server, player, handler, buf, responseSender) -> {
+			Identifier skill = buf.readIdentifier();
+			server.execute(() -> SkillManager.forget(player, skill, true));
 		});
 		ServerPlayNetworking.registerGlobalReceiver(BREAKTHROUGH, (server, player, handler, buf, responseSender) ->
 				server.execute(() -> com.ngoducduy.celestialarts.cultivation.Breakthrough.tryBreakthrough(player)));

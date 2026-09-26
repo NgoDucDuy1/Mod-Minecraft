@@ -92,6 +92,13 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.2 – Phế bỏ công pháp ngay trong Đạo Kinh
+* Người chơi thường giờ có thể **gỡ công pháp đã học**: mở Đạo Kinh (phím mặc định), chọn công pháp → nút **Phế bỏ** → bấm
+  lần nữa trong 3 giây để xác nhận. Server hủy chiêu đang chạy, gỡ khỏi mọi ô kỹ năng và **trả lại Bí Tịch** vào túi (rơi
+  xuống chân nếu túi đầy) nên có thể học lại hoặc trao cho người khác.
+* Gói tin mới `forget_skill`; `/celestial forget` dùng chung đường xử lý (không hoàn Bí Tịch, im lặng).
+* Game test mới `forgetSkillRefundsScrollAndClearsSlot` (13 test).
+
 ### 1.3.1 – Sửa lỗi crash khi chạy jar phát hành (mixin client không tìm thấy target)
 * Jar 1.3.0 tải về chạy ngoài môi trường dev bị lỗi `CameraMixin ... could not find any targets matching 'update'`
   (và tương tự cho `ParticleManagerMixin`, `BipedEntityModelMixin`). Nguyên nhân: với `splitEnvironmentSourceSets()`

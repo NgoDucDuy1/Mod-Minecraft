@@ -123,12 +123,12 @@ public final class CelestialCommand {
 			if (all) {
 				for (Skill s : SkillRegistry.all()) {
 					if (learn) qi.learn(s.getId());
-					else qi.forget(s.getId());
+					else com.ngoducduy.celestialarts.skill.SkillManager.forget(p, s.getId(), false, false);
 				}
 			} else if (learn) {
 				qi.learn(id);
 			} else {
-				qi.forget(id);
+				com.ngoducduy.celestialarts.skill.SkillManager.forget(p, id, false, false);
 			}
 			ModPackets.sendSync(p, qi);
 		}

@@ -57,6 +57,12 @@ public final class ClientPackets {
 		ClientPlayNetworking.send(ModPackets.SET_SLOT, buf);
 	}
 
+	public static void sendForget(Identifier skill) {
+		PacketByteBuf buf = PacketByteBufs.create();
+		buf.writeIdentifier(skill);
+		ClientPlayNetworking.send(ModPackets.FORGET_SKILL, buf);
+	}
+
 	public static void sendAirJump() {
 		ClientPlayNetworking.send(ModPackets.AIR_JUMP, PacketByteBufs.empty());
 	}

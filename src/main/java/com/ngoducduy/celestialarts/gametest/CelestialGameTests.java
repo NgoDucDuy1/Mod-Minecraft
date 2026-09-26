@@ -244,6 +244,32 @@ public final class CelestialGameTests implements FabricGameTest {
 		});
 	}
 
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 100)
+	public void forgetSkillRefundsScrollAndClearsSlot(TestContext ctx) {
+		ServerPlayerEntity player = FakePlayer.get(ctx.getWorld());
+		Vec3d pos = ctx.getAbsolute(new Vec3d(0.5, 2.0, 0.5));
+		player.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0F, 0.0F);
+		player.getInventory().clear();
+		PlayerQi qi = QiHolder.get(player);
+		qi.interruptAllCasts();
+		Skill skill = SkillRegistry.SWORD_QI_SLASH;
+		qi.forget(skill.getId());
+		for (int i = 0; i < PlayerQi.SLOT_COUNT; i++) qi.setSlot(i, null);
+		qi.learn(skill.getId());
+		ctx.assertTrue(skill.getId().equals(qi.getSlot(0)), "learning auto-binds the first free slot");
+		ctx.assertTrue(!SkillManager.forget(player, SkillRegistry.FIRE_LOTUS.getId(), true), "forgetting an unknown art is refused");
+		ctx.assertTrue(SkillManager.forget(player, skill.getId(), true), "forget accepted");
+		ctx.assertTrue(!qi.hasLearned(skill.getId()), "art removed");
+		ctx.assertTrue(qi.getSlot(0) == null, "slot cleared");
+		boolean refunded = false;
+		for (int i = 0; i < player.getInventory().size(); i++) {
+			if (player.getInventory().getStack(i).getItem() instanceof com.ngoducduy.celestialarts.item.SkillScrollItem scroll && scroll.getSkill() == skill) refunded = true;
+		}
+		ctx.assertTrue(refunded, "the art's manual was handed back");
+		ctx.assertTrue(!SkillManager.forget(player, skill.getId(), true), "cannot forget twice (no duplicate scrolls)");
+		ctx.complete();
+	}
+
 	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 200)
 	public void qiCostAndCooldownApplied(TestContext ctx) {
 		// FakePlayer is a survival ServerPlayerEntity outside the player list, so costs are not skipped.

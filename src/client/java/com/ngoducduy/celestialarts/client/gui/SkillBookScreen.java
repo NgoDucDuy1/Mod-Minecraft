@@ -41,6 +41,9 @@ public class SkillBookScreen extends Screen {
 	private int left;
 	private int top;
 	private ButtonWidget breakthroughButton;
+	private ButtonWidget forgetButton;
+	/** Ticks left in which a second click on the forget button confirms it (0 = not armed). */
+	private int forgetArmed;
 	private ButtonWidget prevPage;
 	private ButtonWidget nextPage;
 	private int page;
@@ -58,7 +61,21 @@ public class SkillBookScreen extends Screen {
 		this.breakthroughButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.celestialarts.breakthrough"), b -> {
 			ClientPackets.sendBreakthrough();
 			this.close();
-		}).dimensions(left + 166, top + 186, 78, 20).build());
+		}).dimensions(left + 166, top + 174, 78, 20).build());
+		// "Phế bỏ công pháp": two clicks within ~3 s so a slip cannot throw an art away.
+		this.forgetButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.celestialarts.forget"), b -> {
+			if (selected == null) return;
+			if (forgetArmed > 0) {
+				ClientPackets.sendForget(selected.getId());
+				qi().forget(selected.getId()); // optimistic; the server sync that follows is authoritative
+				selected = null;
+				forgetArmed = 0;
+				refreshLearned();
+				setPage(page);
+			} else {
+				forgetArmed = 60;
+			}
+		}).dimensions(left + 166, top + 198, 78, 20).tooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("gui.celestialarts.forget_tip"))).build());
 		this.prevPage = this.addDrawableChild(ButtonWidget.builder(Text.literal("<"), b -> setPage(page - 1))
 				.dimensions(left + 122, top + 24, 14, 12).build());
 		this.nextPage = this.addDrawableChild(ButtonWidget.builder(Text.literal(">"), b -> setPage(page + 1))
@@ -185,6 +202,10 @@ public class SkillBookScreen extends Screen {
 			ctx.drawCenteredTextWithShadow(textRenderer, hint, this.width / 2, top + PANEL_H + 5, 0xA0A0A0);
 		}
 		breakthroughButton.active = qi.canBreakthrough();
+		forgetButton.active = selected != null;
+		forgetButton.setMessage(forgetArmed > 0 && selected != null
+				? Text.translatable("gui.celestialarts.forget_confirm").formatted(Formatting.RED)
+				: Text.translatable("gui.celestialarts.forget"));
 
 		super.render(ctx, mouseX, mouseY, delta);
 		if (hovered != null) ctx.drawTooltip(textRenderer, tooltip(hovered, qi), mouseX, mouseY);
@@ -229,6 +250,7 @@ public class SkillBookScreen extends Screen {
 			if (mouseX >= x && mouseX < x + ICON && mouseY >= y && mouseY < y + ICON) {
 				if (button == 0) {
 					selected = selected == s ? null : s;
+					forgetArmed = 0;
 					playClick();
 					return true;
 				}
@@ -268,6 +290,13 @@ public class SkillBookScreen extends Screen {
 		if (client != null) {
 			client.getSoundManager().play(net.minecraft.client.sound.PositionedSoundInstance.master(net.minecraft.sound.SoundEvents.UI_BUTTON_CLICK, 1.0F));
 		}
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		// A confirmation that is not given within ~3 s lapses.
+		if (forgetArmed > 0) forgetArmed--;
 	}
 
 	@Override
