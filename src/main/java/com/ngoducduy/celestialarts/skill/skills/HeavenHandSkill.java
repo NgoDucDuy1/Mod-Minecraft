@@ -158,13 +158,16 @@ public class HeavenHandSkill extends Skill {
 		private void summon() {
 			// extra carries the domain radius so the client shock ring travels exactly as far as the damage does.
 			ModPackets.sendFx(world, FxData.at(FxType.HEAVEN_HAND, center, GOLD, HAND_WIDTH, T_END).withTarget(dir).withExtra((int) R_DOMAIN), FX_RANGE_FAR);
-			ModPackets.sendFx(world, FxData.follow(FxType.HEAVEN_PILLAR, caster.getId(), caster.getPos(), PALE, 2.2f, T_END));
-			ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, caster.getId(), caster.getPos(), GOLD, 1.6f, T_END));
-			ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, caster.getPos().add(0, 0.06, 0), GOLD, 4.0f, T_END).withExtra(1));
-			// The sky darkens for everyone in the domain – sent per player at their own eyes so the
-			// 24-block falloff of SCREEN_FLASH never applies.
+			// The pillar and aura only wrap the caster while they hold the summoning pose; once the
+			// hand is called down the show is in the sky, not on the caster (who is free to run).
+			// The client also skips these two for the caster's own first-person view.
+			ModPackets.sendFx(world, FxData.follow(FxType.HEAVEN_PILLAR, caster.getId(), caster.getPos(), PALE, 2.2f, T_SUMMON + 16));
+			ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, caster.getId(), caster.getPos(), GOLD, 1.6f, T_SUMMON + 24));
+			ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, caster.getPos().add(0, 0.06, 0), GOLD, 4.0f, T_SLAM).withExtra(1));
+			// The sky dims for everyone in the domain – sent per player at their own eyes so the
+			// 24-block falloff of SCREEN_FLASH never applies. Kept light so the descent stays visible.
 			for (ServerPlayerEntity p : viewers(world, center, R_DOMAIN + 40)) {
-				ModPackets.sendFxTo(p, FxData.at(FxType.SCREEN_FLASH, p.getEyePos(), 0x120C04, 0.55f, T_SLAM + 20).withExtra(1));
+				ModPackets.sendFxTo(p, FxData.at(FxType.SCREEN_FLASH, p.getEyePos(), 0x120C04, 0.3f, T_SLAM + 20).withExtra(1));
 			}
 			world.playSound(null, caster.getBlockPos(), ModSounds.HEAVEN_HAND_SUMMON, SoundCategory.PLAYERS, 8.0f, 1.0f);
 			world.playSound(null, caster.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 2.0f, 0.8f);

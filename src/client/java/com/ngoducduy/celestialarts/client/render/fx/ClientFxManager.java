@@ -12,6 +12,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
@@ -128,10 +129,15 @@ public final class ClientFxManager {
 		float tickDelta = context.tickDelta();
 		Vec3d cam = camera.getPos();
 
+		// Effects wrapped around the entity the camera sits inside are skipped in first person.
+		Entity focused = camera.isThirdPerson() ? null : camera.getFocusedEntity();
+		int selfId = focused != null ? focused.getId() : -1;
+
 		matrices.push();
 		matrices.translate(-cam.x, -cam.y, -cam.z);
 		for (ClientFx fx : ACTIVE) {
 			if (fx.isDead()) continue;
+			if (selfId >= 0 && fx.data().entityId() == selfId && fx.hiddenInFirstPerson()) continue;
 			matrices.push();
 			try {
 				fx.render(matrices, IMMEDIATE, camera, tickDelta);

@@ -94,6 +94,10 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 
 ## Nhật ký cập nhật
 
+### 1.3.11 – Không còn hiệu ứng che mắt người thi triển
+- Ở góc nhìn thứ nhất, các hiệu ứng *bao quanh thân* người chơi (hào quang QI_AURA, trụ sáng HEAVEN_PILLAR, phù văn xoay RUNE_ORBIT) không còn được vẽ cho chính người đó – nhìn từ bên trong chúng chỉ là một bức tường sáng che kín màn hình. Người chơi khác và camera góc nhìn thứ ba vẫn thấy bình thường; chiêu chiếu ra ngoài (tia, chém, phong nhận, trận pháp dưới chân) vẫn hiện.
+- Thiên Đạo Chi Thủ: trụ sáng và hào quang chỉ bám người thi triển trong tư thế triệu hồi (~5 s) thay vì suốt 16,5 s; sau đó có thể chạy đi và ngắm bàn tay rơi xuống. Màn tối bầu trời giảm 0,55 → 0,30 để cảnh giáng xuống luôn rõ.
+
 ### 1.3.10
 - Thiên Đạo Chi Thủ – hoàn thiện lần cuối: mũi đá đứng 10–13 s đồng bộ server/client, dòng thời gian theo đồng hồ thế giới, bảng màu ngọc-vàng sáng hơn, đĩa trời tím-đen sau trận pháp, trận pháp vẽ bằng vàng/hổ phách thay vì trắng, hạt quanh camera mờ dần (hết quầng sáng trắng ở góc nhìn thứ nhất), linh quang của người thi triển toả từ thân thay vì tầm mắt.
 

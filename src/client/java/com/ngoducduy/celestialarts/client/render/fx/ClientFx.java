@@ -71,6 +71,21 @@ public abstract class ClientFx {
 		return data.entityId() >= 0;
 	}
 
+	/**
+	 * Whether this effect should be skipped while the camera sits inside the followed entity
+	 * (first person). Auras, pillars and rune orbits wrap around the body; seen from the inside
+	 * they are a wall of light across the whole screen that hides the actual skill. Other viewers
+	 * (and the third-person camera) still see them. Effects that project away from the body
+	 * (beams, slashes, wind blades, ground circles) stay visible.
+	 */
+	public boolean hiddenInFirstPerson() {
+		if (!follows()) return false;
+		return switch (data.type()) {
+			case QI_AURA, HEAVEN_PILLAR, RUNE_ORBIT -> true;
+			default -> false;
+		};
+	}
+
 	public void tick() {
 		age++;
 		Entity e = entity();
