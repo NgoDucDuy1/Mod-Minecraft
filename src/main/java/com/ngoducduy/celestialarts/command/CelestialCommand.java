@@ -51,7 +51,7 @@ import java.util.List;
  * /celestial exp &lt;amount&gt; [player]
  * /celestial breakthrough [player]
  * /celestial stage &lt;0-3&gt; [player]          – sơ / trung / hậu / viên mãn
- * /celestial root &lt;kinds&gt; &lt;grade&gt; [player] – e.g. "metal,fire" 4
+ * /celestial root &lt;kinds&gt; &lt;grade&gt; [player] – kinds joined with "+", e.g. metal+fire 4
  * /celestial talent &lt;talent&gt; [player]
  * /celestial reroll [player]                – roll root + talent again (with the ceremony)
  * /celestial meditate                       – toggle meditation
@@ -122,7 +122,7 @@ public final class CelestialCommand {
 										.executes(ctx -> stage(ctx, EntityArgumentType.getPlayers(ctx, "player"))))))
 				.then(CommandManager.literal("root")
 						.requires(src -> src.hasPermissionLevel(2))
-						.then(CommandManager.argument("kinds", StringArgumentType.word()).suggests(ROOT_SUGGESTIONS)
+						.then(CommandManager.argument("kinds", StringArgumentType.string()).suggests(ROOT_SUGGESTIONS)
 								.then(CommandManager.argument("grade", IntegerArgumentType.integer(SpiritRoot.MIN_GRADE, SpiritRoot.MAX_GRADE))
 										.executes(ctx -> root(ctx, List.of(ctx.getSource().getPlayerOrThrow())))
 										.then(CommandManager.argument("player", EntityArgumentType.players())
@@ -178,7 +178,8 @@ public final class CelestialCommand {
 		String spec = StringArgumentType.getString(ctx, "kinds");
 		int grade = IntegerArgumentType.getInteger(ctx, "grade");
 		List<SpiritRoot.Kind> kinds = new ArrayList<>();
-		for (String part : spec.split(",")) {
+		for (String part : spec.split("[+,/]")) {
+			if (part.isBlank()) continue;
 			SpiritRoot.Kind k = SpiritRoot.Kind.byKey(part.trim().toLowerCase());
 			if (k == null) {
 				ctx.getSource().sendError(Text.translatable("command.celestialarts.unknown_root", part));

@@ -305,7 +305,7 @@ public final class Breakthrough {
 			Vec3d from = cloud().add(world.random.nextGaussian() * 2.0, 0, world.random.nextGaussian() * 2.0);
 			// Later bolts are thicker, brighter and hit harder: the tribulation crescendos.
 			float grow = 0.75F + 0.5F * struck / (float) bolts;
-			ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, to, 0xB57BFF, 1.2F * grow, 10), 96.0);
+			ModPackets.sendFx(world, FxData.line(FxType.LIGHTNING_BOLT, from, to, 0xB57BFF, 1.2F * grow, 14), 96.0);
 			ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, caster.getPos().add(0, 0.1, 0), 0xD9C7FF, 3.0F + 2.0F * grow, 12));
 			ModPackets.sendFx(world, FxData.at(FxType.SCREEN_FLASH, caster.getPos(), 0xD9C7FF, 0.45F * grow, 6), 96.0);
 			SkillFx.thunderSparks(world, to, 24 + 6 * struck, 0.9);

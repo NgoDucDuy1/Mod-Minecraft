@@ -224,15 +224,13 @@ public class CultivationScreen extends Screen {
 		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.talent_header"), x, y, 0xC8C8C8, false);
 		y += 12;
 		ctx.drawTexture(talentSeal(talent.getRarity()), x, y, 22, 22, 0, 0, 32, 32, 32, 32);
-		ctx.drawText(textRenderer, talent.getName(), x + 26, y + 2, 0xFFFFFF, false);
+		ctx.drawText(textRenderer, trim(talent.getName(), 86), x + 26, y + 2, 0xFFFFFF, false);
 		ctx.drawText(textRenderer, talent.getRarity().getName(), x + 26, y + 12, 0xFFFFFF, false);
 		if (hover(mouseX, mouseY, x, y, 112, 22)) {
 			tooltip.add(talent.getName());
-			tooltip.add(talent.getDescription());
+			tooltip.addAll(wrap(talent.getDescription(), 180, Formatting.GRAY));
 		}
 		y += 26;
-		int lines = drawWrapped(ctx, talent.getDescription(), x, y, 112, 0x9A9A9A, 3);
-		y += lines * 9 + 4;
 
 		int apt = CultivationStats.aptitude(qi);
 		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.aptitude_header"), x, y, 0xC8C8C8, false);
@@ -241,19 +239,34 @@ public class CultivationScreen extends Screen {
 		ctx.drawText(textRenderer, Text.literal(apt + " / 100  ").append(Text.translatable("aptitude.celestialarts." + CultivationStats.aptitudeTier(apt))), x, y, ac, false);
 		y += 10;
 		bar(ctx, x, y, 112, 5, apt / 100.0F, 0xFF000000 | ac, 0xFF202020);
-		y += 9;
+		y += 8;
 		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.power", Math.round(CultivationStats.powerMultiplier(qi) * 100),
 				Math.round(CultivationStats.expMultiplier(qi) * 100)), x, y, 0x9A9A9A, false);
-		if (hover(mouseX, mouseY, x, y - 31, 112, 40)) {
+		y += 10;
+		// Strongest element for this cultivator, relative to an unattuned art.
+		Element bestElement = null;
+		float bestBonus = 0.0F;
+		float base = CultivationStats.skillDamageMultiplier(qi, null);
+		for (Element e : Element.values()) {
+			float m = CultivationStats.skillDamageMultiplier(qi, e) / base;
+			if (m - 1.0F > bestBonus + 0.001F) {
+				bestBonus = m - 1.0F;
+				bestElement = e;
+			}
+		}
+		if (bestElement != null) {
+			ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.best_element", bestElement.getName(), Math.round(bestBonus * 100)).formatted(Formatting.GREEN), x, y, 0x9CFFB0, false);
+		} else {
+			ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.no_affinity"), x, y, 0x9A9A9A, false);
+		}
+		if (hover(mouseX, mouseY, x, y - 40, 112, 50)) {
 			tooltip.add(Text.translatable("gui.celestialarts.aptitude_tip1"));
 			tooltip.add(Text.translatable("gui.celestialarts.aptitude_tip2").formatted(Formatting.GRAY));
 			tooltip.add(Text.translatable("gui.celestialarts.aptitude_tip3").formatted(Formatting.GRAY));
-			if (root != null) {
-				for (Element e : Element.values()) {
-					float m = CultivationStats.skillDamageMultiplier(qi, e) / CultivationStats.skillDamageMultiplier(qi, null);
-					if (Math.abs(m - 1.0F) > 0.001F) {
-						tooltip.add(Text.empty().append(e.getName()).append(Text.literal(String.format(": %+d%%", Math.round((m - 1) * 100))).formatted(m > 1 ? Formatting.GREEN : Formatting.RED)));
-					}
+			for (Element e : Element.values()) {
+				float m = CultivationStats.skillDamageMultiplier(qi, e) / base;
+				if (Math.abs(m - 1.0F) > 0.001F) {
+					tooltip.add(Text.empty().append(e.getName()).append(Text.literal(String.format(": %+d%%", Math.round((m - 1) * 100))).formatted(m > 1 ? Formatting.GREEN : Formatting.RED)));
 				}
 			}
 		}
@@ -268,13 +281,18 @@ public class CultivationScreen extends Screen {
 		ctx.drawBorder(x, y, w, h, 0xFF5A4A2A);
 	}
 
-	private int drawWrapped(DrawContext ctx, Text text, int x, int y, int width, int color, int maxLines) {
-		var lines = textRenderer.wrapLines(text, width);
-		int n = Math.min(maxLines, lines.size());
-		for (int i = 0; i < n; i++) {
-			ctx.drawText(textRenderer, lines.get(i), x, y + i * 9, color, false);
+	private Text trim(Text text, int width) {
+		String str = text.getString();
+		if (textRenderer.getWidth(str) <= width) return text;
+		return Text.literal(textRenderer.trimToWidth(str, width - textRenderer.getWidth("…")) + "…").setStyle(text.getStyle());
+	}
+
+	private List<Text> wrap(Text text, int width, Formatting formatting) {
+		List<Text> out = new ArrayList<>();
+		for (var line : textRenderer.getTextHandler().wrapLines(text, width, text.getStyle())) {
+			out.add(Text.literal(line.getString()).formatted(formatting));
 		}
-		return n;
+		return out;
 	}
 
 	private static boolean hover(int mx, int my, int x, int y, int w, int h) {

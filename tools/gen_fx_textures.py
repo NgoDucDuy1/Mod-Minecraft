@@ -60,6 +60,54 @@ def gen_vignette():
     out_fx("vignette", img, size, size)
 
 
+def gen_deviation_vignette():
+    """Tẩu hỏa nhập ma overlay (512x512, pre-coloured): heavy black frame, blood-red inner rim, dark
+    vein cracks creeping in from the edges. Drawn with a plain white shader colour × strength."""
+    import numpy as np
+    size = 512
+    W = size * T.SS
+    ys, xs = np.mgrid[0:W, 0:W].astype(np.float32)
+    nx = (xs + 0.5) / W * 2 - 1
+    ny = (ys + 0.5) / W * 2 - 1
+    d = np.sqrt(nx * nx * 0.85 + ny * ny)
+    n = np.asarray(T.noise_layer(size, size, 313, scale=4, octaves=4), dtype=np.float32) / 255.0
+    # Ragged edge so the frame is not a clean ellipse.
+    dd = d * (0.92 + 0.16 * (n - 0.5))
+    black = np.clip((dd - 0.55) / 0.55, 0.0, 1.0) ** 1.6          # 0 in the middle, 1 at the corners
+    red = np.clip(1.0 - np.abs(dd - 0.72) / 0.22, 0.0, 1.0) ** 1.5  # a ring of blood just inside the black
+    a = np.clip(black * 0.98 + red * 0.55, 0.0, 1.0)
+    rgb = np.zeros((W, W, 3), dtype=np.float32)
+    rgb[..., 0] = np.clip(red * 0.75 + black * 0.06, 0.0, 1.0)
+    rgb[..., 1] = red * 0.03
+    rgb[..., 2] = red * 0.05 + black * 0.01
+    img = Image.fromarray(np.dstack([(rgb * 255).astype(np.uint8), (a * 255).astype(np.uint8)]), "RGBA")
+    # Vein cracks: dark red lightning lines from the border towards the centre, fading inward.
+    rnd = random.Random(77)
+    veins = T.new(size, size)
+    for k in range(26):
+        ang = rnd.uniform(0, 2 * math.pi)
+        r0 = 0.98
+        r1 = rnd.uniform(0.42, 0.62)
+        x0, y0 = size / 2 + math.cos(ang) * r0 * size / 2 * 1.1, size / 2 + math.sin(ang) * r0 * size / 2 * 1.1
+        x1, y1 = size / 2 + math.cos(ang + rnd.uniform(-0.25, 0.25)) * r1 * size / 2, size / 2 + math.sin(ang + rnd.uniform(-0.25, 0.25)) * r1 * size / 2
+        pts = T.lightning_points(x0, y0, x1, y1, 7, size * 0.035, rnd)
+        T.polyline_glow(veins, pts, (140, 8, 14), 2.2, glow=2.4, core=False)
+        for j in range(2):
+            px, py = pts[rnd.randrange(2, len(pts) - 1)]
+            bx, by = px + rnd.uniform(-1, 1) * size * 0.08, py + rnd.uniform(-1, 1) * size * 0.08
+            T.polyline_glow(veins, T.lightning_points(px, py, bx, by, 3, size * 0.015, rnd), (110, 6, 10), 1.4, glow=1.6, core=False)
+    veins = T.finish(veins, size, size)
+    # Veins fade towards the centre.
+    va = np.asarray(veins.split()[3], dtype=np.float32) / 255.0
+    dd_small = np.asarray(Image.fromarray((np.clip((d - 0.35) / 0.45, 0.0, 1.0) * 255).astype(np.uint8)).resize((size, size), Image.BILINEAR), dtype=np.float32) / 255.0
+    va = va * dd_small
+    veins.putalpha(Image.fromarray((va * 255).astype(np.uint8)))
+    img = T.finish(img, size, size)
+    img.alpha_composite(veins)
+    T.save(img, os.path.join(FX, "qi_deviation_vignette.png"))
+    print("fx/qi_deviation_vignette.png")
+
+
 def gen_scorch():
     """Dark burnt patch: ragged radial falloff broken up by noise, faint ember cracks in the middle."""
     import numpy as np
@@ -868,7 +916,7 @@ def main():
     gen_circle_heaven(); gen_palm_print()
     gen_beam(); gen_beam_core(); gen_slash(); gen_wind_blade(); gen_hex_shield()
     gen_flame_column(); gen_crack(); gen_vortex(); gen_cloud(); gen_glyph_strip()
-    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette(); gen_scorch(); gen_frost_patch()
+    gen_petal(); gen_frost(); gen_pillar(); gen_ice_spike(); gen_vignette(); gen_deviation_vignette(); gen_scorch(); gen_frost_patch()
     p_glow(); p_spark(); p_flame_wisp(); p_ember(); p_ice_crystal(); p_snowflake(); p_frost_mist()
     p_lightning_arc(); p_wind_streak(); p_void_smoke(); p_lotus_petal(); p_rune(); p_sword_glint()
     p_rock_debris(); p_golden_light()

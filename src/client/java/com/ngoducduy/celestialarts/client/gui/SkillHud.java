@@ -76,16 +76,17 @@ public final class SkillHud {
 		int spiritY = y - (twoLines ? 30 : 20);
 		int spiritAlpha = qi.isMeditating() ? 0xFF : 0xA0;
 		ctx.drawText(font, spirit, x + 1, spiritY, (spiritAlpha << 24) | SpiritQi.labelRgb(density), true);
+		// Status line above everything: trance in progress, or a breakthrough waiting for a key press.
 		if (qi.isMeditating()) {
 			Text med = Text.translatable("gui.celestialarts.meditating_short");
 			float pulse = 0.55F + 0.45F * MathHelper.sin((System.currentTimeMillis() % 100000L) / 220.0F);
 			int a = (int) (pulse * 255) << 24;
-			ctx.drawText(font, med, x + 1, y + 16, a | 0x9BE4FF, true);
+			ctx.drawText(font, med, x + 1, spiritY - 10, a | 0x9BE4FF, true);
 		} else if (qi.canBreakthrough()) {
 			Text ready = Text.translatable(qi.nextBreakthroughIsTribulation() ? "gui.celestialarts.tribulation_ready" : "gui.celestialarts.breakthrough_ready");
 			float blink = 0.6F + 0.4F * MathHelper.sin((System.currentTimeMillis() % 100000L) / 150.0F);
 			int a = (int) (blink * 255) << 24;
-			ctx.drawText(font, ready, x + 1, y + 16, a | (qi.nextBreakthroughIsTribulation() ? 0xD98BFF : 0xFFE9A8), true);
+			ctx.drawText(font, ready, x + 1, spiritY - 10, a | (qi.nextBreakthroughIsTribulation() ? 0xD98BFF : 0xFFE9A8), true);
 		}
 	}
 

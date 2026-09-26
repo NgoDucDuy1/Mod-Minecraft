@@ -399,9 +399,11 @@
 	"command.celestialarts.talent_set": "Đặt thiên phú %s cho %s người chơi",
 	"command.celestialarts.rerolled": "Đã gieo lại linh căn & thiên phú cho %s người chơi",
 	"command.celestialarts.unknown_root": "Linh căn không hợp lệ: %s (metal/wood/water/fire/earth/thunder/dark)",
-	"command.celestialarts.root_count": "Linh căn phải có 1–3 thuộc tính, phân cách bằng dấu phẩy",
+	"command.celestialarts.root_count": "Linh căn phải có 1–3 thuộc tính, nối bằng dấu +, ví dụ metal+fire",
 	"command.celestialarts.unknown_talent": "Thiên phú không hợp lệ: %s",
 	"command.celestialarts.spiritqi": "Linh khí: ×%s (%s) · quần xã ×%s · linh mạch ×%s · linh mạch gần nhất %s khối",
 	"command.celestialarts.chance_tribulation": "Lôi kiếp: %s đạo thiên lôi, mỗi đạo %s ♥",
-	"command.celestialarts.chance_stage": "Đột phá %s: %s%% tại vị trí này"
+	"command.celestialarts.chance_stage": "Đột phá %s: %s%% tại vị trí này",
+	"gui.celestialarts.best_element": "Sở trường: %s +%s%%",
+	"gui.celestialarts.no_affinity": "Chưa có hệ sở trường"
 }

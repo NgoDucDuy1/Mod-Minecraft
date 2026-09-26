@@ -34,6 +34,7 @@ import java.util.List;
  */
 public final class ScreenOverlay {
 	private static final Identifier VIGNETTE = CelestialArts.id("textures/fx/vignette.png");
+	private static final Identifier DEVIATION_VIGNETTE = CelestialArts.id("textures/fx/qi_deviation_vignette.png");
 	private static final double RANGE = 24.0;
 	private static final List<Entry> ACTIVE = new ArrayList<>();
 	/** Player age at which the qi-deviation effect was first seen, or -1. */
@@ -126,20 +127,17 @@ public final class ScreenOverlay {
 		int h = ctx.getScaledWindowHeight();
 
 		if (deviation > 0.005F) {
-			// Tẩu hỏa nhập ma: a dark blood-red vignette with a faint desaturating haze in the middle.
+			// Tẩu hỏa nhập ma: pre-coloured black frame + blood rim + vein cracks, plus a light red-black
+			// cast over everything so even the centre of the view looks sick.
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			int a = (int) (deviation * 70);
-			ctx.fill(0, 0, w, h, (a << 24) | 0x1A0406);
+			int a = (int) (deviation * 60);
+			ctx.fill(0, 0, w, h, (a << 24) | 0x2A0508);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-			RenderSystem.setShaderColor(0.05F, 0.0F, 0.01F, Math.min(1.0F, deviation * 0.95F));
-			ctx.drawTexture(VIGNETTE, 0, 0, 0, 0, w, h, w, h);
-			// A second, tighter red pass so the edge reads as blood rather than plain darkness.
-			int inset = Math.round(Math.min(w, h) * 0.08F);
-			RenderSystem.setShaderColor(0.55F, 0.02F, 0.04F, Math.min(1.0F, deviation * 0.55F));
-			ctx.drawTexture(VIGNETTE, -inset, -inset, 0, 0, w + 2 * inset, h + 2 * inset, w + 2 * inset, h + 2 * inset);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, Math.min(1.0F, 0.35F + 0.65F * deviation));
+			ctx.drawTexture(DEVIATION_VIGNETTE, 0, 0, 0, 0, w, h, w, h);
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 			RenderSystem.disableBlend();
 		}

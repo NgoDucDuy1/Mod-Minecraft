@@ -468,7 +468,7 @@ public final class CelestialAutoTest {
 	private static void cultivationSequence() {
 		command("celestial realm 1");
 		command("celestial stage 3");
-		command("celestial root metal,fire 4");
+		command("celestial root metal+fire 4");
 		command("celestial talent dao_heart");
 		waitTicks(5);
 		waitFor("player back on the ground", c -> c.player != null && c.player.isOnGround(), Duration.ofSeconds(15), true);
@@ -502,7 +502,7 @@ public final class CelestialAutoTest {
 		command("celestial exp 99999");
 		waitTicks(10);
 		int bolts = submitAndWait(c -> CultivationStats.tribulationBolts(QiHolder.get(c.player)));
-		check(bolts >= 6 && bolts <= 12, "tribulation bolt count from the synced root/talent, was " + bolts);
+		check(bolts >= 7 && bolts <= 12, "tribulation bolt count from the synced root/talent (aptitude 81), was " + bolts);
 		long t0 = submitAndWait(c -> {
 			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
 			ClientPackets.sendBreakthrough();
@@ -513,8 +513,8 @@ public final class CelestialAutoTest {
 		// Cloud 16 blocks up: from the third-person camera 4 blocks back that is ~75 degrees up.
 		lookAt(t0 + 42, -60.0F);
 		screenshot("10_tribulation_cloud", false);
-		// Second bolt, mid-flash: bolts land at t0+80, +100, ...; the bolt FX lives 10 ticks.
-		lookAt(t0 + 103, -38.0F);
+		// Second bolt, mid-flash: bolts land at t0+80, +100, ...; the bolt FX lives 14 ticks.
+		lookAt(t0 + 101, -40.0F);
 		screenshot("11_tribulation_bolt", false);
 		// Success at FIRST_BOLT + (bolts-1)*20 + 30: heaven pillar + burst + white ring.
 		long success = t0 + 80 + (bolts - 1) * 20L + 30;

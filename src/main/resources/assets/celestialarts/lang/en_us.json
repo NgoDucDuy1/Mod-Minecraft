@@ -399,9 +399,11 @@
 	"command.celestialarts.talent_set": "Set talent %s for %s player(s)",
 	"command.celestialarts.rerolled": "Re-rolled spirit root & talent for %s player(s)",
 	"command.celestialarts.unknown_root": "Unknown spirit root: %s (metal/wood/water/fire/earth/thunder/dark)",
-	"command.celestialarts.root_count": "A spirit root has 1–3 kinds, separated by commas",
+	"command.celestialarts.root_count": "A spirit root has 1–3 kinds joined with +, e.g. metal+fire",
 	"command.celestialarts.unknown_talent": "Unknown talent: %s",
 	"command.celestialarts.spiritqi": "Spiritual qi: ×%s (%s) · biome ×%s · vein ×%s · nearest vein %s blocks",
 	"command.celestialarts.chance_tribulation": "Tribulation: %s bolts, %s ♥ each",
-	"command.celestialarts.chance_stage": "Breakthrough to %s: %s%% at this spot"
+	"command.celestialarts.chance_stage": "Breakthrough to %s: %s%% at this spot",
+	"gui.celestialarts.best_element": "Strongest: %s +%s%%",
+	"gui.celestialarts.no_affinity": "No elemental affinity yet"
 }

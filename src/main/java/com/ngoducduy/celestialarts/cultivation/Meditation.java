@@ -151,7 +151,7 @@ public final class Meditation {
 			SkillFx.single(world, GlowParticleEffect.glow(color, 0.55F, 22), p, v);
 			if (med % 48 == 0) SkillFx.single(world, ModParticles.RUNE, p.add(0, 0.4, 0), new Vec3d(0, 0.02, 0));
 		}
-		if (med % 200 == 40 && !deviating) {
+		if (med % 200 == 100 && !deviating) {
 			ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, player.getId(), player.getPos(), color, 0.9F, 200));
 		}
 		if (med % 100 == 50 && density >= 1.6F) {
