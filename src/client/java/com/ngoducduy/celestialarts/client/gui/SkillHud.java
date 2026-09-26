@@ -5,6 +5,7 @@ import com.ngoducduy.celestialarts.client.ModKeybinds;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
+import com.ngoducduy.celestialarts.cultivation.SpiritQi;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
@@ -62,18 +63,29 @@ public final class SkillHud {
 		int expW = Math.round(124 * expFrac);
 		if (expW > 0) ctx.drawTexture(HUD, x + 2, y + 11, 0, 20, expW, 3, 256, 64);
 
-		// Text: realm name (left) and qi numbers (right).
-		Text realmName = realm.getName();
+		// Text: realm + stage (left) and qi numbers (right).
+		Text realmName = Text.empty().append(realm.getName()).append(" ").append(qi.getStage().getName());
 		String nums = Math.round(qi.getQi()) + " / " + Math.round(qi.getMaxQi());
 		// Long realm names (e.g. "Tribulation Transcendence") move up a line instead of colliding with the numbers.
 		boolean twoLines = font.getWidth(realmName) + font.getWidth(nums) + 6 > 128;
 		ctx.drawText(font, realmName, x + 1, y - (twoLines ? 20 : 10), realm.getRgb(), true);
 		ctx.drawText(font, nums, x + 127 - font.getWidth(nums), y - 10, 0xFFFFFF, true);
-		if (qi.canBreakthrough()) {
-			Text ready = Text.translatable("gui.celestialarts.breakthrough");
+		// Spiritual qi of the spot, small and dim, above the realm line; brighter while meditating.
+		float density = qi.getSpiritQi();
+		Text spirit = Text.translatable("gui.celestialarts.spirit_qi_short").append(": ").append(Text.translatable("spiritqi.celestialarts." + SpiritQi.label(density)));
+		int spiritY = y - (twoLines ? 30 : 20);
+		int spiritAlpha = qi.isMeditating() ? 0xFF : 0xA0;
+		ctx.drawText(font, spirit, x + 1, spiritY, (spiritAlpha << 24) | SpiritQi.labelRgb(density), true);
+		if (qi.isMeditating()) {
+			Text med = Text.translatable("gui.celestialarts.meditating_short");
+			float pulse = 0.55F + 0.45F * MathHelper.sin((System.currentTimeMillis() % 100000L) / 220.0F);
+			int a = (int) (pulse * 255) << 24;
+			ctx.drawText(font, med, x + 1, y + 16, a | 0x9BE4FF, true);
+		} else if (qi.canBreakthrough()) {
+			Text ready = Text.translatable(qi.nextBreakthroughIsTribulation() ? "gui.celestialarts.tribulation_ready" : "gui.celestialarts.breakthrough_ready");
 			float blink = 0.6F + 0.4F * MathHelper.sin((System.currentTimeMillis() % 100000L) / 150.0F);
 			int a = (int) (blink * 255) << 24;
-			ctx.drawText(font, ready, x + 1, y + 16, a | 0xFFE9A8, true);
+			ctx.drawText(font, ready, x + 1, y + 16, a | (qi.nextBreakthroughIsTribulation() ? 0xD98BFF : 0xFFE9A8), true);
 		}
 	}
 

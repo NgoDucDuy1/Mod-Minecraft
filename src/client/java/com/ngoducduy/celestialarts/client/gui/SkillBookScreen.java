@@ -7,6 +7,7 @@ import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -76,6 +77,9 @@ public class SkillBookScreen extends Screen {
 				forgetArmed = 60;
 			}
 		}).dimensions(left + 166, top + 198, 78, 20).tooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("gui.celestialarts.forget_tip"))).build());
+		this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.celestialarts.cultivation_short"), b ->
+				MinecraftClient.getInstance().setScreen(new CultivationScreen())
+		).dimensions(left + 106, top + 196, 50, 20).tooltip(net.minecraft.client.gui.tooltip.Tooltip.of(Text.translatable("gui.celestialarts.cultivation_tip"))).build());
 		this.prevPage = this.addDrawableChild(ButtonWidget.builder(Text.literal("<"), b -> setPage(page - 1))
 				.dimensions(left + 122, top + 24, 14, 12).build());
 		this.nextPage = this.addDrawableChild(ButtonWidget.builder(Text.literal(">"), b -> setPage(page + 1))
@@ -189,7 +193,7 @@ public class SkillBookScreen extends Screen {
 
 		// Status line.
 		int sy = top + 200;
-		ctx.drawText(textRenderer, qi.getRealm().getName(), left + 13, sy - 10, qi.getRealm().getRgb(), false);
+		ctx.drawText(textRenderer, Text.empty().append(qi.getRealm().getName()).append(" ").append(qi.getStage().getName()), left + 13, sy - 10, qi.getRealm().getRgb(), false);
 		ctx.drawText(textRenderer, Text.translatable("gui.celestialarts.qi").append(": " + Math.round(qi.getQi()) + "/" + Math.round(qi.getMaxQi())), left + 13, sy, 0x9BE4FF, false);
 		int need = qi.getExpForBreakthrough();
 		Text expLine = need < 0

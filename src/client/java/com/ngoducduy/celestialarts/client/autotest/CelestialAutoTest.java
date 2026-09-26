@@ -2,8 +2,10 @@ package com.ngoducduy.celestialarts.client.autotest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.client.ClientPackets;
+import com.ngoducduy.celestialarts.client.gui.CultivationScreen;
 import com.ngoducduy.celestialarts.client.gui.SkillBookScreen;
 import com.ngoducduy.celestialarts.client.render.fx.ClientFxManager;
+import com.ngoducduy.celestialarts.cultivation.CultivationStats;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
@@ -11,6 +13,7 @@ import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
 import com.ngoducduy.celestialarts.registry.GlowParticleEffect;
+import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.skill.Skill;
@@ -259,12 +262,18 @@ public final class CelestialAutoTest {
 			return null;
 		});
 
-		// Breakthrough packet (at max realm the server must refuse gracefully, no crash).
+		cultivationSequence();
+
+		// Breakthrough packet at the very top of cultivation: the server must refuse gracefully, no crash.
+		command("celestial realm 6");
+		command("celestial stage 3");
+		waitTicks(5);
 		submitAndWait(c -> {
 			ClientPackets.sendBreakthrough();
 			return null;
 		});
 		waitTicks(20);
+		check(submitAndWait(c -> !c.player.hasVehicle()), "no meditation started by a refused breakthrough");
 		screenshot("07_final");
 
 		// Leave the world cleanly and quit.
@@ -449,6 +458,89 @@ public final class CelestialAutoTest {
 			return null;
 		});
 		waitTicks(8);
+	}
+
+	/**
+	 * 1.4.0 cultivation loop, end to end through the real packets: one press sits the player on a
+	 * meditation seat, the Đạo Cơ panel opens, a real tribulation (cloud, bolts, pillar) carries a
+	 * peak-stage Luyện Khí cultivator to Trúc Cơ, and the qi-deviation vignette is shown last.
+	 */
+	private static void cultivationSequence() {
+		command("celestial realm 1");
+		command("celestial stage 3");
+		command("celestial root metal,fire 4");
+		command("celestial talent dao_heart");
+		waitTicks(5);
+		waitFor("player back on the ground", c -> c.player != null && c.player.isOnGround(), Duration.ofSeconds(15), true);
+
+		// Sit down. Third-person front so the seat, the array under it and the motes are all visible.
+		submitAndWait(c -> {
+			c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+			c.player.setPitch(12.0F);
+			c.player.prevPitch = 12.0F;
+			ClientPackets.sendMeditate();
+			return null;
+		});
+		waitTicks(50);
+		check(submitAndWait(c -> c.player.getVehicle() != null && c.player.getVehicle().getType() == ModEntities.MEDITATION_SEAT), "one press seats the player on a meditation seat");
+		check(submitAndWait(c -> QiHolder.get(c.player).isMeditating()), "meditating flag synced to the client");
+		screenshot("08_meditation");
+
+		// The cultivation panel over the seated player.
+		submitAndWait(c -> {
+			c.setScreen(new CultivationScreen());
+			return null;
+		});
+		waitTicks(5);
+		screenshot("09_cultivation_screen");
+		submitAndWait(c -> {
+			c.setScreen(null);
+			return null;
+		});
+
+		// Enough cultivation for the gate, then the tribulation. Creative players shrug the bolts off.
+		command("celestial exp 99999");
+		waitTicks(10);
+		int bolts = submitAndWait(c -> CultivationStats.tribulationBolts(QiHolder.get(c.player)));
+		check(bolts >= 6 && bolts <= 12, "tribulation bolt count from the synced root/talent, was " + bolts);
+		long t0 = submitAndWait(c -> {
+			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+			ClientPackets.sendBreakthrough();
+			return Objects.requireNonNull(c.world).getTime();
+		});
+		waitTicks(10);
+		check(submitAndWait(c -> c.player.hasVehicle()), "player stays seated while the tribulation gathers");
+		// Cloud 16 blocks up: from the third-person camera 4 blocks back that is ~75 degrees up.
+		lookAt(t0 + 42, -60.0F);
+		screenshot("10_tribulation_cloud", false);
+		// Second bolt, mid-flash: bolts land at t0+80, +100, ...; the bolt FX lives 10 ticks.
+		lookAt(t0 + 103, -38.0F);
+		screenshot("11_tribulation_bolt", false);
+		// Success at FIRST_BOLT + (bolts-1)*20 + 30: heaven pillar + burst + white ring.
+		long success = t0 + 80 + (bolts - 1) * 20L + 30;
+		lookAt(success + 12, -18.0F);
+		screenshot("12_tribulation_success", false);
+		waitUntil(success + 45);
+		check(submitAndWait(c -> QiHolder.get(c.player).getRealm() == Realm.FOUNDATION), "tribulation carried the player to Foundation");
+		check(submitAndWait(c -> !c.player.hasVehicle()), "trance ended after the breakthrough");
+
+		// Tẩu hỏa nhập ma vignette, first person.
+		submitAndWait(c -> {
+			c.options.setPerspective(Perspective.FIRST_PERSON);
+			c.player.setPitch(4.0F);
+			c.player.prevPitch = 4.0F;
+			return null;
+		});
+		command("effect give @s celestialarts:qi_deviation 20 0");
+		waitTicks(48);
+		check(submitAndWait(c -> c.player.hasStatusEffect(ModEffects.QI_DEVIATION)), "qi deviation effect applied");
+		screenshot("13_qi_deviation", false);
+		command("effect clear @s");
+		submitAndWait(c -> {
+			ClientFxManager.clear();
+			return null;
+		});
+		waitTicks(10);
 	}
 
 	/** Waits for the world clock, then points the camera two ticks before the shot so interpolation has settled. */

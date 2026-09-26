@@ -2,6 +2,7 @@ package com.ngoducduy.celestialarts.mixin;
 
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
+import com.ngoducduy.celestialarts.cultivation.CultivationStats;
 import com.ngoducduy.celestialarts.cultivation.RealmPassives;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEffects;
@@ -42,10 +43,10 @@ public abstract class LivingEntityMixin {
 		LivingEntity self = (LivingEntity) (Object) this;
 		if (self.getWorld().isClient) return amount;
 
-		// Skill damage grows with the caster's realm.
+		// Skill damage grows with the caster's realm, stage, aptitude, spirit root and talent.
 		if (amount > 0 && source.getAttacker() instanceof ServerPlayerEntity attacker && attacker != self
 				&& ModDamageTypes.isSkillDamage(source)) {
-			amount *= RealmPassives.skillDamageMultiplier(QiHolder.get(attacker).getRealm());
+			amount *= CultivationStats.skillDamageMultiplier(QiHolder.get(attacker), ModDamageTypes.elementOf(source));
 		}
 
 		if (self instanceof ServerPlayerEntity player && celestialarts$wouldVanillaAccept(self, source, amount)) {

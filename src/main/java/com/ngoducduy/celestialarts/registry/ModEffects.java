@@ -3,6 +3,7 @@ package com.ngoducduy.celestialarts.registry;
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.effect.FrozenEffect;
 import com.ngoducduy.celestialarts.effect.QiBurnEffect;
+import com.ngoducduy.celestialarts.effect.QiDeviationEffect;
 import com.ngoducduy.celestialarts.effect.SuppressedEffect;
 import com.ngoducduy.celestialarts.effect.SwordIntentEffect;
 import net.minecraft.entity.effect.StatusEffect;
@@ -18,6 +19,8 @@ public final class ModEffects {
 	public static final StatusEffect SWORD_INTENT = register("sword_intent", new SwordIntentEffect());
 	/** Trấn Áp – pinned to the ground beneath Thiên Đạo Chi Thủ; cannot jump or fly, dragged down when airborne. */
 	public static final StatusEffect SUPPRESSED = register("suppressed", new SuppressedEffect());
+	/** Tẩu hỏa nhập ma – qi running wild after a failed breakthrough: no regen, no skills, slow internal burn. */
+	public static final StatusEffect QI_DEVIATION = register("qi_deviation", new QiDeviationEffect());
 
 	private ModEffects() {
 	}

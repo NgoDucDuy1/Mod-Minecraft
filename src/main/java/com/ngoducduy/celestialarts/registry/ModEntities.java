@@ -4,6 +4,7 @@ import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.entity.FireLotusEntity;
 import com.ngoducduy.celestialarts.entity.FlyingSwordEntity;
 import com.ngoducduy.celestialarts.entity.HeavenSwordEntity;
+import com.ngoducduy.celestialarts.entity.MeditationSeatEntity;
 import com.ngoducduy.celestialarts.entity.ThunderDragonEntity;
 import com.ngoducduy.celestialarts.entity.WindDragonEntity;
 import com.ngoducduy.celestialarts.entity.IceShardEntity;
@@ -78,6 +79,13 @@ public final class ModEntities {
 			FabricEntityTypeBuilder.<HeavenSwordEntity>create(SpawnGroup.MISC, HeavenSwordEntity::new)
 					.dimensions(EntityDimensions.fixed(3.0f, 12.0f))
 					.trackRangeBlocks(256).trackedUpdateRate(1)
+					.fireImmune().disableSaving().disableSummon()
+					.build());
+
+	public static final EntityType<MeditationSeatEntity> MEDITATION_SEAT = register("meditation_seat",
+			FabricEntityTypeBuilder.<MeditationSeatEntity>create(SpawnGroup.MISC, MeditationSeatEntity::new)
+					.dimensions(EntityDimensions.fixed(0.9f, 0.15f))
+					.trackRangeBlocks(96).trackedUpdateRate(10)
 					.fireImmune().disableSaving().disableSummon()
 					.build());
 

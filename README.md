@@ -10,20 +10,38 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 
 ## Tính năng
 
-### Hệ thống tu luyện
-| Cảnh giới | Linh lực tối đa | Hồi phục / tick | Kinh nghiệm để đột phá |
+### Hệ thống tu luyện (1.4.0)
+| Cảnh giới | Linh lực cơ bản | Hồi phục / tick | Tu vi mỗi tiểu cảnh giới |
 |---|---|---|---|
-| Luyện Khí | 100 | 0.35 | 400 |
-| Trúc Cơ | 160 | 0.50 | 1 500 |
-| Kim Đan | 240 | 0.70 | 4 000 |
-| Nguyên Anh | 340 | 0.95 | 9 000 |
-| Hóa Thần | 460 | 1.25 | 18 000 |
-| Độ Kiếp | 620 | 1.70 | – |
+| Luyện Khí | 100 | 0.35 | 100 |
+| Trúc Cơ | 160 | 0.50 | 375 |
+| Kim Đan | 240 | 0.70 | 1 000 |
+| Nguyên Anh | 340 | 0.95 | 2 250 |
+| Hóa Thần | 460 | 1.25 | 4 500 |
+| Độ Kiếp | 620 | 1.70 | 8 000 |
 
-* **Linh lực (Qi)** hồi tự nhiên, hồi nhanh gấp 3 khi *ngồi thiền* (sneak đứng yên trên mặt đất).
-* **Kinh nghiệm** nhận được khi dùng công pháp, hạ quái, dùng linh thạch.
-* **Đột phá** (phím `B` hoặc nút trong sách): khi đủ kinh nghiệm sẽ diễn ra *thiên kiếp* – mây kiếp
-  tụ trên đầu, 3 – 9 tia lôi giáng xuống, kết thúc bằng trận pháp và cột sáng thăng cảnh.
+* Mỗi đại cảnh giới chia **Sơ Kỳ → Trung Kỳ → Hậu Kỳ → Viên Mãn** (6 × 4 = 24 bậc). Mỗi bậc cộng thêm
+  linh lực tối đa, hồi phục và sát thương công pháp.
+* **Linh căn** được gieo ngẫu nhiên khi vào thế giới lần đầu: Kim / Mộc / Thủy / Hỏa / Thổ (hiếm hơn: **Lôi**, **Ám** biến dị),
+  1 – 3 thuộc tính (Thiên / Song / Tam linh căn) và 5 phẩm (Phàm → Thiên phẩm). Linh căn tương hợp hệ nào thì công pháp hệ đó
+  mạnh hơn (+4 %/phẩm) và tốn ít linh lực hơn; linh căn càng thuần thì hồi linh lực càng nhanh.
+* **Thiên phú** (15 loại, 5 độ hiếm từ *Tàn khuyết* đến *Truyền thuyết*): Thiết Cốt, Kiếm Cốt, Xích Diễm Tâm, Lôi Thể,
+  Đạo Tâm Bất Động, Tiên Thiên Đạo Thể, Hư Không Linh Thể, Thượng Cổ Thánh Thể, Hỗn Độn Thể, Kinh Mạch Tàn Khuyết…
+  Mỗi loại đổi chỉ số, hệ số sát thương theo hệ, tỉ lệ đột phá hoặc độ nặng của lôi kiếp.
+* **Tư chất** (1 – 100) = linh căn + thiên phú, quyết định *sức mạnh trong cùng cảnh giới* (85 % – 120 %), linh lực tối đa,
+  tốc độ tu luyện và cả độ dữ dội của thiên kiếp.
+* **Thiền định** (`X`, nhấn **một lần**): nhân vật tự ngồi xuống bồ đoàn linh khí, trận pháp mở dưới chân, linh khí xoáy vào
+  đan điền và tu vi tăng theo thời gian. Nhấn `X` lần nữa (hoặc bị đánh trúng) để xuất định.
+* **Linh khí theo địa điểm** (×0.2 – ×3.0): đỉnh núi tuyết, rừng hoa anh đào, hang rêu, đồng cỏ hoa giàu linh khí; sa mạc,
+  đầm lầy, Nether, Deep Dark cằn cỗi. Ngoài ra còn **linh mạch** ẩn dưới đất (mỗi ô 256 khối một mạch, vị trí theo seed)
+  – ngồi lên linh mạch nhân đôi tốc độ tu luyện. Dùng `/celestial spiritqi` để dò.
+* **Đột phá tiểu cảnh giới** (`B` khi đủ tu vi): 6 giây tụ khí rồi quyết định theo tỉ lệ (tư chất, thiên phú, linh khí nơi ngồi).
+  Thất bại → **tẩu hỏa nhập ma**: mất sạch linh lực, mất một phần tu vi, 60 s giảm tốc/giảm sát thương, màn hình viền đen đỏ.
+* **Đại cảnh giới** (Viên Mãn → cảnh giới sau) phải **độ lôi kiếp thật**: mây kiếp phủ trời, 5 – 12 đạo thiên lôi giáng xuống
+  (số lượng và sức mạnh tăng theo tư chất và thiên phú – Hỗn Độn Thể chịu nhiều sét nhất, Lôi Thể chịu ít sát thương hơn).
+  Phải ngồi yên chịu đủ; bỏ chạy hoặc chết giữa kiếp → thất bại, rớt về Hậu Kỳ, tẩu hỏa nhập ma 120 s.
+* **Bảng Đạo Cơ** (`N`): cảnh giới, thanh tu vi/linh lực, tỉ lệ đột phá hoặc thông số lôi kiếp sắp tới, linh khí nơi đứng,
+  linh căn, thiên phú, tư chất và hệ số từng hệ.
 
 ### Thể phách theo cảnh giới (bị động)
 Mỗi lần đột phá, thân thể tu sĩ được tôi luyện (áp dụng bằng attribute modifier, không cộng dồn):
@@ -37,7 +55,7 @@ Mỗi lần đột phá, thân thể tu sĩ được tôi luyện (áp dụng b�
 | Hóa Thần | +8 ♥ | +4 | +24 % | +4 | 0.32 | Miễn sát thương lửa / dung nham |
 | Độ Kiếp | +10 ♥ | +5 | +30 % | +5 | 0.40 | Lăng Không Bộ dùng được 2 lần |
 
-Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và các hạt linh khí xoáy vào đan điền.
+Khi thiền định, quanh người xuất hiện **hào quang tụ khí** và các hạt linh khí xoáy vào đan điền; ở nơi linh khí dày các hạt dày hơn.
 
 ### 21 công pháp
 | Công pháp | Hệ | Loại | Cảnh giới | Mô tả hiệu ứng |
@@ -80,7 +98,7 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
 ### Vật phẩm & lệnh
 * **Bí tịch công pháp** (20 cuộn) – chuột phải để lĩnh ngộ, **Linh thạch / Linh thạch thượng phẩm** – hồi linh lực + kinh nghiệm,
   **Trúc Cơ Đan / Nguyên Anh Đan / Hồi Linh Đan / Thăng Thiên Đan**, **Đạo Thư** (mở màn hình kỹ năng, có lật trang), **Tiên Kiếm**.
-* Lệnh `/celestial info|learn|forget|realm|qi|exp|breakthrough` (cần quyền OP).
+* Lệnh `/celestial info|learn|forget|realm|stage|root|talent|reroll|qi|exp|breakthrough|meditate|spiritqi|chance` (đa số cần quyền OP).
 * **Công thức chế tạo**: linh thạch (thạch anh tím + lapis), linh thạch thượng phẩm, đạo thư, đan dược, tiên kiếm và
   9 bí tịch cảnh giới thấp (Luyện Khí / Trúc Cơ). Bí tịch cảnh giới cao chỉ tìm thấy trong **rương công trình**
   (stronghold, mansion, bastion, ancient city, end city…) – độ hiếm tăng theo cảnh giới yêu cầu.
@@ -88,11 +106,26 @@ Khi ngồi thiền, quanh người xuất hiện **hào quang tụ khí** và c�
   học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 21 công pháp.
 
 ### Phím mặc định
-`R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `B` – đột phá. Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
+`R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `N` – bảng Đạo Cơ · `X` – thiền định (nhấn một lần) · `B` – đột phá / độ kiếp.
+Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
 
 ---
 
 ## Nhật ký cập nhật
+
+### 1.4.0 – Đại tu hệ thống tu luyện (phần A)
+- **24 bậc cảnh giới**: mỗi đại cảnh giới chia Sơ / Trung / Hậu Kỳ / Viên Mãn; mỗi bậc tăng linh lực, hồi phục, sát thương.
+- **Linh căn** (Kim/Mộc/Thủy/Hỏa/Thổ + Lôi/Ám biến dị, 1–3 thuộc tính, 5 phẩm) gieo ngẫu nhiên khi vào thế giới, hiện màn hình *Linh Căn Thức Tỉnh*;
+  quyết định hệ công pháp mạnh, tiêu hao linh lực và tốc độ hồi linh lực.
+- **15 thiên phú** với 5 độ hiếm; **tư chất** 1–100 làm cùng cảnh giới mạnh yếu khác nhau (85–120 %).
+- **Thiền định một chạm** (`X`): thực thể *bồ đoàn linh khí* (model + texture 256²) đặt nhân vật ngồi xuống, tự tu luyện; không cần yên tĩnh.
+- **Linh khí theo địa điểm**: hệ số theo quần xã + **linh mạch** ẩn theo seed (thay cho quần xã mới – Fabric 1.20.1 không có API thêm quần xã
+  Overworld nếu không dùng TerraBlender; sẽ cân nhắc ở phần sau). HUD hiển thị mức linh khí nơi đứng.
+- **Đột phá tiểu cảnh giới có tỉ lệ**; thất bại → hiệu ứng **Tẩu Hỏa Nhập Ma** mới (icon, sát thương âm ỉ, giảm tốc, khói đen đỏ,
+  viền màn hình đen đỏ đập theo nhịp tim).
+- **Lôi kiếp thật** khi vượt đại cảnh giới: số tia và sát thương theo tư chất/thiên phú, loại sát thương `tribulation` riêng, bỏ chạy = thất bại.
+- **Bảng Đạo Cơ** (`N`) và nút *Đạo Cơ* trong Đạo Kinh; icon linh căn (7) và ấn thiên phú (5) 32×32 tự sinh.
+- Lệnh mới `/celestial stage|root|talent|reroll|meditate|spiritqi|chance`; 4 gametest mới (lôi kiếp, thiền định, chỉ số, NBT); 6 ảnh autotest mới.
 
 ### 1.3.11 – Không còn hiệu ứng che mắt người thi triển
 - Ở góc nhìn thứ nhất, các hiệu ứng *bao quanh thân* người chơi (hào quang QI_AURA, trụ sáng HEAVEN_PILLAR, phù văn xoay RUNE_ORBIT) không còn được vẽ cho chính người đó – nhìn từ bên trong chúng chỉ là một bức tường sáng che kín màn hình. Người chơi khác và camera góc nhìn thứ ba vẫn thấy bình thường; chiêu chiếu ra ngoài (tia, chém, phong nhận, trận pháp dưới chân) vẫn hiện.

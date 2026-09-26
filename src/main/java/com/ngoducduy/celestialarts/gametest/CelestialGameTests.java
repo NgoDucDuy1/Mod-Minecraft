@@ -2,15 +2,21 @@ package com.ngoducduy.celestialarts.gametest;
 
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.cultivation.Breakthrough;
+import com.ngoducduy.celestialarts.cultivation.CultivationStats;
+import com.ngoducduy.celestialarts.cultivation.Meditation;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
 import com.ngoducduy.celestialarts.cultivation.RealmPassives;
+import com.ngoducduy.celestialarts.cultivation.SpiritRoot;
+import com.ngoducduy.celestialarts.cultivation.Stage;
+import com.ngoducduy.celestialarts.cultivation.Talent;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModItems;
+import com.ngoducduy.celestialarts.skill.Element;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillManager;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
@@ -52,7 +58,11 @@ public final class CelestialGameTests implements FabricGameTest {
 		Vec3d pos = ctx.getAbsolute(new Vec3d(0.5, 2.0, 0.5));
 		player.refreshPositionAndAngles(pos.x, pos.y, pos.z, 0.0F, 0.0F);
 		PlayerQi qi = QiHolder.get(player);
+		// Fixed root/talent so multipliers are deterministic across runs (aptitude 50).
+		qi.setRoot(new SpiritRoot(List.of(SpiritRoot.Kind.METAL), 3));
+		qi.setTalent(Talent.MORTAL_BODY);
 		qi.setRealm(realm);
+		qi.setStage(Stage.EARLY);
 		qi.setQi(qi.getMaxQi());
 		for (Skill s : SkillRegistry.all()) {
 			qi.learn(s.getId());
@@ -185,17 +195,23 @@ public final class CelestialGameTests implements FabricGameTest {
 		high.setAiDisabled(true);
 
 		ctx.runAtTick(2, () -> {
+			PlayerQi qi = QiHolder.get(player);
 			float before = low.getHealth();
 			low.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, player), 10.0F);
 			float lost = before - low.getHealth();
-			ctx.assertTrue(Math.abs(lost - 10.0F) < 0.01F, "qi refining skill hit deals base damage, lost " + lost);
+			float expected1 = 10.0F * CultivationStats.skillDamageMultiplier(qi, Element.SWORD);
+			ctx.assertTrue(Math.abs(lost - expected1) < 0.01F, "qi refining skill hit follows the cultivation multiplier, lost " + lost + " expected " + expected1);
+			// A metal root favours sword arts: the sword multiplier beats the unattuned one.
+			ctx.assertTrue(CultivationStats.skillDamageMultiplier(qi, Element.SWORD) > CultivationStats.skillDamageMultiplier(qi, Element.FIRE), "metal root favours sword arts");
 
-			QiHolder.get(player).setRealm(Realm.TRIBULATION);
+			qi.setRealm(Realm.TRIBULATION);
+			qi.setStage(Stage.PEAK);
 			float before2 = high.getHealth();
 			high.damage(ModDamageTypes.source(world, ModDamageTypes.SWORD_QI, player), 10.0F);
 			float lost2 = before2 - high.getHealth();
-			float expected = 10.0F * RealmPassives.skillDamageMultiplier(Realm.TRIBULATION);
+			float expected = 10.0F * CultivationStats.skillDamageMultiplier(qi, Element.SWORD);
 			ctx.assertTrue(Math.abs(lost2 - expected) < 0.01F, "tribulation skill hit is amplified, lost " + lost2 + " expected " + expected);
+			ctx.assertTrue(lost2 > lost * 1.5F, "peak tribulation hits much harder than early qi refining");
 
 			// Non-skill damage from the same player is untouched.
 			high.timeUntilRegen = 0;
@@ -349,26 +365,116 @@ public final class CelestialGameTests implements FabricGameTest {
 		ctx.complete();
 	}
 
-	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 400)
-	public void breakthroughAdvancesRealm(TestContext ctx) {
+	/**
+	 * Crossing a major realm: a peak-stage cultivator with enough cultivation sits down, the
+	 * tribulation runs its bolts (the mock player is invulnerable, so it always survives) and the
+	 * realm advances to Foundation, early stage.
+	 */
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 480)
+	public void tribulationAdvancesRealm(TestContext ctx) {
 		ServerPlayerEntity player = spawnPlayer(ctx, Realm.QI_REFINING);
 		PlayerQi qi = QiHolder.get(player);
+		qi.setStage(Stage.PEAK);
 		qi.setExp(qi.getExpForBreakthrough() + 10);
 		ctx.assertTrue(qi.canBreakthrough(), "enough exp to break through");
+		ctx.assertTrue(qi.nextBreakthroughIsTribulation(), "peak stage means the next step is a tribulation");
+		int bolts = CultivationStats.tribulationBolts(qi);
+		ctx.assertTrue(bolts >= 5 && bolts <= 12, "bolt count in a sane range, was " + bolts);
 		ctx.runAtEveryTick(() -> tickIfDetached(ctx, player));
-		ctx.runAtTick(2, () -> Breakthrough.tryBreakthrough(player));
-		ctx.runAtTick(220, () -> {
+		ctx.runAtTick(2, () -> {
+			player.setOnGround(true);
+			Breakthrough.tryBreakthrough(player);
+			ctx.assertTrue(Meditation.isMeditating(player), "breakthrough seats the cultivator");
+			ctx.assertTrue(Breakthrough.isInTribulation(qi), "tribulation cast started");
+		});
+		ctx.runAtTick(60, () -> ctx.assertTrue(Meditation.isMeditating(player) && Breakthrough.isInTribulation(qi), "still seated under the cloud"));
+		int done = 80 + bolts * 20 + 60;
+		ctx.runAtTick(done, () -> {
 			ctx.assertTrue(qi.getRealm() == Realm.FOUNDATION, "realm advanced to Foundation, was " + qi.getRealm());
-			ctx.assertTrue(qi.getExp() == 10, "exp reduced by the breakthrough cost, was " + qi.getExp());
+			ctx.assertTrue(qi.getStage() == Stage.EARLY, "new realm starts at early stage, was " + qi.getStage());
+			ctx.assertTrue(qi.getExp() == 0, "cultivation spent by the tribulation, was " + qi.getExp());
+			ctx.assertTrue(!Meditation.isMeditating(player), "trance ends with the breakthrough");
+			ctx.assertTrue(!player.hasStatusEffect(com.ngoducduy.celestialarts.registry.ModEffects.QI_DEVIATION), "no qi deviation after success");
 			removePlayer(ctx, player);
 			ctx.complete();
 		});
 	}
 
+	/** One press sits, gathers cultivation over time, a second press stands up. */
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 200)
+	public void meditationTogglesAndGathersCultivation(TestContext ctx) {
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.FOUNDATION);
+		PlayerQi qi = QiHolder.get(player);
+		qi.setExp(0);
+		ctx.runAtEveryTick(() -> tickIfDetached(ctx, player));
+		ctx.runAtTick(2, () -> {
+			player.setOnGround(true);
+			Meditation.toggle(player);
+			ctx.assertTrue(Meditation.isMeditating(player), "first press seats the player");
+			ctx.assertTrue(qi.isMeditating(), "qi state mirrors the seat");
+			ctx.assertTrue(count(ctx.getWorld(), ModEntities.MEDITATION_SEAT, player.getPos(), 2.0) == 1, "one seat entity under the player");
+		});
+		ctx.runAtTick(90, () -> {
+			ctx.assertTrue(Meditation.isMeditating(player), "still meditating without holding any key");
+			ctx.assertTrue(qi.getExp() > 0, "cultivation accumulates while seated, exp " + qi.getExp());
+			ctx.assertTrue(qi.getSpiritQi() > 0.0F, "spiritual qi of the spot was sampled");
+			Meditation.toggle(player);
+			ctx.assertTrue(!Meditation.isMeditating(player) && !qi.isMeditating(), "second press stands up");
+		});
+		ctx.runAtTick(120, () -> {
+			ctx.assertTrue(count(ctx.getWorld(), ModEntities.MEDITATION_SEAT, player.getPos(), 4.0) == 0, "seat entity removed after standing up");
+			removePlayer(ctx, player);
+			ctx.complete();
+		});
+	}
+
+	/** Pure numbers behind aptitude, breakthrough odds and tribulations. */
+	@GameTest(templateName = EMPTY_STRUCTURE)
+	public void cultivationStatsAreMonotonic(TestContext ctx) {
+		SpiritRoot poor = new SpiritRoot(List.of(SpiritRoot.Kind.METAL, SpiritRoot.Kind.WOOD, SpiritRoot.Kind.EARTH), 1);
+		SpiritRoot best = new SpiritRoot(List.of(SpiritRoot.Kind.THUNDER), 5);
+		int aPoor = CultivationStats.aptitude(poor, Talent.CRIPPLED_MERIDIANS);
+		int aBest = CultivationStats.aptitude(best, Talent.CHAOS_BODY);
+		ctx.assertTrue(aPoor >= 1 && aPoor < 20, "poor aptitude is mortal tier, was " + aPoor);
+		ctx.assertTrue(aBest > 80 && aBest <= 100, "best aptitude is peerless tier, was " + aBest);
+		ctx.assertTrue(CultivationStats.aptitudeTier(aPoor).equals("mortal") && CultivationStats.aptitudeTier(aBest).equals("peerless"), "tier labels");
+
+		PlayerQi weak = new PlayerQi();
+		weak.setRoot(poor);
+		weak.setTalent(Talent.CRIPPLED_MERIDIANS);
+		PlayerQi strong = new PlayerQi();
+		strong.setRoot(best);
+		strong.setTalent(Talent.CHAOS_BODY);
+		for (PlayerQi q : List.of(weak, strong)) {
+			q.setRealm(Realm.GOLDEN_CORE);
+			q.setStage(Stage.MIDDLE);
+		}
+		ctx.assertTrue(CultivationStats.powerMultiplier(strong) > CultivationStats.powerMultiplier(weak), "talent separates power within a realm");
+		ctx.assertTrue(strong.getMaxQi() > weak.getMaxQi() && strong.getRegenPerTick() > weak.getRegenPerTick(), "better root regenerates and stores more qi");
+		ctx.assertTrue(CultivationStats.skillDamageMultiplier(strong, Element.LIGHTNING) > CultivationStats.skillDamageMultiplier(strong, Element.EARTH), "thunder root favours lightning arts");
+		ctx.assertTrue(CultivationStats.tribulationBolts(strong) > CultivationStats.tribulationBolts(weak), "heaven sends more lightning at greater talent");
+		ctx.assertTrue(CultivationStats.tribulationBoltDamage(strong) > CultivationStats.tribulationBoltDamage(weak), "and heavier bolts");
+		float cWeak = CultivationStats.breakthroughChance(weak, 0.5F);
+		float cStrong = CultivationStats.breakthroughChance(strong, 2.5F);
+		ctx.assertTrue(cWeak >= 0.2F && cWeak < cStrong && cStrong <= 0.98F, "breakthrough odds clamp and ordering, " + cWeak + " < " + cStrong);
+		ctx.assertTrue(CultivationStats.breakthroughChance(weak, 2.5F) > CultivationStats.breakthroughChance(weak, 0.5F), "rich spiritual qi helps");
+		ctx.assertTrue(CultivationStats.deviationTicks(weak, true) > CultivationStats.deviationTicks(weak, false), "tribulation deviation lasts longer");
+		ctx.assertTrue(CultivationStats.deviationTicks(strong, false) > 0 && CultivationStats.deviationTicks(weak, false) > 0, "deviation positive");
+		// Stage chain: 6 realms x 4 stages = 24 steps, peak of the last realm is the end.
+		PlayerQi p = new PlayerQi();
+		p.setRealm(Realm.TRIBULATION);
+		p.setStage(Stage.PEAK);
+		ctx.assertTrue(p.isAtPeakOfCultivation() && p.getRank() == 24 && !p.canBreakthrough(), "peak of cultivation");
+		ctx.complete();
+	}
+
 	@GameTest(templateName = EMPTY_STRUCTURE)
 	public void qiNbtRoundTrip(TestContext ctx) {
 		PlayerQi qi = new PlayerQi();
+		qi.setRoot(new SpiritRoot(List.of(SpiritRoot.Kind.FIRE, SpiritRoot.Kind.DARK), 4));
+		qi.setTalent(Talent.DAO_HEART);
 		qi.setRealm(Realm.NASCENT_SOUL);
+		qi.setStage(Stage.LATE);
 		qi.setQi(123.5F);
 		qi.setExp(777);
 		qi.learn(SkillRegistry.FIRE_LOTUS.getId());
@@ -382,6 +488,10 @@ public final class CelestialGameTests implements FabricGameTest {
 		copy.readNbt(nbt);
 
 		ctx.assertTrue(copy.getRealm() == Realm.NASCENT_SOUL, "realm restored");
+		ctx.assertTrue(copy.getStage() == Stage.LATE, "stage restored");
+		ctx.assertTrue(copy.getRoot() != null && copy.getRoot().getGrade() == 4 && copy.getRoot().getKinds().equals(List.of(SpiritRoot.Kind.FIRE, SpiritRoot.Kind.DARK)), "spirit root restored");
+		ctx.assertTrue(copy.getTalent() == Talent.DAO_HEART, "talent restored");
+		ctx.assertTrue(copy.hasAwakened(), "awakened flag restored");
 		ctx.assertTrue(Math.abs(copy.getQi() - 123.5F) < 0.001F, "qi restored");
 		ctx.assertTrue(copy.getExp() == 777, "exp restored");
 		ctx.assertTrue(copy.hasLearned(SkillRegistry.FIRE_LOTUS.getId()) && copy.hasLearned(SkillRegistry.TAIJI_FORMATION.getId()), "learned skills restored");

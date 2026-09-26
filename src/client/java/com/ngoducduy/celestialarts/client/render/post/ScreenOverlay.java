@@ -5,6 +5,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.client.render.RenderUtil;
 import com.ngoducduy.celestialarts.network.FxData;
+import com.ngoducduy.celestialarts.registry.ModEffects;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.BufferBuilder;
@@ -34,6 +36,8 @@ public final class ScreenOverlay {
 	private static final Identifier VIGNETTE = CelestialArts.id("textures/fx/vignette.png");
 	private static final double RANGE = 24.0;
 	private static final List<Entry> ACTIVE = new ArrayList<>();
+	/** Player age at which the qi-deviation effect was first seen, or -1. */
+	private static int deviationStart = -1;
 
 	private ScreenOverlay() {
 	}
@@ -76,10 +80,17 @@ public final class ScreenOverlay {
 
 	public static void clear() {
 		ACTIVE.clear();
+		deviationStart = -1;
 	}
 
 	public static void tick(MinecraftClient client) {
 		if (client.isPaused()) return;
+		// Remember when the deviation effect showed up so the vignette can ramp in.
+		if (client.player != null && client.player.hasStatusEffect(ModEffects.QI_DEVIATION)) {
+			if (deviationStart < 0) deviationStart = client.player.age;
+		} else {
+			deviationStart = -1;
+		}
 		Iterator<Entry> it = ACTIVE.iterator();
 		while (it.hasNext()) {
 			Entry e = it.next();
@@ -88,12 +99,51 @@ public final class ScreenOverlay {
 		}
 	}
 
+	/**
+	 * Strength (0..1) of the qi-deviation vignette for the local player: ramps up over the first
+	 * two seconds of the effect and out over the last two, with a slow, uneven "heartbeat" so the
+	 * black-red edge never sits still.
+	 */
+	private static float deviationStrength(MinecraftClient client, float tickDelta) {
+		if (client.player == null) return 0.0F;
+		StatusEffectInstance inst = client.player.getStatusEffect(ModEffects.QI_DEVIATION);
+		if (inst == null) return 0.0F;
+		float in = deviationStart < 0 ? 1.0F : MathHelper.clamp((client.player.age - deviationStart + tickDelta) / 40.0F, 0.0F, 1.0F);
+		float out = inst.isInfinite() ? 1.0F : MathHelper.clamp(inst.getDuration() / 40.0F, 0.0F, 1.0F);
+		float t = (client.player.age + tickDelta) / 20.0F;
+		float beat = (float) Math.pow(Math.max(0.0, Math.sin(t * 4.2)), 6.0);
+		float beat2 = (float) Math.pow(Math.max(0.0, Math.sin(t * 4.2 + 1.1)), 12.0) * 0.6F;
+		float amp = 1.0F + 0.25F * (inst.getAmplifier());
+		return MathHelper.clamp((0.55F + 0.30F * (beat + beat2)) * Math.min(in, out) * amp, 0.0F, 1.0F);
+	}
+
 	public static void render(DrawContext ctx, float tickDelta) {
-		if (ACTIVE.isEmpty()) return;
 		MinecraftClient client = MinecraftClient.getInstance();
 		if (client.options.hudHidden) return;
+		float deviation = deviationStrength(client, tickDelta);
+		if (ACTIVE.isEmpty() && deviation <= 0.005F) return;
 		int w = ctx.getScaledWindowWidth();
 		int h = ctx.getScaledWindowHeight();
+
+		if (deviation > 0.005F) {
+			// Tẩu hỏa nhập ma: a dark blood-red vignette with a faint desaturating haze in the middle.
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			int a = (int) (deviation * 70);
+			ctx.fill(0, 0, w, h, (a << 24) | 0x1A0406);
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+			RenderSystem.setShaderColor(0.05F, 0.0F, 0.01F, Math.min(1.0F, deviation * 0.95F));
+			ctx.drawTexture(VIGNETTE, 0, 0, 0, 0, w, h, w, h);
+			// A second, tighter red pass so the edge reads as blood rather than plain darkness.
+			int inset = Math.round(Math.min(w, h) * 0.08F);
+			RenderSystem.setShaderColor(0.55F, 0.02F, 0.04F, Math.min(1.0F, deviation * 0.55F));
+			ctx.drawTexture(VIGNETTE, -inset, -inset, 0, 0, w + 2 * inset, h + 2 * inset, w + 2 * inset, h + 2 * inset);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			RenderSystem.disableBlend();
+		}
+		if (ACTIVE.isEmpty()) return;
 
 		float flashR = 0, flashG = 0, flashB = 0, flashA = 0;
 		float darkA = 0;

@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Per-player cultivation data: Qi pool (linh lực), realm (cảnh giới), cultivation
- * experience (tu vi), learned skills, hot-bar skill slots, cooldowns and any
- * currently running multi-tick skill casts.
+ * Per-player cultivation data: Qi pool (linh lực), realm and minor stage (cảnh giới), cultivation
+ * experience (tu vi) inside the current stage, the innate spirit root and talent, learned skills,
+ * hot-bar skill slots, cooldowns and any currently running multi-tick skill casts.
  *
  * <p>The same class is used on both sides; the server is authoritative and pushes
  * a snapshot to the owning client whenever something changes.</p>
@@ -33,7 +33,18 @@ public class PlayerQi {
 
 	private float qi;
 	private Realm realm = Realm.QI_REFINING;
+	private Stage stage = Stage.EARLY;
 	private int exp;
+	/** Fractional cultivation gain from meditation waiting to become a whole point. */
+	private float expBuffer;
+	/** Null until the root awakens on the first join. */
+	@Nullable
+	private SpiritRoot root;
+	private Talent talent = Talent.MORTAL_BODY;
+	/** Server: sitting on a meditation seat. Synced so the HUD can show the trance. */
+	private boolean meditating;
+	/** Spiritual qi density at the player's position, sampled by the server every second. */
+	private float spiritQi = 1.0F;
 	private final Set<Identifier> learned = new LinkedHashSet<>();
 	private final Identifier[] slots = new Identifier[SLOT_COUNT];
 	private final Map<Identifier, Integer> cooldowns = new HashMap<>();
@@ -55,7 +66,12 @@ public class PlayerQi {
 	}
 
 	public float getMaxQi() {
-		return realm.getMaxQi();
+		return CultivationStats.maxQi(this);
+	}
+
+	/** Qi regenerated per tick out of combat (before meditation / spirit-qi bonuses). */
+	public float getRegenPerTick() {
+		return CultivationStats.regenPerTick(this);
 	}
 
 	public void setQi(float value) {
@@ -74,6 +90,11 @@ public class PlayerQi {
 		return qi >= amount;
 	}
 
+	/** Qi a skill costs this cultivator: cheaper for elements the spirit root is attuned to. */
+	public float qiCost(Skill skill) {
+		return skill.getQiCost() * CultivationStats.qiCostMultiplier(this, skill.getElement());
+	}
+
 	public boolean consumeQi(float amount) {
 		if (qi < amount) return false;
 		setQi(qi - amount);
@@ -89,8 +110,89 @@ public class PlayerQi {
 	public void setRealm(Realm realm) {
 		if (this.realm != realm) {
 			this.realm = realm;
-			this.qi = Math.min(this.qi, realm.getMaxQi());
+			this.qi = Math.min(this.qi, getMaxQi());
 			dirty = true;
+		}
+	}
+
+	public Stage getStage() {
+		return stage;
+	}
+
+	public void setStage(Stage stage) {
+		if (this.stage != stage) {
+			this.stage = stage;
+			this.qi = Math.min(this.qi, getMaxQi());
+			dirty = true;
+		}
+	}
+
+	/** Realm and stage as one number: 1 (Luyện Khí sơ kỳ) … 24 (Độ Kiếp viên mãn). */
+	public int getRank() {
+		return (realm.getLevel() - 1) * Stage.values().length + stage.getIndex() + 1;
+	}
+
+	/** True at the very top: Độ Kiếp viên mãn. */
+	public boolean isAtPeakOfCultivation() {
+		return realm.isMax() && stage.isPeak();
+	}
+
+	@Nullable
+	public SpiritRoot getRoot() {
+		return root;
+	}
+
+	public boolean hasAwakened() {
+		return root != null;
+	}
+
+	public void setRoot(@Nullable SpiritRoot root) {
+		this.root = root;
+		this.qi = Math.min(this.qi, getMaxQi());
+		dirty = true;
+	}
+
+	public Talent getTalent() {
+		return talent;
+	}
+
+	public void setTalent(Talent talent) {
+		if (this.talent != talent) {
+			this.talent = talent;
+			this.qi = Math.min(this.qi, getMaxQi());
+			dirty = true;
+		}
+	}
+
+	public boolean isMeditating() {
+		return meditating;
+	}
+
+	public void setMeditating(boolean meditating) {
+		if (this.meditating != meditating) {
+			this.meditating = meditating;
+			dirty = true;
+		}
+	}
+
+	public float getSpiritQi() {
+		return spiritQi;
+	}
+
+	public void setSpiritQi(float spiritQi) {
+		if (Math.abs(this.spiritQi - spiritQi) > 0.005F) {
+			this.spiritQi = spiritQi;
+			dirty = true;
+		}
+	}
+
+	/** Adds fractional cultivation gain; whole points are moved into {@link #getExp()}. */
+	public void addExpFraction(float amount) {
+		expBuffer += amount;
+		if (expBuffer >= 1.0F) {
+			int whole = (int) expBuffer;
+			expBuffer -= whole;
+			addExp(whole);
 		}
 	}
 
@@ -110,13 +212,18 @@ public class PlayerQi {
 		setExp(exp + amount);
 	}
 
-	/** Exp needed to reach the next realm, or -1 when at the highest realm. */
+	/** Exp needed to leave the current stage, or -1 at Độ Kiếp viên mãn. */
 	public int getExpForBreakthrough() {
-		return realm.isMax() ? -1 : realm.next().getRequiredExp();
+		return isAtPeakOfCultivation() ? -1 : realm.getStageExp();
 	}
 
 	public boolean canBreakthrough() {
-		return !realm.isMax() && exp >= realm.next().getRequiredExp();
+		return !isAtPeakOfCultivation() && exp >= realm.getStageExp();
+	}
+
+	/** Whether the next breakthrough is the great one (peak stage → next realm, with a tribulation). */
+	public boolean nextBreakthroughIsTribulation() {
+		return stage.isPeak() && !realm.isMax();
 	}
 
 	public int getMeditateTicks() {
@@ -294,7 +401,13 @@ public class PlayerQi {
 	public NbtCompound writeNbt(NbtCompound nbt) {
 		nbt.putFloat("Qi", qi);
 		nbt.putInt("Realm", realm.getLevel());
+		nbt.putInt("Stage", stage.getIndex());
 		nbt.putInt("Exp", exp);
+		nbt.putFloat("ExpBuffer", expBuffer);
+		if (root != null) nbt.put("Root", root.writeNbt(new NbtCompound()));
+		nbt.putString("Talent", talent.getKey());
+		nbt.putBoolean("Meditating", meditating);
+		nbt.putFloat("SpiritQi", spiritQi);
 		NbtList learnedList = new NbtList();
 		for (Identifier id : learned) {
 			learnedList.add(NbtString.of(id.toString()));
@@ -325,8 +438,14 @@ public class PlayerQi {
 
 	public void readNbt(NbtCompound nbt) {
 		realm = Realm.byLevel(nbt.getInt("Realm"));
-		qi = MathHelper.clamp(nbt.getFloat("Qi"), 0f, realm.getMaxQi());
+		stage = Stage.byIndex(nbt.getInt("Stage"));
+		root = nbt.contains("Root", NbtElement.COMPOUND_TYPE) ? SpiritRoot.readNbt(nbt.getCompound("Root")) : null;
+		talent = nbt.contains("Talent", NbtElement.STRING_TYPE) ? Talent.byKey(nbt.getString("Talent")) : Talent.MORTAL_BODY;
+		meditating = nbt.getBoolean("Meditating");
+		spiritQi = nbt.contains("SpiritQi", NbtElement.FLOAT_TYPE) ? nbt.getFloat("SpiritQi") : 1.0F;
 		exp = nbt.getInt("Exp");
+		expBuffer = nbt.getFloat("ExpBuffer");
+		qi = MathHelper.clamp(nbt.getFloat("Qi"), 0f, getMaxQi());
 		learned.clear();
 		NbtList learnedList = nbt.getList("Learned", NbtElement.STRING_TYPE);
 		for (int i = 0; i < learnedList.size(); i++) {

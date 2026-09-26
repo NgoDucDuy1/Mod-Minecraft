@@ -653,6 +653,185 @@ def icon_thunder_dragon():
     icon_finish(img, "thunder_dragon")
 
 
+# ---------------------------------------------------------------- 1.4.0 cultivation GUI
+
+ROOT_COLORS = {
+    "metal": ((0xE8, 0xEC, 0xF2), (0xFF, 0xFF, 0xFF)),
+    "wood": ((0x7C, 0xDC, 0x7C), (0xD8, 0xFF, 0xC0)),
+    "water": ((0x6F, 0xB8, 0xFF), (0xD8, 0xF2, 0xFF)),
+    "fire": ((0xFF, 0x7A, 0x3A), (0xFF, 0xE0, 0x9A)),
+    "earth": ((0xD9, 0xB3, 0x6A), (0xFF, 0xF0, 0xC0)),
+    "thunder": ((0xC9, 0x8B, 0xFF), (0xF2, 0xE6, 0xFF)),
+    "dark": ((0x8A, 0x3B, 0xD6), (0xD2, 0x8B, 0xFF)),
+}
+
+RARITY_COLORS = {
+    "cursed": ((0x55, 0x55, 0x60), (0x90, 0x90, 0xA0)),
+    "common": ((0xD8, 0xD8, 0xD8), (0xFF, 0xFF, 0xFF)),
+    "uncommon": ((0x6C, 0xE0, 0x6C), (0xD0, 0xFF, 0xC0)),
+    "rare": ((0x5A, 0xD8, 0xFF), (0xD0, 0xF8, 0xFF)),
+    "legendary": ((0xFF, 0xC8, 0x40), (0xFF, 0xF0, 0xB0)),
+}
+
+
+def root_icon(kind):
+    """32x32 spirit-root icon (textures/gui/roots/<kind>.png): round jade plate + element glyph."""
+    col, col2 = ROOT_COLORS[kind]
+    img = T.new(32, 32)
+    d = ImageDraw.Draw(img)
+    d.ellipse([1 * S, 1 * S, 31 * S - 1, 31 * S - 1], fill=dk(col, 0.22) + (255,))
+    img.alpha_composite(T.radial(32, 32, col + (140,), dk(col, 0.35) + (0,), power=1.5, radius=14))
+    if kind == "metal":
+        # a straight sword blade with a short cross guard
+        T.polygon_glow(img, [(15, 26), (16, 5), (17, 26)], col2, glow=1.6)
+        T.polyline_glow(img, [(11, 22), (21, 22)], (210, 220, 235), 2.0, glow=1.0)
+        T.polyline_glow(img, [(16, 22), (16, 28)], (120, 130, 150), 2.0, glow=0.6)
+    elif kind == "wood":
+        # a sprouting tree: trunk and three leaves
+        T.polyline_glow(img, [(16, 28), (16, 14)], (120, 90, 50), 2.4, glow=0.6)
+        for (cx, cy, rot) in [(16, 8, 90), (10, 14, 150), (22, 14, 30)]:
+            a = math.radians(rot)
+            pts = [(cx + 5 * math.cos(a), cy - 5 * math.sin(a)), (cx + 4 * math.cos(a + 1.7), cy - 4 * math.sin(a + 1.7)),
+                   (cx - 5 * math.cos(a), cy + 5 * math.sin(a)), (cx + 4 * math.cos(a - 1.7), cy - 4 * math.sin(a - 1.7))]
+            T.polygon_glow(img, pts, col, glow=1.2)
+        T.polygon_glow(img, [(16, 4), (18, 8), (16, 12), (14, 8)], col2, glow=1.0)
+    elif kind == "water":
+        # a droplet with two ripples underneath
+        T.polygon_glow(img, [(16, 4), (21, 12), (22, 17), (19, 21), (13, 21), (10, 17), (11, 12)], col, glow=1.6)
+        T.polygon_glow(img, [(15, 12), (17.5, 15.5), (17, 18.5), (14, 18), (13.5, 15)], col2, glow=1.0, fill_alpha=200)
+        for y, w in ((24, 8), (27, 12)):
+            T.arc_glow(img, [16 - w, y - 2, 16 + w, y + 2], 0, 180, col, 1.6, glow=0.8)
+    elif kind == "fire":
+        T.polygon_glow(img, [(16, 3), (22, 12), (25, 20), (21, 28), (11, 28), (7, 20), (10, 12)], col, glow=1.8)
+        T.polygon_glow(img, [(16, 11), (20, 17), (20.5, 22.5), (16, 27), (11.5, 22.5), (12, 17)], col2, glow=1.2)
+        T.polygon_glow(img, [(16, 17), (18, 21), (16, 25.5), (14, 21)], WHITE, glow=0.8)
+    elif kind == "earth":
+        # a mountain with a sun disc
+        T.polygon_glow(img, [(4, 27), (12, 12), (16, 18), (21, 9), (28, 27)], col, glow=1.4)
+        T.polygon_glow(img, [(12, 12), (14, 16), (10, 16)], col2, glow=0.8)
+        T.polygon_glow(img, [(21, 9), (23.5, 14), (18.5, 14)], col2, glow=0.8)
+        T.polyline_glow(img, [(3, 28), (29, 28)], (200, 170, 110), 1.8, glow=0.8)
+    elif kind == "thunder":
+        rnd = random.Random(11)
+        T.polyline_glow(img, [(18, 3), (12, 15), (17, 15), (13, 29)], col2, 2.4, glow=2.0)
+        T.polyline_glow(img, [(18, 3), (12, 15), (17, 15), (13, 29)], WHITE, 1.0, glow=0.5)
+        for k in range(3):
+            pts = T.lightning_points(15 + rnd.uniform(-4, 4), 10 + k * 6, 24 + rnd.uniform(-3, 3), 12 + k * 6, 3, 1.5, rnd)
+            T.polyline_glow(img, pts, col, 1.0, glow=1.0)
+    elif kind == "dark":
+        # a crescent moon with a swallowing vortex
+        T.polygon_glow(img, T.crescent(17, 15, 10, 4.5, 40), col2, glow=1.8)
+        for k in range(3):
+            a0 = 60 + k * 120
+            T.arc_glow(img, [8, 8, 24, 24], a0, a0 + 70, col, 1.6, glow=1.4)
+        T.polygon_glow(img, T.star_points(9, 9, 2.5, 1, 4), WHITE, glow=1.0, fill_alpha=220)
+    d = ImageDraw.Draw(img)
+    d.ellipse([1 * S, 1 * S, 31 * S - 1, 31 * S - 1], outline=col + (255,), width=S)
+    save(img, os.path.join(GUI, "roots"), kind, 32, 32)
+
+
+def talent_seal(rarity):
+    """32x32 talent seal (textures/gui/talent_<rarity>.png): square seal with as many stars as the rank."""
+    col, col2 = RARITY_COLORS[rarity]
+    rank = ["cursed", "common", "uncommon", "rare", "legendary"].index(rarity)
+    img = T.new(32, 32)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([2 * S, 2 * S, 30 * S - 1, 30 * S - 1], radius=4 * S, fill=dk(col, 0.2) + (255,))
+    img.alpha_composite(T.radial(32, 32, col + (110 + 25 * rank,), dk(col, 0.3) + (0,), power=1.5, radius=14))
+    # inner seal ring
+    T.arc_glow(img, [6, 6, 26, 26], 0, 360, col, 1.4, glow=1.0 + 0.3 * rank)
+    if rarity == "cursed":
+        # a cracked seal: an X of two dark fissures
+        T.polyline_glow(img, [(10, 10), (22, 22)], (30, 20, 40), 2.2, glow=0.4)
+        T.polyline_glow(img, [(22, 10), (10, 22)], (30, 20, 40), 2.2, glow=0.4)
+        T.polyline_glow(img, [(10, 10), (22, 22)], col2, 0.9, glow=0.8)
+        T.polyline_glow(img, [(22, 10), (10, 22)], col2, 0.9, glow=0.8)
+    else:
+        # central big star, plus smaller satellite stars for higher ranks
+        T.polygon_glow(img, T.star_points(16, 16, 6.5, 2.8, 5, rot=-math.pi / 2), col2, glow=1.4 + 0.4 * rank, fill_alpha=240)
+        satellites = {1: [], 2: [(16, 6)], 3: [(9, 8), (23, 8)], 4: [(8, 9), (24, 9), (16, 26)]}[rank]
+        for (sx, sy) in satellites:
+            T.polygon_glow(img, T.star_points(sx, sy, 2.4, 1.0, 4), WHITE, glow=1.0, fill_alpha=230)
+    if rarity == "legendary":
+        # golden corner flourishes
+        for (cx, cy, sx, sy) in [(4, 4, 1, 1), (28, 4, -1, 1), (4, 28, 1, -1), (28, 28, -1, -1)]:
+            T.polyline_glow(img, [(cx, cy + sy * 5), (cx, cy), (cx + sx * 5, cy)], col2, 1.4, glow=1.2)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([2 * S, 2 * S, 30 * S - 1, 30 * S - 1], radius=4 * S, outline=col + (255,), width=S)
+    save(img, GUI, "talent_" + rarity, 32, 32)
+
+
+def effect_icon_qi_deviation():
+    def qi_deviation(img):
+        red = (220, 30, 40)
+        img.alpha_composite(T.radial(32, 32, (120, 0, 10, 170), (40, 0, 5, 0), power=1.2, radius=14))
+        # a cracked, inverted qi swirl: two black arcs, red fissures bleeding out
+        for a0 in (20, 200):
+            T.arc_glow(img, [7, 7, 25, 25], a0, a0 + 130, (20, 6, 10), 3.0, glow=0.4)
+            T.arc_glow(img, [7, 7, 25, 25], a0, a0 + 130, red, 1.2, glow=1.4)
+        rnd = random.Random(4)
+        for (x1, y1) in [(4, 5), (28, 6), (26, 28), (5, 27)]:
+            pts = T.lightning_points(16, 16, x1, y1, 4, 1.4, rnd)
+            T.polyline_glow(img, pts, red, 1.0, glow=1.2)
+        T.polygon_glow(img, T.star_points(16, 16, 3.2, 1.3, 4), (255, 90, 90), glow=1.2, fill_alpha=240)
+    effect_icon("qi_deviation", qi_deviation)
+
+
+def gui_cultivation():
+    """256x256 texture; the panel occupies 256x222 at the top (layout mirrors CultivationScreen)."""
+    W, H = 256, 256
+    PH = 222
+    img = Image.new("RGBA", (W, H))
+    n = T.noise_layer(256, PH, 91, scale=6, octaves=3, ss=False)
+    paper = Image.new("RGBA", (256, PH), (46, 40, 70, 255))
+    tint = T.colorize(n, (80, 70, 120), 0.5)
+    paper.alpha_composite(tint)
+    img.paste(paper, (0, 0))
+    # faint taiji / bagua watermark behind the left column
+    wm = T.new(120, 120)
+    T.arc_glow(wm, [8, 8, 112, 112], 0, 360, (150, 130, 190), 1.2, glow=1.0)
+    for k in range(8):
+        a = math.radians(k * 45)
+        x0, y0 = 60 + 46 * math.cos(a), 60 + 46 * math.sin(a)
+        x1, y1 = 60 + 54 * math.cos(a), 60 + 54 * math.sin(a)
+        T.polyline_glow(wm, [(x0, y0), (x1, y1)], (150, 130, 190), 1.4, glow=0.8)
+    T.arc_glow(wm, [30, 30, 90, 90], 0, 360, (150, 130, 190), 1.0, glow=0.8)
+    wm = T.finish(wm, 120, 120)
+    a = wm.split()[3].point(lambda v: int(v * 0.22))
+    wm.putalpha(a)
+    img.alpha_composite(wm, (8, 60))
+    d = ImageDraw.Draw(img)
+    d.rectangle([0, 0, 255, PH - 1], outline=(230, 195, 110, 255), width=2)
+    d.rectangle([3, 3, 252, PH - 4], outline=(120, 95, 50, 255), width=1)
+    # title bar
+    d.rectangle([6, 6, 249, 24], fill=(30, 22, 44, 220), outline=(230, 195, 110, 255))
+    # left column (realm / progress / spirit qi) and right column (root / talent / aptitude)
+    d.rectangle([8, 27, 127, 190], fill=(24, 18, 36, 190), outline=(160, 130, 80, 255))
+    d.rectangle([130, 27, 249, 190], fill=(24, 18, 36, 190), outline=(160, 130, 80, 255))
+    # column header strips
+    d.rectangle([9, 28, 126, 39], fill=(40, 32, 58, 255))
+    d.rectangle([131, 28, 248, 39], fill=(40, 32, 58, 255))
+    # button row
+    d.rectangle([8, 193, 249, 218], fill=(24, 18, 36, 200), outline=(160, 130, 80, 255))
+    gold = (230, 195, 110, 255)
+    for (cx, cy, sx, sy) in [(6, 6, 1, 1), (249, 6, -1, 1), (6, PH - 7, 1, -1), (249, PH - 7, -1, -1)]:
+        d.line([(cx, cy), (cx + sx * 10, cy)], fill=gold, width=2)
+        d.line([(cx, cy), (cx, cy + sy * 10)], fill=gold, width=2)
+        d.point((cx + sx * 3, cy + sy * 3), fill=gold)
+    T.save(img, os.path.join(GUI, "cultivation.png"))
+    print("gui/cultivation.png")
+
+
+def cultivation_assets():
+    os.makedirs(os.path.join(GUI, "roots"), exist_ok=True)
+    for kind in ROOT_COLORS:
+        root_icon(kind)
+    for rarity in RARITY_COLORS:
+        talent_seal(rarity)
+    effect_icon_qi_deviation()
+    gui_cultivation()
+
+
 def main():
     for f in (ITEM, GUI, SKILLS):
         os.makedirs(f, exist_ok=True)
@@ -674,6 +853,7 @@ def main():
     item_pill("qi_pill", (80, 220, 200))
     item_pill("heaven_pill", (255, 215, 90))
     gui_hud(); gui_skill_book(); advancement_bg(); mod_icon()
+    cultivation_assets()
 
 
 if __name__ == "__main__":

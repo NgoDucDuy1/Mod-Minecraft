@@ -67,6 +67,10 @@ public final class ClientPackets {
 		ClientPlayNetworking.send(ModPackets.AIR_JUMP, PacketByteBufs.empty());
 	}
 
+	public static void sendMeditate() {
+		ClientPlayNetworking.send(ModPackets.MEDITATE, PacketByteBufs.empty());
+	}
+
 	public static void sendBreakthrough() {
 		ClientPlayNetworking.send(ModPackets.BREAKTHROUGH, PacketByteBufs.create());
 	}

@@ -30,13 +30,16 @@ class Tex:
 
     def face_regions(self, u, v, w, h, d):
         k = self.density
+        # Fractional cuboid sizes (e.g. a 1.5 px thick cushion) are rounded the way the model
+        # UV mapper rounds them.
+        R = lambda x: int(round(x))
         return {
-            "top": ((u + d) * k, v * k, w * k, d * k),
-            "bottom": ((u + d + w) * k, v * k, w * k, d * k),
-            "right": (u * k, (v + d) * k, d * k, h * k),
-            "front": ((u + d) * k, (v + d) * k, w * k, h * k),
-            "left": ((u + d + w) * k, (v + d) * k, d * k, h * k),
-            "back": ((u + 2 * d + w) * k, (v + d) * k, w * k, h * k),
+            "top": (R((u + d) * k), R(v * k), R(w * k), R(d * k)),
+            "bottom": (R((u + d + w) * k), R(v * k), R(w * k), R(d * k)),
+            "right": (R(u * k), R((v + d) * k), R(d * k), R(h * k)),
+            "front": (R((u + d) * k), R((v + d) * k), R(w * k), R(h * k)),
+            "left": (R((u + d + w) * k), R((v + d) * k), R(d * k), R(h * k)),
+            "back": (R((u + 2 * d + w) * k), R((v + d) * k), R(w * k), R(h * k)),
         }
 
     def cuboid(self, u, v, w, h, d, painter, shade=True):
@@ -503,10 +506,76 @@ def thunder_dragon():
     dragon_head("thunder_dragon", (70, 30, 130), (170, 120, 255), (225, 205, 255), (235, 225, 255), (255, 240, 255), (210, 190, 255))
 
 
+def meditation_seat():
+    """Bồ đoàn (meditation cushion), UV 64x64 at density 4. Deep-red silk with a golden brocade
+    border, a lotus medallion on top and eight small rune ticks; the underside is plain cloth."""
+    t = Tex(64, 64, density=4)
+    silk = (128, 34, 40)
+    silk_dark = (86, 20, 26)
+    gold = (232, 186, 92)
+    gold_dark = (150, 108, 44)
+    cream = (246, 226, 184)
+
+    def weave(fx, fy, scale=24):
+        return 0.5 + 0.5 * hash_noise(int(fx * scale), int(fy * scale), 21)
+
+    def side_painter(face, fx, fy, medallion=True):
+        n = weave(fx, fy)
+        c = mix(silk_dark, silk, 0.35 + 0.5 * n)
+        if face in ("top",):
+            return top_painter(fx, fy, medallion)
+        if face == "bottom":
+            return with_a(mix(silk_dark, (60, 40, 36), 0.5 + 0.3 * n))
+        # rim: brocade band with gold stitching along the top edge
+        if fy < 0.35:
+            c = mix(gold_dark, gold, 0.4 + 0.5 * n)
+        elif abs(fy - 0.6) < 0.08 and int(fx * 32) % 4 in (0, 1):
+            c = mix(c, gold, 0.6)
+        return with_a(c)
+
+    def top_painter(fx, fy, medallion=True):
+        dx, dy = fx - 0.5, fy - 0.5
+        r = math.hypot(dx, dy) * 2.0  # 0 centre .. 1 edge of the square
+        ang = math.atan2(dy, dx)
+        n = weave(fx, fy)
+        c = mix(silk_dark, silk, 0.4 + 0.45 * n)
+        if not medallion:
+            # wings: plain silk with a brocade hem along the outer edges
+            e = min(fx, 1 - fx, fy, 1 - fy)
+            if e < 0.06:
+                c = mix(gold_dark, gold, 0.45 + 0.4 * n)
+            return with_a(c)
+        # brocade border
+        if r > 0.86:
+            c = mix(gold_dark, gold, 0.45 + 0.4 * n)
+        elif r > 0.80:
+            c = mix(c, gold, 0.35)
+        # eight lotus petals
+        petal = math.cos(ang * 8.0)
+        if 0.30 < r < 0.62 and petal > 0.15:
+            edge = (petal - 0.15) / 0.85
+            c = mix(c, cream, 0.25 + 0.55 * edge * (1.0 - abs(r - 0.46) / 0.16))
+        # core medallion
+        if r < 0.24:
+            c = mix(gold, cream, max(0.0, 1.0 - r / 0.24) * 0.8)
+        elif r < 0.30:
+            c = gold_dark
+        # rune ticks between the petals near the border
+        if 0.68 < r < 0.76 and math.cos(ang * 8.0 + math.pi) > 0.92:
+            c = gold
+        return with_a(c)
+
+    t.cuboid(0, 0, 12, 2, 12, side_painter)
+    t.cuboid(0, 14, 16, 1.5, 8, lambda f, x, y: side_painter(f, x, y, False))
+    t.cuboid(0, 24, 8, 1.5, 16, lambda f, x, y: side_painter(f, x, y, False))
+    t.save("meditation_seat")
+
+
 def main():
     sword_qi(); ice_shard(); fire_lotus(); spirit_sword(); flying_sword(); rock_spike(); heaven_sword()
     heaven_hand()
     wind_dragon(); thunder_dragon()
+    meditation_seat()
 
 
 if __name__ == "__main__":

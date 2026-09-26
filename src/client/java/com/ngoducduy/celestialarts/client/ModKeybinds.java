@@ -1,5 +1,6 @@
 package com.ngoducduy.celestialarts.client;
 
+import com.ngoducduy.celestialarts.client.gui.CultivationScreen;
 import com.ngoducduy.celestialarts.client.gui.SkillBookScreen;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
@@ -11,7 +12,8 @@ import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Six skill slot keys (R, F, V, G, C, Z by default), a skill-book key (K) and a breakthrough key (B).
+ * Six skill slot keys (R, F, V, G, C, Z by default), a skill-book key (K), a cultivation-panel key (N),
+ * a meditation toggle (X) and a breakthrough key (B).
  * Slot keys send a cast on press; channelled skills additionally send a release when the key goes up.
  */
 public final class ModKeybinds {
@@ -19,6 +21,8 @@ public final class ModKeybinds {
 	public static final KeyBinding[] SLOTS = new KeyBinding[PlayerQi.SLOT_COUNT];
 	public static KeyBinding OPEN_BOOK;
 	public static KeyBinding BREAKTHROUGH;
+	public static KeyBinding MEDITATE;
+	public static KeyBinding OPEN_CULTIVATION;
 	private static final int[] DEFAULT_KEYS = {GLFW.GLFW_KEY_R, GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_G, GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_Z};
 	private static final boolean[] HELD = new boolean[PlayerQi.SLOT_COUNT];
 
@@ -31,6 +35,8 @@ public final class ModKeybinds {
 		}
 		OPEN_BOOK = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.celestialarts.open_book", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, CATEGORY));
 		BREAKTHROUGH = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.celestialarts.breakthrough", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, CATEGORY));
+		MEDITATE = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.celestialarts.meditate", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X, CATEGORY));
+		OPEN_CULTIVATION = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.celestialarts.open_cultivation", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_N, CATEGORY));
 	}
 
 	public static void tick(MinecraftClient client) {
@@ -40,8 +46,15 @@ public final class ModKeybinds {
 		while (OPEN_BOOK.wasPressed()) {
 			if (client.currentScreen == null) client.setScreen(new SkillBookScreen());
 		}
+		while (OPEN_CULTIVATION.wasPressed()) {
+			if (client.currentScreen == null) client.setScreen(new CultivationScreen());
+		}
 		while (BREAKTHROUGH.wasPressed()) {
 			ClientPackets.sendBreakthrough();
+		}
+		while (MEDITATE.wasPressed()) {
+			// One press sits down, the next stands up; the server owns the state and syncs it back.
+			ClientPackets.sendMeditate();
 		}
 
 		for (int i = 0; i < SLOTS.length; i++) {

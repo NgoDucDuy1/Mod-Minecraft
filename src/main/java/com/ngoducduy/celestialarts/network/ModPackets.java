@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.network;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.cultivation.Meditation;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.skill.SkillManager;
@@ -33,6 +34,8 @@ public final class ModPackets {
 	public static final Identifier BREAKTHROUGH = CelestialArts.id("breakthrough");
 	/** C2S: player performed an air jump (Lăng Không Bộ); server validates realm and charges qi. */
 	public static final Identifier AIR_JUMP = CelestialArts.id("air_jump");
+	/** C2S: toggle meditation (sit down / stand up). [] */
+	public static final Identifier MEDITATE = CelestialArts.id("meditate");
 
 	/** S2C: full cultivation state snapshot. [nbt] */
 	public static final Identifier SYNC_QI = CelestialArts.id("sync_qi");
@@ -74,6 +77,8 @@ public final class ModPackets {
 		});
 		ServerPlayNetworking.registerGlobalReceiver(BREAKTHROUGH, (server, player, handler, buf, responseSender) ->
 				server.execute(() -> com.ngoducduy.celestialarts.cultivation.Breakthrough.tryBreakthrough(player)));
+		ServerPlayNetworking.registerGlobalReceiver(MEDITATE, (server, player, handler, buf, responseSender) ->
+				server.execute(() -> Meditation.toggle(player)));
 		ServerPlayNetworking.registerGlobalReceiver(AIR_JUMP, (server, player, handler, buf, responseSender) ->
 				server.execute(() -> com.ngoducduy.celestialarts.cultivation.RealmPassives.airJump(player)));
 	}

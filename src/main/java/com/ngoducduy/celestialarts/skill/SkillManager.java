@@ -1,6 +1,11 @@
 package com.ngoducduy.celestialarts.skill;
 
+import com.ngoducduy.celestialarts.cultivation.Breakthrough;
+import com.ngoducduy.celestialarts.cultivation.CultivationStats;
+import com.ngoducduy.celestialarts.cultivation.Meditation;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
+import com.ngoducduy.celestialarts.entity.MeditationSeatEntity;
+import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.network.ModPackets;
 import com.ngoducduy.celestialarts.registry.ModSounds;
@@ -87,7 +92,16 @@ public final class SkillManager {
 					String.format("%.1f", qi.getCooldown(id) / 20.0)).formatted(Formatting.GRAY), true);
 			return false;
 		}
-		if (player.hasVehicle() && !skill.canUseWhileRiding()) {
+		// Qi running wild: the meridians cannot channel anything.
+		if (player.hasStatusEffect(ModEffects.QI_DEVIATION)) {
+			player.sendMessage(Text.translatable("message.celestialarts.deviation_blocks").formatted(Formatting.DARK_RED), true);
+			return false;
+		}
+		if (player.getVehicle() instanceof MeditationSeatEntity) {
+			// Under the tribulation one may still raise shields / golden body from the seat (moving skills
+			// will pull the cultivator off it – that counts as fleeing). Plain meditation simply ends.
+			if (!Breakthrough.isInTribulation(qi)) Meditation.stop(player, Meditation.StopReason.TOGGLE);
+		} else if (player.hasVehicle() && !skill.canUseWhileRiding()) {
 			player.sendMessage(Text.translatable("message.celestialarts.cannot_while_riding").formatted(Formatting.RED), true);
 			return false;
 		}
@@ -96,7 +110,8 @@ public final class SkillManager {
 			player.sendMessage(Text.translatable("message.celestialarts.channeling").formatted(Formatting.RED), true);
 			return false;
 		}
-		if (!qi.hasQi(skill.getQiCost()) && !player.isCreative()) {
+		float cost = qi.qiCost(skill);
+		if (!qi.hasQi(cost) && !player.isCreative()) {
 			player.sendMessage(Text.translatable("message.celestialarts.not_enough_qi").formatted(Formatting.RED), true);
 			return false;
 		}
@@ -108,8 +123,8 @@ public final class SkillManager {
 			player.getServerWorld().playSound(null, player.getBlockPos(), ModSounds.CAST_QI, SoundCategory.PLAYERS, 0.6f, 0.95f + player.getRandom().nextFloat() * 0.1f);
 		}
 		if (ok) {
-			if (!player.isCreative()) qi.consumeQi(skill.getQiCost());
-			qi.setCooldown(id, skill.getCooldownTicks());
+			if (!player.isCreative()) qi.consumeQi(cost);
+			qi.setCooldown(id, Math.round(skill.getCooldownTicks() * CultivationStats.cooldownMultiplier(qi)));
 			qi.markDirty();
 		}
 		return ok;
@@ -148,17 +163,13 @@ public final class SkillManager {
 
 		qi.tickCooldowns();
 
-		// Qi regeneration: base regen from realm, doubled while meditating (sneaking still).
-		float regen = qi.getRealm().getRegenPerTick();
-		boolean meditating = player.isSneaking() && !player.hasVehicle()
-				&& player.getVelocity().horizontalLengthSquared() < 1.0E-4 && player.isOnGround();
-		if (meditating) {
-			qi.setMeditateTicks(qi.getMeditateTicks() + 1);
-			regen *= 3.0f;
-		} else {
-			qi.setMeditateTicks(0);
-		}
-		if (qi.getQi() < qi.getMaxQi()) {
+		// Qi regeneration: realm/stage/root/talent base, ×(2 + spiritual qi) in meditation, nothing
+		// while the qi runs wild.
+		Meditation.tick(player, qi);
+		float regen = qi.getRegenPerTick();
+		if (qi.isMeditating()) regen *= 2.0F + qi.getSpiritQi();
+		if (player.hasStatusEffect(ModEffects.QI_DEVIATION)) regen = 0.0F;
+		if (regen > 0 && qi.getQi() < qi.getMaxQi()) {
 			qi.addQi(regen);
 		}
 

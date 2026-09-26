@@ -34,6 +34,12 @@ import java.util.UUID;
  * abilities     –        air jump  no fall dmg  hover, no drown  fire immune   2 air jumps
  * </pre>
  *
+ * On top of the realm table the minor stage, the talent and the aptitude refine the body:
+ * <ul>
+ *   <li>stage: +1 health per stage past sơ kỳ, attack +4% per stage (through {@link CultivationStats}),</li>
+ *   <li>talent: health %, armour, attack, speed, knockback resistance, fire / freeze immunity,</li>
+ *   <li>aptitude: the attack bonus is scaled by the power multiplier (0.85 … 1.20).</li>
+ * </ul>
  * Attribute modifiers use fixed UUIDs so they can be replaced idempotently and never stack.
  */
 public final class RealmPassives {
@@ -42,6 +48,8 @@ public final class RealmPassives {
 	private static final UUID SPEED_ID = UUID.fromString("2f3e5a10-6d2c-4d2f-9b0a-1c9e8e1c0003");
 	private static final UUID TOUGHNESS_ID = UUID.fromString("2f3e5a10-6d2c-4d2f-9b0a-1c9e8e1c0004");
 	private static final UUID KNOCKBACK_ID = UUID.fromString("2f3e5a10-6d2c-4d2f-9b0a-1c9e8e1c0005");
+	private static final UUID TALENT_HEALTH_ID = UUID.fromString("2f3e5a10-6d2c-4d2f-9b0a-1c9e8e1c0006");
+	private static final UUID TALENT_ARMOR_ID = UUID.fromString("2f3e5a10-6d2c-4d2f-9b0a-1c9e8e1c0007");
 
 	public static final float AIR_JUMP_QI = 6.0F;
 	public static final double AIR_JUMP_VELOCITY = 0.62;
@@ -104,10 +112,13 @@ public final class RealmPassives {
 
 	/** Returns true when the body simply ignores this kind of harm. */
 	public static boolean ignoresDamage(PlayerEntity player, DamageSource source) {
-		Realm realm = QiHolder.get(player).getRealm();
+		PlayerQi qi = QiHolder.get(player);
+		Realm realm = qi.getRealm();
+		Talent talent = qi.getTalent();
 		if (source.isIn(DamageTypeTags.IS_FALL)) return immuneToFall(realm);
 		if (source.isIn(DamageTypeTags.IS_DROWNING)) return immuneToDrowning(realm);
-		if (source.isIn(DamageTypeTags.IS_FIRE)) return immuneToFire(realm);
+		if (source.isIn(DamageTypeTags.IS_FIRE)) return immuneToFire(realm) || (talent.immuneToFire() && realm.getLevel() >= 2);
+		if (source.isIn(DamageTypeTags.IS_FREEZING)) return talent.immuneToFreezing();
 		return false;
 	}
 
@@ -115,13 +126,18 @@ public final class RealmPassives {
 
 	/** Re-applies the attribute modifiers for the player's current realm. Cheap; safe to call every second. */
 	public static void apply(ServerPlayerEntity player) {
-		Realm realm = QiHolder.get(player).getRealm();
+		PlayerQi qi = QiHolder.get(player);
+		Realm realm = qi.getRealm();
+		Talent talent = qi.getTalent();
+		float power = CultivationStats.powerMultiplier(qi) * CultivationStats.stageMultiplier(qi.getStage());
 		boolean changed = false;
-		changed |= set(player, EntityAttributes.GENERIC_MAX_HEALTH, HEALTH_ID, "celestialarts.realm_health", bonusHealth(realm), EntityAttributeModifier.Operation.ADDITION);
-		changed |= set(player, EntityAttributes.GENERIC_ATTACK_DAMAGE, ATTACK_ID, "celestialarts.realm_attack", bonusAttack(realm), EntityAttributeModifier.Operation.ADDITION);
-		changed |= set(player, EntityAttributes.GENERIC_MOVEMENT_SPEED, SPEED_ID, "celestialarts.realm_speed", bonusSpeed(realm), EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+		changed |= set(player, EntityAttributes.GENERIC_MAX_HEALTH, HEALTH_ID, "celestialarts.realm_health", bonusHealth(realm) + qi.getStage().getIndex(), EntityAttributeModifier.Operation.ADDITION);
+		changed |= set(player, EntityAttributes.GENERIC_ATTACK_DAMAGE, ATTACK_ID, "celestialarts.realm_attack", bonusAttack(realm) * power + talent.bonusAttack(), EntityAttributeModifier.Operation.ADDITION);
+		changed |= set(player, EntityAttributes.GENERIC_MOVEMENT_SPEED, SPEED_ID, "celestialarts.realm_speed", bonusSpeed(realm) + talent.bonusSpeed(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
 		changed |= set(player, EntityAttributes.GENERIC_ARMOR_TOUGHNESS, TOUGHNESS_ID, "celestialarts.realm_toughness", bonusToughness(realm), EntityAttributeModifier.Operation.ADDITION);
-		changed |= set(player, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, KNOCKBACK_ID, "celestialarts.realm_knockback", bonusKnockbackResistance(realm), EntityAttributeModifier.Operation.ADDITION);
+		changed |= set(player, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, KNOCKBACK_ID, "celestialarts.realm_knockback", bonusKnockbackResistance(realm) + talent.bonusKnockbackResistance(), EntityAttributeModifier.Operation.ADDITION);
+		changed |= set(player, EntityAttributes.GENERIC_MAX_HEALTH, TALENT_HEALTH_ID, "celestialarts.talent_health", talent.healthMultiplier() - 1.0F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
+		changed |= set(player, EntityAttributes.GENERIC_ARMOR, TALENT_ARMOR_ID, "celestialarts.talent_armor", talent.bonusArmor(), EntityAttributeModifier.Operation.ADDITION);
 		if (changed && player.getHealth() > player.getMaxHealth()) {
 			player.setHealth(player.getMaxHealth());
 		}
@@ -157,23 +173,6 @@ public final class RealmPassives {
 	/** Called every tick for online players: aura while meditating / hovering. */
 	public static void tick(ServerPlayerEntity player, PlayerQi qi) {
 		if (player.age % 20 == 0) apply(player);
-
-		int med = qi.getMeditateTicks();
-		if (med > 0) {
-			ServerWorld world = player.getServerWorld();
-			if (med % 200 == 40) {
-				ModPackets.sendFx(player, FxData.follow(FxType.QI_AURA, player.getId(), player.getPos(), qi.getRealm().getRgb(), 1.0F, 200));
-			}
-			if (med > 40 && med % 12 == 0) {
-				// Qi spiralling into the dantian.
-				double a = med * 0.35;
-				double r = 1.1;
-				Vec3d p = player.getPos().add(Math.cos(a) * r, 0.2 + (med % 60) / 60.0 * 1.2, Math.sin(a) * r);
-				Vec3d v = player.getPos().add(0, 0.9, 0).subtract(p).multiply(0.06);
-				SkillFx.single(world, com.ngoducduy.celestialarts.registry.GlowParticleEffect.glow(qi.getRealm().getRgb(), 0.6F, 24), p, v);
-				if (med % 48 == 0) SkillFx.single(world, ModParticles.RUNE, p.add(0, 0.4, 0), new Vec3d(0, 0.02, 0));
-			}
-		}
 
 		if (canHover(qi.getRealm()) && player.isSneaking() && !player.isOnGround() && !player.hasVehicle()
 				&& !player.getAbilities().flying && player.getVelocity().y < -0.05 && !player.isTouchingWater()) {

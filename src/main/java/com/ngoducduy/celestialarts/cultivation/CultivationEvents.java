@@ -26,13 +26,6 @@ public final class CultivationEvents {
 				SkillManager.tickPlayer(player);
 				PlayerQi qi = QiHolder.get(player);
 				RealmPassives.tick(player, qi);
-				if (qi.getMeditateTicks() > 0) {
-					Breakthrough.hintIfReady(player, qi);
-					// Meditation slowly grows cultivation.
-					if (qi.getMeditateTicks() % 100 == 0) {
-						qi.addExp(1 + qi.getRealm().getLevel());
-					}
-				}
 			}
 		});
 
@@ -54,11 +47,24 @@ public final class CultivationEvents {
 			ModPackets.sendSync(newPlayer, QiHolder.get(newPlayer));
 		});
 
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> QiHolder.get(handler.player).interruptAllCasts());
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			QiHolder.get(handler.player).interruptAllCasts();
+			Meditation.stop(handler.player, Meditation.StopReason.DISCONNECT);
+		});
 
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-			RealmPassives.apply(handler.player);
-			ModPackets.sendSync(handler.player, QiHolder.get(handler.player));
+			ServerPlayerEntity player = handler.player;
+			PlayerQi qi = QiHolder.get(player);
+			// A seat never survives a relog; make sure the flag does not either.
+			qi.setMeditating(false);
+			RealmPassives.apply(player);
+			ModPackets.sendSync(player, qi);
+			// First join in this world: the spirit root awakens (a few ticks later so the client is ready).
+			if (!qi.hasAwakened()) {
+				server.execute(() -> server.execute(() -> {
+					if (player.isAlive() && !player.isDisconnected()) Awakening.ensure(player);
+				}));
+			}
 		});
 
 		// Killing creatures grants cultivation experience (tu vi).
@@ -67,7 +73,7 @@ public final class CultivationEvents {
 				int exp = expFor(entity);
 				if (exp > 0) {
 					PlayerQi qi = QiHolder.get(player);
-					qi.addExp(exp);
+					if (!qi.isAtPeakOfCultivation()) qi.addExpFraction(exp * CultivationStats.expMultiplier(qi));
 					qi.addQi(exp * 0.5f);
 				}
 			}

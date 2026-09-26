@@ -3,10 +3,19 @@ package com.ngoducduy.celestialarts.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.ngoducduy.celestialarts.cultivation.Awakening;
 import com.ngoducduy.celestialarts.cultivation.Breakthrough;
+import com.ngoducduy.celestialarts.cultivation.CultivationStats;
+import com.ngoducduy.celestialarts.cultivation.Meditation;
+import com.ngoducduy.celestialarts.cultivation.RealmPassives;
+import com.ngoducduy.celestialarts.cultivation.SpiritQi;
+import com.ngoducduy.celestialarts.cultivation.SpiritRoot;
+import com.ngoducduy.celestialarts.cultivation.Stage;
+import com.ngoducduy.celestialarts.cultivation.Talent;
 import com.ngoducduy.celestialarts.cultivation.PlayerQi;
 import com.ngoducduy.celestialarts.cultivation.QiHolder;
 import com.ngoducduy.celestialarts.cultivation.Realm;
@@ -20,10 +29,13 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,6 +50,13 @@ import java.util.List;
  * /celestial qi &lt;amount&gt; [player]
  * /celestial exp &lt;amount&gt; [player]
  * /celestial breakthrough [player]
+ * /celestial stage &lt;0-3&gt; [player]          – sơ / trung / hậu / viên mãn
+ * /celestial root &lt;kinds&gt; &lt;grade&gt; [player] – e.g. "metal,fire" 4
+ * /celestial talent &lt;talent&gt; [player]
+ * /celestial reroll [player]                – roll root + talent again (with the ceremony)
+ * /celestial meditate                       – toggle meditation
+ * /celestial spiritqi                       – spiritual qi density here and the nearest vein
+ * /celestial chance                         – odds of the next breakthrough / tribulation preview
  * </pre>
  */
 public final class CelestialCommand {
@@ -94,7 +113,152 @@ public final class CelestialCommand {
 						.executes(ctx -> {
 							Breakthrough.tryBreakthrough(ctx.getSource().getPlayerOrThrow());
 							return 1;
-						})));
+						}))
+				.then(CommandManager.literal("stage")
+						.requires(src -> src.hasPermissionLevel(2))
+						.then(CommandManager.argument("stage", IntegerArgumentType.integer(0, 3))
+								.executes(ctx -> stage(ctx, List.of(ctx.getSource().getPlayerOrThrow())))
+								.then(CommandManager.argument("player", EntityArgumentType.players())
+										.executes(ctx -> stage(ctx, EntityArgumentType.getPlayers(ctx, "player"))))))
+				.then(CommandManager.literal("root")
+						.requires(src -> src.hasPermissionLevel(2))
+						.then(CommandManager.argument("kinds", StringArgumentType.word()).suggests(ROOT_SUGGESTIONS)
+								.then(CommandManager.argument("grade", IntegerArgumentType.integer(SpiritRoot.MIN_GRADE, SpiritRoot.MAX_GRADE))
+										.executes(ctx -> root(ctx, List.of(ctx.getSource().getPlayerOrThrow())))
+										.then(CommandManager.argument("player", EntityArgumentType.players())
+												.executes(ctx -> root(ctx, EntityArgumentType.getPlayers(ctx, "player")))))))
+				.then(CommandManager.literal("talent")
+						.requires(src -> src.hasPermissionLevel(2))
+						.then(CommandManager.argument("talent", StringArgumentType.word()).suggests(TALENT_SUGGESTIONS)
+								.executes(ctx -> talent(ctx, List.of(ctx.getSource().getPlayerOrThrow())))
+								.then(CommandManager.argument("player", EntityArgumentType.players())
+										.executes(ctx -> talent(ctx, EntityArgumentType.getPlayers(ctx, "player"))))))
+				.then(CommandManager.literal("reroll")
+						.requires(src -> src.hasPermissionLevel(2))
+						.executes(ctx -> reroll(ctx, List.of(ctx.getSource().getPlayerOrThrow())))
+						.then(CommandManager.argument("player", EntityArgumentType.players())
+								.executes(ctx -> reroll(ctx, EntityArgumentType.getPlayers(ctx, "player")))))
+				.then(CommandManager.literal("meditate")
+						.executes(ctx -> {
+							Meditation.toggle(ctx.getSource().getPlayerOrThrow());
+							return 1;
+						}))
+				.then(CommandManager.literal("spiritqi")
+						.executes(ctx -> spiritQi(ctx)))
+				.then(CommandManager.literal("chance")
+						.executes(ctx -> chance(ctx))));
+	}
+
+	private static final SuggestionProvider<ServerCommandSource> ROOT_SUGGESTIONS = (ctx, builder) -> {
+		for (SpiritRoot.Kind k : SpiritRoot.Kind.values()) builder.suggest(k.getKey());
+		builder.suggest("metal,fire");
+		builder.suggest("wood,water,earth");
+		return builder.buildFuture();
+	};
+
+	private static final SuggestionProvider<ServerCommandSource> TALENT_SUGGESTIONS = (ctx, builder) -> {
+		for (Talent t : Talent.values()) builder.suggest(t.getKey());
+		return builder.buildFuture();
+	};
+
+	private static int stage(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players) {
+		Stage stage = Stage.byIndex(IntegerArgumentType.getInteger(ctx, "stage"));
+		for (ServerPlayerEntity p : players) {
+			PlayerQi qi = QiHolder.get(p);
+			qi.setStage(stage);
+			qi.setQi(qi.getMaxQi());
+			RealmPassives.apply(p);
+			ModPackets.sendSync(p, qi);
+		}
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.stage_set", stage.getName(), players.size()), true);
+		return players.size();
+	}
+
+	private static int root(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players) {
+		String spec = StringArgumentType.getString(ctx, "kinds");
+		int grade = IntegerArgumentType.getInteger(ctx, "grade");
+		List<SpiritRoot.Kind> kinds = new ArrayList<>();
+		for (String part : spec.split(",")) {
+			SpiritRoot.Kind k = SpiritRoot.Kind.byKey(part.trim().toLowerCase());
+			if (k == null) {
+				ctx.getSource().sendError(Text.translatable("command.celestialarts.unknown_root", part));
+				return 0;
+			}
+			if (!kinds.contains(k)) kinds.add(k);
+		}
+		if (kinds.isEmpty() || kinds.size() > 3) {
+			ctx.getSource().sendError(Text.translatable("command.celestialarts.root_count"));
+			return 0;
+		}
+		SpiritRoot root = new SpiritRoot(kinds, grade);
+		for (ServerPlayerEntity p : players) {
+			PlayerQi qi = QiHolder.get(p);
+			qi.setRoot(root);
+			RealmPassives.apply(p);
+			ModPackets.sendSync(p, qi);
+			p.sendMessage(Awakening.summary(qi), false);
+		}
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.root_set", root.getKindsText(), root.getGradeName(), players.size()), true);
+		return players.size();
+	}
+
+	private static int talent(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players) {
+		String key = StringArgumentType.getString(ctx, "talent").toLowerCase();
+		Talent talent = null;
+		for (Talent t : Talent.values()) {
+			if (t.getKey().equals(key)) talent = t;
+		}
+		if (talent == null) {
+			ctx.getSource().sendError(Text.translatable("command.celestialarts.unknown_talent", key));
+			return 0;
+		}
+		for (ServerPlayerEntity p : players) {
+			PlayerQi qi = QiHolder.get(p);
+			qi.setTalent(talent);
+			RealmPassives.apply(p);
+			ModPackets.sendSync(p, qi);
+			p.sendMessage(Awakening.summary(qi), false);
+		}
+		Talent finalTalent = talent;
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.talent_set", finalTalent.getName(), players.size()), true);
+		return players.size();
+	}
+
+	private static int reroll(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players) {
+		for (ServerPlayerEntity p : players) {
+			Awakening.roll(p, p.getServerWorld().getRandom(), true);
+		}
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.rerolled", players.size()), true);
+		return players.size();
+	}
+
+	private static int spiritQi(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		ServerPlayerEntity p = ctx.getSource().getPlayerOrThrow();
+		ServerWorld world = p.getServerWorld();
+		BlockPos at = p.getBlockPos();
+		float density = SpiritQi.density(world, at);
+		float biome = SpiritQi.biomeFactor(world.getBiome(at));
+		float vein = SpiritQi.veinFactor(world.getSeed(), at.getX(), at.getZ());
+		double veinDist = SpiritQi.nearestVeinDistance(world.getSeed(), at.getX(), at.getZ());
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.spiritqi",
+				String.format("%.2f", density), Text.translatable("spiritqi.celestialarts." + SpiritQi.label(density)),
+				String.format("%.2f", biome), String.format("%.2f", vein), (int) veinDist).formatted(Formatting.AQUA), false);
+		return 1;
+	}
+
+	private static int chance(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		ServerPlayerEntity p = ctx.getSource().getPlayerOrThrow();
+		PlayerQi qi = QiHolder.get(p);
+		float density = SpiritQi.density(p.getServerWorld(), p.getBlockPos());
+		if (qi.nextBreakthroughIsTribulation()) {
+			ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.chance_tribulation",
+					CultivationStats.tribulationBolts(qi),
+					String.format("%.1f", CultivationStats.tribulationBoltDamage(qi) * qi.getTalent().tribulationDamageMultiplier() / 2.0F)).formatted(Formatting.LIGHT_PURPLE), false);
+		} else {
+			ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.chance_stage",
+					qi.getStage().next().getName(), Math.round(CultivationStats.breakthroughChance(qi, density) * 100)).formatted(Formatting.AQUA), false);
+		}
+		return 1;
 	}
 
 	private static int info(CommandContext<ServerCommandSource> ctx, Collection<ServerPlayerEntity> players) {
@@ -102,11 +266,13 @@ public final class CelestialCommand {
 			PlayerQi qi = QiHolder.get(p);
 			ctx.getSource().sendFeedback(() -> Text.literal("")
 					.append(p.getDisplayName()).append(Text.literal(" — ").formatted(Formatting.GRAY))
-					.append(qi.getRealm().getName())
-					.append(Text.literal(String.format("  Qi %.0f/%.0f  Exp %d/%s  Skills %d",
+					.append(qi.getRealm().getName()).append(" ").append(qi.getStage().getName())
+					.append(Text.literal(String.format("  Qi %.0f/%.0f  Exp %d/%s  Apt %d  Skills %d",
 							qi.getQi(), qi.getMaxQi(), qi.getExp(),
 							qi.getExpForBreakthrough() < 0 ? "MAX" : String.valueOf(qi.getExpForBreakthrough()),
+							CultivationStats.aptitude(qi),
 							qi.getLearned().size())).formatted(Formatting.AQUA)), false);
+			ctx.getSource().sendFeedback(() -> Awakening.summary(qi), false);
 		}
 		return players.size();
 	}
