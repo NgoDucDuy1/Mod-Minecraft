@@ -44,7 +44,10 @@ public class RockSpikeRenderer extends GlowEntityRenderer<RockSpikeEntity> {
 		}
 		// Slide the whole spike up out of the ground.
 		matrices.translate(0.0, -(1.0F - rise) * height, 0.0);
-		matrices.scale(1.0F, yScale, 1.0F);
+		// Tall spikes (the ring heaved up by Thiên Đạo Chi Thủ) thicken with height so they read as
+		// rock, not needles; ordinary fissure spikes (yScale ~1-2) barely change.
+		float girth = Math.max(1.0F, (float) Math.sqrt(yScale) * 0.95F);
+		matrices.scale(girth, yScale, girth);
 		applyModelFlip(matrices);
 		model.setAngles((float) Math.toRadians(entity.getSpinSeed()));
 		VertexConsumer body = vcp.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));

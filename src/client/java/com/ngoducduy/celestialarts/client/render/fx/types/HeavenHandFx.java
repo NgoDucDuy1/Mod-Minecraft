@@ -217,14 +217,24 @@ public class HeavenHandFx extends ClientFx {
 		matrices.scale(handScale, handScale, handScale);
 		// Lit, opaque golden jade (vanilla entity shading gives the palm and fingers real volume);
 		// only the dissolution thins it out.
-		float solidA = appear * (1.0F - dissolve * dissolve);
+		float solidA = appear * (1.0F - dissolve) * (1.0F - dissolve);
 		VertexConsumer solid = consumers.getBuffer(ModRenderLayers.entityFar(FxTextures.HEAVEN_HAND));
-		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.98F, 0.92F, solidA);
-		// Faint emissive rim while descending; blazing only as the hand returns to light.
-		float glowA = body * 0.03F * u + appear * dissolve * (1.0F - dissolve) * 1.4F;
-		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.HEAVEN_HAND));
-		matrices.scale(1.015F, 1.015F, 1.015F);
-		m.render(matrices, glow, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.9F, 0.6F, glowA);
+		m.render(matrices, solid, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.94F, 0.78F, solidA);
+		// Dao seams and seals burn from within (emissive mask), pulsing faster as the palm nears the
+		// ground; the whole hand only blazes as it returns to light.
+		float pulse = 0.8F + 0.2F * MathHelper.sin(t * (0.25F + 0.5F * u));
+		float seamA = body * (0.55F + 0.35F * u) * pulse;
+		VertexConsumer seams = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.HEAVEN_HAND_GLOW));
+		matrices.push();
+		matrices.scale(1.004F, 1.004F, 1.004F);
+		m.render(matrices, seams, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.95F, 0.75F, seamA);
+		matrices.pop();
+		float glowA = appear * dissolve * (1.0F - dissolve) * 0.6F;
+		if (glowA > 0.003F) {
+			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.HEAVEN_HAND));
+			matrices.scale(1.015F, 1.015F, 1.015F);
+			m.render(matrices, glow, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0F, 0.9F, 0.6F, glowA);
+		}
 		matrices.pop();
 
 		matrices.pop();

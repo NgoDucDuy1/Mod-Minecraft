@@ -242,7 +242,7 @@ public class HeavenHandSkill extends Skill {
 				double r = HAND_WIDTH * (0.58 + 0.10 * world.random.nextDouble());
 				Vec3d p = center.add(Math.sin(a) * r, 0, Math.cos(a) * r);
 				Vec3d ground = Targeting.snapToGround(world, p.add(0, 2, 0), 12);
-				float height = 4.5f + 3.5f * world.random.nextFloat();
+				float height = 9.0f + 7.0f * world.random.nextFloat();
 				RockSpikeEntity.spawn(world, caster, ground, height, 14f, ModEntities.ROCK_SPIKE);
 				ModPackets.sendFx(world, FxData.at(FxType.SHOCKWAVE_RING, ground.add(0, 0.1, 0), 0xC69C5B, 3.0f, 10), FX_RANGE_FAR);
 			}

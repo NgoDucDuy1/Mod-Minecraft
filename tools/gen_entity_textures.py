@@ -271,11 +271,20 @@ def heaven_hand():
     the 'top' UV region (-Y) is the palm surface that faces the ground."""
     import texlib as T
     t = Tex(256, 128, density=4)
-    base = (240, 206, 128)
-    deep = (156, 104, 40)
-    dark = (96, 58, 20)
-    hot = (255, 244, 204)
-    seam = (255, 228, 140)
+    base = (244, 202, 112)
+    deep = (160, 104, 36)
+    dark = (98, 58, 18)
+    hot = (255, 240, 190)
+    seam = (255, 226, 130)
+    # Painters also accumulate an emissive amount in EMIT[0]; a second pass writes only that into
+    # heaven_hand_glow.png (the seams/seals that burn from within on the client).
+    EMIT = [0.0]
+    mode = {"emit": False}
+
+    def out(c, e):
+        if mode["emit"]:
+            return (255, 236, 170, int(255 * max(0.0, min(1.0, e))))
+        return with_a(c, 255)
     # Smooth noise fields sampled by normalised face coordinates: body tone, veins, fine grain.
     tone = np.asarray(T.noise_layer(256, 256, 41, scale=3, octaves=4, ss=False), dtype=np.float32) / 255.0
     vein = np.asarray(T.noise_layer(256, 256, 87, scale=5, octaves=3, ss=False), dtype=np.float32) / 255.0
@@ -306,29 +315,35 @@ def heaven_hand():
 
     def palm(face, fx, fy):
         c = jade(fx, fy, 1)
+        e = 0.0
         if face == "top":  # palm surface (-Y): palm lines, central scripture seal, bevelled rim
             c = bevel(c, fx, fy, 14.0)
             for (cx, cy, r, w) in [(0.05, 0.2, 0.62, 0.014), (0.1, -0.05, 0.85, 0.012), (0.9, 0.35, 0.55, 0.011)]:
                 d = abs(math.hypot(fx - cx, fy - cy) - r)
                 if d < w:
                     c = mix(seam, c, d / w)
+                    e = max(e, 0.7 * (1 - d / w))
             d = math.hypot((fx - 0.5) * 1.1, fy - 0.5)
             # Seal: double ring, eight-spoke wheel, inner ring, centre dot.
             if abs(d - 0.22) < 0.009 or abs(d - 0.30) < 0.005 or abs(d - 0.10) < 0.006:
                 c = hot
+                e = 1.0
             a = math.atan2(fy - 0.5, (fx - 0.5) * 1.1)
             if 0.10 < d < 0.22:
                 spoke = abs(((a / (math.pi / 4)) + 0.5) % 1.0 - 0.5)
                 if spoke * d < 0.006:
                     c = mix(c, hot, 0.85)
+                    e = max(e, 0.85)
             if d < 0.035:
                 c = hot
+                e = 1.0
             # 24 scripture strokes between the rings.
             if 0.235 < d < 0.29:
                 cell = ((a + math.pi) / (2 * math.pi) * 24) % 1.0
                 if 0.2 < cell < 0.5 and abs(d - 0.262) < 0.018 * (0.5 + 0.5 * math.sin(cell * math.pi * 3)):
                     c = mix(c, seam, 0.9)
-            return with_a(c, 255)
+                    e = max(e, 0.9)
+            return out(c, e)
         if face == "bottom":  # back of the hand: tendon ridges + sun seal near the wrist
             ridge = 0.5 + 0.5 * math.cos((fx - 0.5) * 4 * 2 * math.pi)
             c = mix(c, hot, ridge * 0.14 * fy)
@@ -336,20 +351,31 @@ def heaven_hand():
             d = math.hypot((fx - 0.5) * 1.1, (fy - 0.30) * 1.0)
             if abs(d - 0.16) < 0.007 or abs(d - 0.05) < 0.02:
                 c = hot
+                e = 1.0
             a = math.atan2(fy - 0.30, (fx - 0.5) * 1.1)
             if 0.16 < d < 0.24 and abs(((a / (math.pi / 8)) + 0.5) % 1.0 - 0.5) * d < 0.004:
                 c = mix(c, seam, 0.9)
-            return with_a(c, 255)
+                e = max(e, 0.9)
+            # Four dashed scripture lines running along the tendons towards the fingers.
+            for k in range(4):
+                lx = 0.125 + 0.25 * k
+                if abs(fx - lx) < 0.006 and 0.52 < fy < 0.94 and (int(fy * 40) % 3) != 0:
+                    c = mix(c, seam, 0.85)
+                    e = max(e, 0.85)
+            return out(c, e)
         # side walls: darker, bevelled, one bright seam line halfway
         c = mix(c, deep, 0.3)
         c = bevel(c, fx, fy, 12.0)
         if abs(fy - 0.5) < 0.06:
-            c = mix(c, seam, 0.55 * (1 - abs(fy - 0.5) / 0.06))
-        return with_a(c, 255)
+            k = 1 - abs(fy - 0.5) / 0.06
+            c = mix(c, seam, 0.55 * k)
+            e = 0.8 * k
+        return out(c, e)
 
     def finger(seed, last=False):
         def p(face, fx, fy):
             c = jade(fx, fy, seed)
+            e = 0.0
             if face in ("top", "bottom"):
                 # dark joints at both ends, bevelled sides, bright nail seam on the tip segment
                 j = min(fy, 1 - fy)
@@ -360,20 +386,25 @@ def heaven_hand():
                     # a single glyph stroke on each finger pad
                     if abs(fx - 0.5) < 0.05 and 0.3 < fy < 0.7:
                         c = mix(c, seam, 0.6)
+                        e = 0.9
                 if last and face == "bottom" and fy > 0.72:
                     c = mix(c, hot, 0.6)
+                    e = 0.5
                     if fy > 0.78 and abs(fx - 0.5) < 0.3:
                         c = mix(c, (255, 255, 255), 0.35)
+                        e = 0.8
             elif face in ("left", "right"):
                 j = min(fx, 1 - fx)
                 c = mix(dark, c, min(1.0, j * 9))
                 c = bevel(c, fx, fy, 9.0)
                 if abs(fy - 0.5) < 0.08:
-                    c = mix(c, seam, 0.5 * (1 - abs(fy - 0.5) / 0.08))
+                    k = 1 - abs(fy - 0.5) / 0.08
+                    c = mix(c, seam, 0.5 * k)
+                    e = 0.8 * k
             else:
                 c = mix(c, deep, 0.4)
                 c = bevel(c, fx, fy, 8.0)
-            return with_a(c, 255)
+            return out(c, e)
         return p
 
     t.cuboid(0, 0, 32, 6, 36, palm)
@@ -386,6 +417,13 @@ def heaven_hand():
     for (u, v, w, h, d, seed, last) in segs:
         t.cuboid(u, v, w, h, d, finger(seed, last))
     t.save("heaven_hand")
+    # Emissive mask: same layout, only the seams/seals, unshaded.
+    mode["emit"] = True
+    g = Tex(256, 128, density=4)
+    g.cuboid(0, 0, 32, 6, 36, palm, shade=False)
+    for (u, v, w, h, d, seed, last) in segs:
+        g.cuboid(u, v, w, h, d, finger(seed, last), shade=False)
+    g.save("heaven_hand_glow")
 
 
 def dragon_head(name, scale_dark, scale_light, belly, horn, eye, glow):

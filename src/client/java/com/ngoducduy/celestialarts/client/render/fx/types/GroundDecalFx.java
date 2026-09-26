@@ -85,7 +85,7 @@ public class GroundDecalFx extends ClientFx {
 		if (glowLife > 0.0F) {
 			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.PALM_PRINT));
 			float pulse = 0.85F + 0.15F * MathHelper.sin(t * 0.15F);
-			RenderUtil.flatQuad(glow, e, scale, color, alpha * (0.08F + 0.32F * glowLife * glowLife) * pulse);
+			RenderUtil.flatQuad(glow, e, scale, color, alpha * (0.03F + 0.15F * glowLife * glowLife) * pulse);
 		}
 	}
 }
