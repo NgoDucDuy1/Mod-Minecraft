@@ -70,6 +70,27 @@ public abstract class ModRenderLayers extends RenderLayer {
 		return new GainLayer(CelestialArts.MOD_ID + "_additive_soft", inner, ADDITIVE_GAIN);
 	});
 
+	/**
+	 * Additive layer drawn straight onto the main framebuffer, bypassing the bloom pass. For dense
+	 * line-art (the sky formation of Thiên Đạo Chi Thủ seen from below) bloom fills the gaps between
+	 * the lines with a milky haze; crisp geometry stays legible and only chosen accents glow.
+	 */
+	private static final Function<Identifier, RenderLayer> ADDITIVE_CRISP = Util.memoize(texture -> {
+		MultiPhaseParameters params = MultiPhaseParameters.builder()
+				.program(BEACON_BEAM_PROGRAM)
+				.texture(new RenderPhase.Texture(texture, false, false))
+				.transparency(LIGHTNING_TRANSPARENCY)
+				.cull(DISABLE_CULLING)
+				.lightmap(DISABLE_LIGHTMAP)
+				.overlay(DISABLE_OVERLAY_COLOR)
+				.writeMaskState(COLOR_MASK)
+				.target(MAIN_TARGET)
+				.build(false);
+		RenderLayer inner = RenderLayer.of(CelestialArts.MOD_ID + "_additive_crisp", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+				VertexFormat.DrawMode.QUADS, 256, false, true, params);
+		return new GainLayer(CelestialArts.MOD_ID + "_additive_crisp_soft", inner, ADDITIVE_GAIN);
+	});
+
 	/** Wraps a layer and multiplies the shader colour while it is active (the core shaders honour ColorModulator). */
 	private static final class GainLayer extends RenderLayer {
 		GainLayer(String name, RenderLayer inner, float gain) {
@@ -163,6 +184,18 @@ public abstract class ModRenderLayers extends RenderLayer {
 		return SOLID_GLOW_FAR.apply(texture);
 	}
 
+	private static final Function<Identifier, RenderLayer> ADDITIVE_CRISP_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_additive_crisp_far", ADDITIVE_CRISP.apply(texture)));
+
+	/** Additive without bloom (see {@link #ADDITIVE_CRISP}). */
+	public static RenderLayer additiveCrisp(Identifier texture) {
+		return ADDITIVE_CRISP.apply(texture);
+	}
+
+	/** {@link #additiveCrisp(Identifier)} without distance fog. */
+	public static RenderLayer additiveCrispFar(Identifier texture) {
+		return ADDITIVE_CRISP_FAR.apply(texture);
+	}
+
 	private static final Function<Identifier, RenderLayer> ENTITY_FAR = Util.memoize(texture -> new FarLayer(CelestialArts.MOD_ID + "_entity_far", RenderLayer.getEntityTranslucentCull(texture)));
 
 	/**
@@ -236,7 +269,7 @@ public abstract class ModRenderLayers extends RenderLayer {
 			}
 		}
 		// Fog-less variants, same ordering: solid, translucent, additive.
-		for (Function<Identifier, RenderLayer> kind : java.util.List.of(SOLID_GLOW_FAR, TRANSLUCENT_GLOW_FAR, ADDITIVE_FAR)) {
+		for (Function<Identifier, RenderLayer> kind : java.util.List.of(ADDITIVE_CRISP, SOLID_GLOW_FAR, TRANSLUCENT_GLOW_FAR, ADDITIVE_FAR, ADDITIVE_CRISP_FAR)) {
 			for (Field field : FxTextures.class.getFields()) {
 				if (!Modifier.isStatic(field.getModifiers()) || field.getType() != Identifier.class) continue;
 				try {

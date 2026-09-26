@@ -271,11 +271,11 @@ def heaven_hand():
     the 'top' UV region (-Y) is the palm surface that faces the ground."""
     import texlib as T
     t = Tex(256, 128, density=4)
-    base = (234, 214, 156)
-    deep = (150, 106, 50)
-    dark = (96, 62, 26)
-    hot = (255, 250, 228)
-    seam = (255, 232, 150)
+    base = (240, 206, 128)
+    deep = (156, 104, 40)
+    dark = (96, 58, 20)
+    hot = (255, 244, 204)
+    seam = (255, 228, 140)
     # Smooth noise fields sampled by normalised face coordinates: body tone, veins, fine grain.
     tone = np.asarray(T.noise_layer(256, 256, 41, scale=3, octaves=4, ss=False), dtype=np.float32) / 255.0
     vein = np.asarray(T.noise_layer(256, 256, 87, scale=5, octaves=3, ss=False), dtype=np.float32) / 255.0

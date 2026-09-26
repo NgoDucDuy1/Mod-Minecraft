@@ -118,15 +118,15 @@ public class HeavenHandFx extends ClientFx {
 
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 0.12F));
-		VertexConsumer circle = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.CIRCLE_HEAVEN));
-		RenderUtil.flatQuad(circle, matrices.peek(), radius, PALE, env * 0.42F);
+		VertexConsumer circle = consumers.getBuffer(ModRenderLayers.additiveCrispFar(FxTextures.CIRCLE_HEAVEN));
+		RenderUtil.flatQuad(circle, matrices.peek(), radius, PALE, env * 0.9F);
 		matrices.pop();
 		// Counter-rotating glyph bands.
-		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLYPHS));
-		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, PALE, env * 0.4F, env * 0.4F);
-		RenderUtil.annulus(glyphs, flat, radius * 0.50F, radius * 0.56F, 96, 32.0F, t * 0.006F, GOLD, env * 0.35F, env * 0.35F);
+		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveCrispFar(FxTextures.GLYPHS));
+		RenderUtil.annulus(glyphs, flat, radius * 0.86F, radius * 0.93F, 96, 48.0F, -t * 0.004F, PALE, env * 0.8F, env * 0.8F);
+		RenderUtil.annulus(glyphs, flat, radius * 0.50F, radius * 0.56F, 96, 32.0F, t * 0.006F, GOLD, env * 0.7F, env * 0.7F);
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
-		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.3F);
+		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.25F);
 		// Light bleeding down from the array.
 		float veil = env * (t < T_SUMMON ? 0.03F : 0.015F);
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
@@ -197,9 +197,9 @@ public class HeavenHandFx extends ClientFx {
 			matrices.push();
 			matrices.translate(0.0F, 0.0F, -0.95F * handScale);
 			VertexConsumer arm = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
-			RenderUtil.cylinder(arm, matrices.peek(), 0.42F * handScale, 0.30F * handScale, armTop, 40, 4.0F, 3.0F, t * 0.05F, GOLD, body * 0.14F, body * 0.02F);
+			RenderUtil.cylinder(arm, matrices.peek(), 0.42F * handScale, 0.30F * handScale, armTop, 40, 4.0F, 3.0F, t * 0.05F, GOLD, body * 0.07F, 0.0F);
 			VertexConsumer core = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM_CORE));
-			RenderUtil.cylinder(core, matrices.peek(), 0.22F * handScale, 0.12F * handScale, armTop, 24, 1.0F, 4.0F, t * 0.09F, PALE, body * 0.18F, 0.0F);
+			RenderUtil.cylinder(core, matrices.peek(), 0.22F * handScale, 0.12F * handScale, armTop, 24, 1.0F, 4.0F, t * 0.09F, PALE, body * 0.06F, 0.0F);
 			matrices.pop();
 		}
 
@@ -207,9 +207,9 @@ public class HeavenHandFx extends ClientFx {
 		matrices.push();
 		matrices.translate(0.0F, 0.0F, -0.98F * handScale);
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
-		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLYPHS));
-		RenderUtil.annulus(glyphs, matrices.peek(), 0.62F * handScale, 0.70F * handScale, 64, 24.0F, t * 0.01F, PALE, body * 0.5F, body * 0.5F);
-		RenderUtil.annulus(glyphs, matrices.peek(), 0.78F * handScale, 0.84F * handScale, 64, 32.0F, -t * 0.007F, GOLD, body * 0.4F, body * 0.4F);
+		VertexConsumer glyphs = consumers.getBuffer(ModRenderLayers.additiveCrispFar(FxTextures.GLYPHS));
+		RenderUtil.annulus(glyphs, matrices.peek(), 0.62F * handScale, 0.70F * handScale, 64, 24.0F, t * 0.01F, PALE, body * 0.85F, body * 0.85F);
+		RenderUtil.annulus(glyphs, matrices.peek(), 0.78F * handScale, 0.84F * handScale, 64, 32.0F, -t * 0.007F, GOLD, body * 0.7F, body * 0.7F);
 		matrices.pop();
 
 		// The hand model, in blocks (ModelPart divides cuboid units by 16 itself).
@@ -288,7 +288,7 @@ public class HeavenHandFx extends ClientFx {
 			float rise = Math.min(1.0F, s / 25.0F);
 			VertexConsumer cloud = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.CLOUD));
 			RenderUtil.cylinder(cloud, e, w * 0.18F, w * (0.26F + 0.1F * (1.0F - colLife)), 70.0F * rise, 48, 8.0F, 2.0F, -s * 0.02F, DUST, colLife * 0.55F, 0.0F);
-			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.2F, 0.0F);
+			RenderUtil.cylinder(glow, e, w * 0.16F, w * 0.22F, 40.0F * rise, 32, 1.0F, 0.0F, GOLD, colLife * colLife * 0.12F, 0.0F);
 		}
 		matrices.pop();
 	}

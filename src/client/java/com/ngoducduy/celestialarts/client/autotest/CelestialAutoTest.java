@@ -398,8 +398,8 @@ public final class CelestialAutoTest {
 		});
 		// Wide vantage: 155 blocks from the target point (72 blocks ahead of the caster) on the
 		// front-left diagonal, hovering 6 blocks up, looking +X+Z – the hand (110 wide, ~180 long
-		// with the fingers) is seen three-quarter on instead of edge-on.
-		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -45 -10", home.x - 110.0, home.y + 6.0, home.z + 72.0 - 110.0);
+		// with the fingers) is seen three-quarter on instead of edge-on, 175 blocks out and 28 up.
+		String wide = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -45 -6", home.x - 124.0, home.y + 28.0, home.z + 72.0 - 124.0);
 		String high = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 50", home.x - 60.0, home.y + 80.0, home.z + 72.0);
 		String back = String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z);
 
@@ -417,15 +417,15 @@ public final class CelestialAutoTest {
 			return null;
 		});
 		command(wide);
-		lookAt(t0 + 200, -12.0F);
+		lookAt(t0 + 200, -10.0F);
 		screenshot("skill_heaven_hand_3_approach", false);
-		lookAt(t0 + 243, -8.0F);
+		lookAt(t0 + 243, -4.0F);
 		screenshot("skill_heaven_hand_4_impact", false);
-		lookAt(t0 + 253, -6.0F);
+		lookAt(t0 + 253, -4.0F);
 		screenshot("skill_heaven_hand", false);
-		lookAt(t0 + 266, -5.0F);
+		lookAt(t0 + 266, -2.0F);
 		screenshot("skill_heaven_hand_6_shock_ring", false);
-		lookAt(t0 + 296, -8.0F);
+		lookAt(t0 + 296, -6.0F);
 		screenshot("skill_heaven_hand_7_dissolve", false);
 
 		// High angle over the palm print while the hand lifts away and fades.
