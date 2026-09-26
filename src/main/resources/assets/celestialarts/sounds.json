@@ -1,336 +1,10 @@
 {
-	"skill.sword_qi": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.sword_qi",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/sword_qi_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/sword_qi_2",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/sword_qi_3",
-				"stream": false
-			}
-		]
-	},
-	"skill.sword_hum": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.sword_hum",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/sword_hum",
-				"stream": false
-			}
-		]
-	},
-	"skill.sword_launch": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.sword_launch",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/sword_launch_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/sword_launch_2",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/sword_launch_3",
-				"stream": false
-			}
-		]
-	},
-	"skill.fire_whoosh": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.fire_whoosh",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/fire_whoosh_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/fire_whoosh_2",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/fire_whoosh_3",
-				"stream": false
-			}
-		]
-	},
-	"skill.fire_explosion": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.fire_explosion",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/fire_explosion",
-				"stream": false
-			}
-		]
-	},
-	"skill.ice_cast": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.ice_cast",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/ice_cast",
-				"stream": false
-			}
-		]
-	},
-	"skill.ice_shatter": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.ice_shatter",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/ice_shatter_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/ice_shatter_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.thunder_strike": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.thunder_strike",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/thunder_strike_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/thunder_strike_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.thunder_charge": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.thunder_charge",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/thunder_charge",
-				"stream": false
-			}
-		]
-	},
-	"skill.lightning_step": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.lightning_step",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/lightning_step",
-				"stream": false
-			}
-		]
-	},
-	"skill.wind_slash": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.wind_slash",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/wind_slash_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/wind_slash_2",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/wind_slash_3",
-				"stream": false
-			}
-		]
-	},
-	"skill.earth_quake": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.earth_quake",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/earth_quake_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/earth_quake_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.void_drain": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.void_drain",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/void_drain",
-				"stream": false
-			}
-		]
-	},
-	"skill.void_collapse": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.void_collapse",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/void_collapse",
-				"stream": false
-			}
-		]
-	},
-	"skill.shield_up": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.shield_up",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/shield_up",
-				"stream": false
-			}
-		]
-	},
-	"skill.shield_hit": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.shield_hit",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/shield_hit_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/shield_hit_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.formation": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.formation",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/formation",
-				"stream": false
-			}
-		]
-	},
-	"skill.beam_loop": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.beam_loop",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/beam_loop",
-				"stream": false
-			}
-		]
-	},
-	"skill.qi_gather": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.qi_gather",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/qi_gather",
-				"stream": false
-			}
-		]
-	},
-	"skill.breakthrough": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.breakthrough",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/breakthrough",
-				"stream": false
-			}
-		]
-	},
-	"skill.heaven_sword_fall": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.heaven_sword_fall",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/heaven_sword_fall",
-				"stream": false
-			}
-		]
-	},
-	"skill.heaven_sword_impact": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.heaven_sword_impact",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/heaven_sword_impact",
-				"stream": false
-			}
-		]
-	},
-	"skill.sword_flight": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.sword_flight",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/sword_flight",
-				"stream": false
-			}
-		]
-	},
-	"skill.palm_strike": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.palm_strike",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/palm_strike_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/palm_strike_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.golden_body": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.golden_body",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/golden_body",
-				"stream": false
-			}
-		]
-	},
-	"skill.dragon_roar": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.dragon_roar",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/dragon_roar_1",
-				"stream": false
-			},
-			{
-				"name": "celestialarts:skill/dragon_roar_2",
-				"stream": false
-			}
-		]
-	},
-	"skill.freeze_field": {
-		"category": "player",
-		"subtitle": "subtitles.celestialarts.skill.freeze_field",
-		"sounds": [
-			{
-				"name": "celestialarts:skill/freeze_field",
-				"stream": false
-			}
-		]
-	},
 	"item.learn_skill": {
 		"category": "player",
 		"subtitle": "subtitles.celestialarts.item.learn_skill",
 		"sounds": [
 			{
-				"name": "celestialarts:item/learn_skill",
+				"name": "celestialarts:synth/item/learn_skill",
 				"stream": false
 			}
 		]
@@ -340,7 +14,333 @@
 		"subtitle": "subtitles.celestialarts.item.spirit_stone",
 		"sounds": [
 			{
-				"name": "celestialarts:item/spirit_stone",
+				"name": "celestialarts:synth/item/spirit_stone",
+				"stream": false
+			}
+		]
+	},
+	"skill.beam_loop": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.beam_loop",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/beam_loop",
+				"stream": false
+			}
+		]
+	},
+	"skill.breakthrough": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.breakthrough",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/breakthrough",
+				"stream": false
+			}
+		]
+	},
+	"skill.dragon_roar": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.dragon_roar",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/dragon_roar_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/dragon_roar_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.earth_quake": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.earth_quake",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/earth_quake_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/earth_quake_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.fire_explosion": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.fire_explosion",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/fire_explosion",
+				"stream": false
+			}
+		]
+	},
+	"skill.fire_whoosh": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.fire_whoosh",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/fire_whoosh_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/fire_whoosh_2",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/fire_whoosh_3",
+				"stream": false
+			}
+		]
+	},
+	"skill.formation": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.formation",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/formation",
+				"stream": false
+			}
+		]
+	},
+	"skill.freeze_field": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.freeze_field",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/freeze_field",
+				"stream": false
+			}
+		]
+	},
+	"skill.golden_body": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.golden_body",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/golden_body",
+				"stream": false
+			}
+		]
+	},
+	"skill.heaven_sword_fall": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_sword_fall",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/heaven_sword_fall",
+				"stream": false
+			}
+		]
+	},
+	"skill.heaven_sword_impact": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.heaven_sword_impact",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/heaven_sword_impact",
+				"stream": false
+			}
+		]
+	},
+	"skill.ice_cast": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.ice_cast",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/ice_cast",
+				"stream": false
+			}
+		]
+	},
+	"skill.ice_shatter": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.ice_shatter",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/ice_shatter_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/ice_shatter_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.lightning_step": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.lightning_step",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/lightning_step",
+				"stream": false
+			}
+		]
+	},
+	"skill.palm_strike": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.palm_strike",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/palm_strike_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/palm_strike_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.qi_gather": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.qi_gather",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/qi_gather",
+				"stream": false
+			}
+		]
+	},
+	"skill.shield_hit": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.shield_hit",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/shield_hit_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/shield_hit_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.shield_up": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.shield_up",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/shield_up",
+				"stream": false
+			}
+		]
+	},
+	"skill.sword_flight": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.sword_flight",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/sword_flight",
+				"stream": false
+			}
+		]
+	},
+	"skill.sword_hum": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.sword_hum",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/sword_hum",
+				"stream": false
+			}
+		]
+	},
+	"skill.sword_launch": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.sword_launch",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/sword_launch_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/sword_launch_2",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/sword_launch_3",
+				"stream": false
+			}
+		]
+	},
+	"skill.sword_qi": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.sword_qi",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/sword_qi_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/sword_qi_2",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/sword_qi_3",
+				"stream": false
+			}
+		]
+	},
+	"skill.thunder_charge": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.thunder_charge",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/thunder_charge",
+				"stream": false
+			}
+		]
+	},
+	"skill.thunder_strike": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.thunder_strike",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/thunder_strike_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/thunder_strike_2",
+				"stream": false
+			}
+		]
+	},
+	"skill.void_collapse": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.void_collapse",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/void_collapse",
+				"stream": false
+			}
+		]
+	},
+	"skill.void_drain": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.void_drain",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/void_drain",
+				"stream": false
+			}
+		]
+	},
+	"skill.wind_slash": {
+		"category": "player",
+		"subtitle": "subtitles.celestialarts.skill.wind_slash",
+		"sounds": [
+			{
+				"name": "celestialarts:synth/skill/wind_slash_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/wind_slash_2",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:synth/skill/wind_slash_3",
 				"stream": false
 			}
 		]

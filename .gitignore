@@ -31,3 +31,6 @@ replay_*.log
 
 # python tooling
 __pycache__/
+
+# sound download cache
+tools/.cache/

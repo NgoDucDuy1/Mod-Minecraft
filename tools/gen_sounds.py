@@ -31,7 +31,11 @@ from scipy import signal
 
 SR = 44100
 ASSETS = os.path.join(os.path.dirname(__file__), "..", "src", "main", "resources", "assets", "celestialarts")
-OUT = os.path.join(ASSETS, "sounds")
+SOUND_ROOT = os.path.join(ASSETS, "sounds")
+OUT = os.path.join(SOUND_ROOT, "synth")  # synthesised renders; real recordings live in sounds/real
+TOOLS = os.path.dirname(os.path.abspath(__file__))
+SYNTH_MANIFEST = os.path.join(TOOLS, "sounds_synth.json")
+REAL_MANIFEST = os.path.join(TOOLS, "sounds_real.json")
 
 rng = np.random.default_rng(20260926)
 
@@ -925,19 +929,35 @@ def analyse(name, x):
     print("    %-30s rms %.3f cent %5d Hz  bands%% %-22s flat %.3f" % (name, rms, cent, bands, flat))
 
 
-def write_sounds_json(files):
+def build_sounds_json():
+    """Merge the synth and real manifests into assets/celestialarts/sounds.json.
+
+    Manifests map "skill/name" -> ["sounds/...-relative paths without .ogg"]. When an event has real
+    recordings (tools/sounds_real.json, produced by tools/fetch_real_sounds.py) those are used;
+    otherwise the synthesised renders are. Files that do not exist are skipped with a warning so a
+    partially failed download never produces a broken resource pack."""
+    synth = json.load(open(SYNTH_MANIFEST)) if os.path.exists(SYNTH_MANIFEST) else {}
+    real = json.load(open(REAL_MANIFEST)) if os.path.exists(REAL_MANIFEST) else {}
     data = {}
-    for path, variants in files.items():
-        event = path.replace("/", ".")
+    total = 0
+    for name in sorted(set(synth) | set(real)):
+        variants = real.get(name) or synth.get(name) or []
+        variants = [v for v in variants if os.path.exists(os.path.join(SOUND_ROOT, v + ".ogg"))]
+        if not variants:
+            print("WARNING: no files for %s" % name)
+            continue
+        event = name.replace("/", ".")
         data[event] = {
             "category": "player",
             "subtitle": "subtitles.celestialarts." + event,
             "sounds": [{"name": "celestialarts:" + v, "stream": False} for v in variants],
         }
+        total += len(variants)
     with open(os.path.join(ASSETS, "sounds.json"), "w") as f:
         json.dump(data, f, indent="\t")
         f.write("\n")
-    print("sounds.json (%d events, %d files)" % (len(data), sum(len(v) for v in files.values())))
+    print("sounds.json (%d events, %d files; %d events use real recordings)" % (len(data), total, len([n for n in data if n.replace(".", "/") in real])))
+    return data
 
 
 def main():
@@ -959,8 +979,11 @@ def main():
             print("%-32s %.2fs" % (p, dur))
             if do_analyse:
                 analyse(p, x if p in LOOPS else trim_silence(x))
-        files[name] = paths
-    write_sounds_json(files)
+        files[name] = ["synth/" + p for p in paths]
+    with open(SYNTH_MANIFEST, "w") as f:
+        json.dump(files, f, indent="\t")
+        f.write("\n")
+    build_sounds_json()
 
 
 if __name__ == "__main__":

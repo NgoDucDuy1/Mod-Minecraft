@@ -1,0 +1,103 @@
+name: Fetch real sounds
+
+# Downloads the CC0 Freesound recordings listed in tools/fetch_real_sounds.py, edits them into the
+# mod's sound events and commits the resulting OGG files + sounds.json back to the branch.
+# Run manually (workflow_dispatch) whenever the recipe list changes.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q ffmpeg libsndfile1
+          python3 -m pip install --upgrade pip
+          python3 -m pip install numpy scipy soundfile matplotlib
+
+      - name: Render synthesised sounds
+        run: python3 tools/gen_sounds.py
+
+      - name: Download + edit real recordings
+        id: fetch
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 tools/fetch_real_sounds.py --analyse 2>&1 | tee fetch.log
+
+      - name: Spectrogram sheet
+        if: always()
+        run: |
+          python3 - <<'EOF'
+          import glob, os, soundfile as sf, matplotlib
+          matplotlib.use("Agg")
+          import matplotlib.pyplot as plt
+          files = sorted(glob.glob("src/main/resources/assets/celestialarts/sounds/real/**/*.ogg", recursive=True))
+          if files:
+              cols = 4
+              rows = (len(files) + cols - 1) // cols
+              fig, axs = plt.subplots(rows, cols, figsize=(5 * cols, 3 * rows))
+              for ax, f in zip(axs.flat, files):
+                  x, sr = sf.read(f)
+                  ax.specgram(x, NFFT=1024, Fs=sr, noverlap=768, cmap="magma", vmin=-110, vmax=-20)
+                  ax.set_ylim(0, 12000)
+                  ax.set_title(os.path.relpath(f, "src/main/resources/assets/celestialarts/sounds/real"), fontsize=8)
+              for ax in list(axs.flat)[len(files):]:
+                  ax.axis("off")
+              plt.tight_layout()
+              plt.savefig("spectrograms.jpg", dpi=55, pil_kwargs={"quality": 60})
+          EOF
+
+      - name: Commit results
+        id: commit
+        shell: bash
+        run: |
+          git config user.name "NgoDucDuy1"
+          git config user.email "ngoducduy1@users.noreply.github.com"
+          git add -A src/main/resources/assets/celestialarts/sounds src/main/resources/assets/celestialarts/sounds.json tools/sounds_real.json tools/sounds_synth.json tools/SOUND_CREDITS.md
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            echo "sha=" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Sounds: real CC0 recordings rendered by fetch-sounds workflow [skip ci]"
+            git push origin HEAD:${GITHUB_REF_NAME}
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report to issue
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "<!-- fetch-sounds-report -->"
+            echo "**Fetch real sounds** run ${{ github.run_id }} on \`${GITHUB_REF_NAME}\` (commit \`${{ steps.commit.outputs.sha }}\`)"
+            echo
+            echo '```'
+            tail -n 120 fetch.log 2>/dev/null || echo "(no log)"
+            echo '```'
+          } > report.md
+          gh issue comment 1 --body-file report.md || true
+          if [ -f spectrograms.jpg ]; then
+            base64 -w 0 spectrograms.jpg > spec.b64
+            split -b 60000 -d spec.b64 spec.part.
+            n=$(ls spec.part.* | wc -l); i=1
+            for f in spec.part.*; do
+              { echo "<!-- fetch-sounds-spectro ${i}/${n} -->"; echo '```'; cat "$f"; echo; echo '```'; } > part.md
+              gh issue comment 1 --body-file part.md || true
+              i=$((i+1))
+            done
+          fi
