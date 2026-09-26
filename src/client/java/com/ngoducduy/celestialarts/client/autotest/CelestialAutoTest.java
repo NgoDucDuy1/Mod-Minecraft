@@ -390,7 +390,7 @@ public final class CelestialAutoTest {
 			return null;
 		});
 		int elapsed = 0;
-		int[][] shots = {{55, -62}, {150, -48}, {205, -32}, {236, -12}, {249, -4}, {262, -6}, {300, -22}, {332, -8}};
+		int[][] shots = {{55, -55}, {150, -50}, {205, -35}, {236, -8}, {249, -4}, {262, -3}, {300, -14}, {332, -2}};
 		String[] names = {"skill_heaven_hand_1_formation", "skill_heaven_hand_2_descent", "skill_heaven_hand_3_approach", "skill_heaven_hand_4_impact",
 				"skill_heaven_hand", "skill_heaven_hand_6_shock_ring", "skill_heaven_hand_7_dissolve", "skill_heaven_hand_8_palm_print"};
 		for (int i = 0; i < shots.length; i++) {

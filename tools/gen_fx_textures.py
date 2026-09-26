@@ -414,7 +414,7 @@ def gen_palm_print():
     deep = np.asarray(shape.filter(ImageFilter.GaussianBlur(10 * S))).astype(np.float32) / 255.0
     inside = m > 0.5
     # Pressed floor: dark, slightly mottled.
-    floor_a = np.clip(m * (0.78 + 0.2 * n1), 0, 1)
+    floor_a = np.clip(m * (0.50 + 0.2 * n1), 0, 1)
     # Rim of shattered ground just outside the print.
     rim = np.clip((0.5 - np.abs(m - 0.5)) * 2.0, 0, 1) * (0.6 + 0.4 * n2)
     outer = np.clip((deep - 0.05) * 6.0, 0, 1) * (m < 0.5) * n2 * 0.7
@@ -424,9 +424,9 @@ def gen_palm_print():
     seam = np.clip(seam * (0.4 + 0.6 * deep), 0, 1)
     rgb = np.zeros((W, W, 3), dtype=np.float32)
     # base dark brown / charcoal
-    rgb[..., 0] = 28 + 30 * n1
-    rgb[..., 1] = 18 + 18 * n1
-    rgb[..., 2] = 12 + 10 * n1
+    rgb[..., 0] = 62 + 40 * n1
+    rgb[..., 1] = 42 + 26 * n1
+    rgb[..., 2] = 26 + 16 * n1
     a = np.clip(floor_a + rim * 0.7 + outer, 0, 1)
     # Cracked rim is lighter earth.
     rgb[..., 0] += rim * 90 + outer * 70

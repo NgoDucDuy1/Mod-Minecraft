@@ -22,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
  * Thiên Đạo Chi Thủ – the whole world-scale spectacle in one effect so every part stays in sync:
  *
  * <ol>
- *   <li><b>Khai Thiên</b> (0–80 ticks): a 460-block formation of eight trigrams unfolds in the sky
- *       150 blocks above the target; the ground beneath darkens.</li>
+ *   <li><b>Khai Thiên</b> (0–80 ticks): a formation of eight trigrams unfolds in the sky 120 blocks
+ *       above the target; the ground beneath darkens.</li>
  *   <li><b>Giáng Lâm</b> (80–240): the hand of the Heavenly Dao – {@code scale} blocks across –
  *       pushes through the formation on an arm of light and sinks, slowly at first, then faster and
  *       faster. Its shadow swallows the ground, a column of pressure links palm and earth, glyph
@@ -34,16 +34,17 @@ import net.minecraft.util.math.Vec3d;
  * </ol>
  *
  * <p>{@code pos} = ground centre, {@code target} = horizontal direction the fingers point,
- * {@code scale} = hand width in blocks, {@code duration} = 330. All layers use the fog-less variants
- * so the hand remains visible from anywhere inside the 220-block domain.</p>
+ * {@code scale} = hand width in blocks, {@code extra} = domain radius the shock ring travels,
+ * {@code duration} = 330. All layers use the fog-less variants so the hand remains visible from
+ * anywhere inside the domain.</p>
  */
 public class HeavenHandFx extends ClientFx {
 	public static final int T_SUMMON = 80;
 	public static final int T_SLAM = 240;
 	public static final int T_DISSOLVE = 270;
 	public static final int T_END = 330;
-	public static final float SKY_HEIGHT = 150.0F;
-	public static final float START_HEIGHT = 175.0F;
+	public static final float SKY_HEIGHT = 120.0F;
+	public static final float START_HEIGHT = 140.0F;
 	public static final float RING_SPEED = 6.0F;
 
 	private static final int GOLD = 0xFFD86B;
@@ -53,6 +54,7 @@ public class HeavenHandFx extends ClientFx {
 
 	private final float yawDeg;
 	private final float handScale;
+	private final float domain;
 	private HeavenHandModel model;
 
 	public HeavenHandFx(FxData data, ClientWorld world) {
@@ -60,6 +62,7 @@ public class HeavenHandFx extends ClientFx {
 		Vec3d d = data.target();
 		this.yawDeg = d.lengthSquared() < 1.0E-6 ? 0.0F : (float) Math.toDegrees(Math.atan2(d.x, d.z));
 		this.handScale = Math.max(1.0F, scale) / (HeavenHandModel.WIDTH_UNITS / 16.0F);
+		this.domain = data.extra() > 0 ? data.extra() : Math.max(1.0F, scale) * 2.0F;
 	}
 
 	private HeavenHandModel model() {
@@ -105,13 +108,13 @@ public class HeavenHandFx extends ClientFx {
 		float out = 1.0F - RenderUtil.easeInCubic(MathHelper.clamp((t - (T_SLAM + 10)) / 70.0F, 0.0F, 1.0F));
 		float env = Math.min(in, out);
 		if (env <= 0.0F) return;
-		float radius = w * 0.77F * (0.6F + 0.4F * in) * (1.0F + 0.35F * (1.0F - out));
+		float radius = Math.max(w * 0.9F, domain * 0.45F) * (0.6F + 0.4F * in) * (1.0F + 0.35F * (1.0F - out));
 		matrices.push();
 		matrices.translate(0.0F, SKY_HEIGHT, 0.0F);
 		MatrixStack.Entry flat = matrices.peek();
 		// Soft golden haze so the array reads against a bright sky as well as a dark one.
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
-		RenderUtil.flatQuad(glow, flat, radius * 1.15F, GOLD, env * 0.16F);
+		RenderUtil.flatQuad(glow, flat, radius * 1.1F, GOLD, env * 0.07F);
 
 		matrices.push();
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 0.12F));
@@ -125,11 +128,11 @@ public class HeavenHandFx extends ClientFx {
 		VertexConsumer ring = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.RING));
 		RenderUtil.flatQuad(ring, flat, radius * 1.04F, PALE, env * 0.5F);
 		// Light bleeding down from the array.
-		float veil = env * (t < T_SUMMON ? 0.10F : 0.05F);
+		float veil = env * (t < T_SUMMON ? 0.07F : 0.035F);
 		VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
 		matrices.push();
 		matrices.translate(0.0F, -SKY_HEIGHT, 0.0F);
-		RenderUtil.cylinder(beam, matrices.peek(), radius * 0.95F, radius * 0.7F, SKY_HEIGHT, 48, 6.0F, 2.0F, -t * 0.01F, GOLD, veil * 0.4F, veil);
+		RenderUtil.cylinder(beam, matrices.peek(), radius * 0.55F, radius * 0.45F, SKY_HEIGHT, 48, 6.0F, 2.0F, -t * 0.01F, GOLD, veil * 0.3F, veil);
 		matrices.pop();
 		matrices.pop();
 	}
@@ -139,12 +142,12 @@ public class HeavenHandFx extends ClientFx {
 		if (t < 10.0F) return;
 		float u = MathHelper.clamp((t - T_SUMMON) / (float) (T_SLAM - T_SUMMON), 0.0F, 1.0F);
 		float gone = 1.0F - MathHelper.clamp((t - T_DISSOLVE) / 40.0F, 0.0F, 1.0F);
-		float dark = (0.12F + 0.55F * u) * gone;
+		float dark = (0.10F + 0.35F * u) * gone;
 		matrices.push();
 		matrices.translate(0.0F, 0.06F, 0.0F);
 		MatrixStack.Entry e = matrices.peek();
 		VertexConsumer shadow = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.GLOW));
-		RenderUtil.flatQuad(shadow, e, w * (0.45F + 0.15F * u), SHADOW, dark);
+		RenderUtil.flatQuad(shadow, e, w * (0.40F + 0.12F * u), SHADOW, dark);
 		if (t >= T_SUMMON && t < T_SLAM) {
 			// Golden pressure pouring down from the palm onto the ground.
 			VertexConsumer beam = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.BEAM));
@@ -254,9 +257,8 @@ public class HeavenHandFx extends ClientFx {
 		VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.GLOW));
 		if (s < 16.0F) {
 			float f = 1.0F - s / 16.0F;
-			RenderUtil.flatQuad(glow, e, w * 0.9F, 0xFFFFFF, f * f * 0.95F);
+			RenderUtil.flatQuad(glow, e, w * 0.6F, 0xFFFFFF, f * f * 0.7F);
 		}
-		float domain = w * 0.75F;
 		float ringR = s * RING_SPEED;
 		if (ringR < domain + 12.0F) {
 			float f = MathHelper.clamp(ringR / domain, 0.0F, 1.0F);

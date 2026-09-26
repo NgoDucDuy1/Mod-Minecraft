@@ -11,7 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 
 /**
  * Thiên Đạo Chi Thủ – the colossal palm of the Heavenly Dao (rendered by {@code HeavenHandFx} at
- * ~100x scale → 300 blocks across).
+ * ~37x scale → 110 blocks across).
  *
  * <p>Built in world orientation (no entity y-flip): the palm faces {@code -Y} (down), the fingers
  * point along {@code +Z}, the thumb sits on the {@code -X} side. Every finger has three jointed

@@ -36,8 +36,8 @@ import net.minecraft.util.math.Vec3d;
  * heavens for sixteen seconds.
  *
  * <ol>
- *   <li><b>Khai Thiên</b> (0–4 s): a formation of eight trigrams unfolds 150 blocks above the target
- *       point (48 blocks ahead of the caster) and the world darkens for everyone inside the
+ *   <li><b>Khai Thiên</b> (0–4 s): a formation of eight trigrams unfolds 120 blocks above the target
+ *       point (72 blocks ahead of the caster) and the world darkens for everyone inside the
  *       {@value #R_DOMAIN}-block domain. The caster stands rooted, wrapped in heavenly light,
  *       nearly invulnerable but unable to move or cast anything else.</li>
  *   <li><b>Giáng Lâm</b> (4–12 s): a {@value #HAND_WIDTH}-block-wide palm pushes through the array and
@@ -56,13 +56,13 @@ import net.minecraft.util.math.Vec3d;
  */
 public class HeavenHandSkill extends Skill {
 	/** Distance in front of the caster where the palm centres. */
-	public static final double TARGET_RANGE = 48.0;
+	public static final double TARGET_RANGE = 72.0;
 	/** Radius of the suppression domain and of the shock ring. */
 	public static final double R_DOMAIN = 220.0;
 	/** Radius of the lethal core under the palm. */
 	public static final double R_CORE = 40.0;
 	/** Width of the hand in blocks (drives the client model scale and the palm print). */
-	public static final float HAND_WIDTH = 300.0f;
+	public static final float HAND_WIDTH = 110.0f;
 	/** Everyone this far from the centre receives the world-scale effect packets. */
 	public static final double FX_RANGE_FAR = 520.0;
 
@@ -150,14 +150,15 @@ public class HeavenHandSkill extends Skill {
 		}
 
 		private void summon() {
-			ModPackets.sendFx(world, FxData.at(FxType.HEAVEN_HAND, center, GOLD, HAND_WIDTH, T_END).withTarget(dir), FX_RANGE_FAR);
+			// extra carries the domain radius so the client shock ring travels exactly as far as the damage does.
+			ModPackets.sendFx(world, FxData.at(FxType.HEAVEN_HAND, center, GOLD, HAND_WIDTH, T_END).withTarget(dir).withExtra((int) R_DOMAIN), FX_RANGE_FAR);
 			ModPackets.sendFx(world, FxData.follow(FxType.HEAVEN_PILLAR, caster.getId(), caster.getPos(), PALE, 2.2f, T_END));
 			ModPackets.sendFx(world, FxData.follow(FxType.QI_AURA, caster.getId(), caster.getPos(), GOLD, 1.6f, T_END));
 			ModPackets.sendFx(world, FxData.at(FxType.MAGIC_CIRCLE, caster.getPos().add(0, 0.06, 0), GOLD, 4.0f, T_END).withExtra(1));
 			// The sky darkens for everyone in the domain – sent per player at their own eyes so the
 			// 24-block falloff of SCREEN_FLASH never applies.
 			for (ServerPlayerEntity p : viewers(world, center, R_DOMAIN + 40)) {
-				ModPackets.sendFxTo(p, FxData.at(FxType.SCREEN_FLASH, p.getEyePos(), 0x120C04, 0.8f, T_SLAM + 20).withExtra(1));
+				ModPackets.sendFxTo(p, FxData.at(FxType.SCREEN_FLASH, p.getEyePos(), 0x120C04, 0.55f, T_SLAM + 20).withExtra(1));
 			}
 			world.playSound(null, caster.getBlockPos(), ModSounds.HEAVEN_HAND_SUMMON, SoundCategory.PLAYERS, 8.0f, 1.0f);
 			world.playSound(null, caster.getBlockPos(), ModSounds.RISER, SoundCategory.PLAYERS, 2.0f, 0.8f);

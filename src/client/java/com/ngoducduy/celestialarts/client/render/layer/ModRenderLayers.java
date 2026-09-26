@@ -121,7 +121,7 @@ public abstract class ModRenderLayers extends RenderLayer {
 	 * Wraps a layer and pushes the fog planes out to infinity while it draws. The core shaders read
 	 * {@code FogStart/FogEnd} from {@link RenderSystem} when the program is bound (i.e. at draw time,
 	 * inside this layer's start/end actions), so world-scale effects such as the sky formation and the
-	 * 300-block hand of Thiên Đạo Chi Thủ stay visible instead of dissolving into the distance fog
+	 * 110-block hand of Thiên Đạo Chi Thủ stay visible instead of dissolving into the distance fog
 	 * 150-250 blocks away. Depth testing against terrain is untouched.
 	 */
 	private static final class FarLayer extends RenderLayer {

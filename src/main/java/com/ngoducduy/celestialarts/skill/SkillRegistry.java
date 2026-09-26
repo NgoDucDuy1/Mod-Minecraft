@@ -62,7 +62,7 @@ public final class SkillRegistry {
 	public static final ThunderDragonSkill THUNDER_DRAGON = register("thunder_dragon", new ThunderDragonSkill());
 	// Realm 6 – Độ Kiếp
 	public static final HeavenSwordSkill HEAVEN_SWORD = register("heaven_sword", new HeavenSwordSkill());
-	/** The super-ultimate: a 300-block hand of heaven pressing down a 220-block domain. */
+	/** The super-ultimate: a 110-block hand of heaven pressing down a 220-block domain. */
 	public static final HeavenHandSkill HEAVEN_HAND = register("heaven_hand", new HeavenHandSkill());
 
 	private SkillRegistry() {

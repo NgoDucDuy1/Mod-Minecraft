@@ -80,12 +80,12 @@ public class GroundDecalFx extends ClientFx {
 	/** Palm print: dark pressed earth with molten golden seams that cool down over a minute. */
 	private void renderPalm(VertexConsumerProvider consumers, MatrixStack.Entry e, float t, float alpha) {
 		VertexConsumer mark = consumers.getBuffer(ModRenderLayers.translucentGlowFar(FxTextures.PALM_PRINT));
-		RenderUtil.flatQuad(mark, e, scale, 0xFFFFFF, alpha * 0.95F);
+		RenderUtil.flatQuad(mark, e, scale, 0xFFFFFF, alpha * 0.8F);
 		float glowLife = MathHelper.clamp(1.0F - t / 1200.0F, 0.0F, 1.0F);
 		if (glowLife > 0.0F) {
 			VertexConsumer glow = consumers.getBuffer(ModRenderLayers.additiveFar(FxTextures.PALM_PRINT));
 			float pulse = 0.85F + 0.15F * MathHelper.sin(t * 0.15F);
-			RenderUtil.flatQuad(glow, e, scale, color, alpha * (0.25F + 0.75F * glowLife * glowLife) * pulse);
+			RenderUtil.flatQuad(glow, e, scale, color, alpha * (0.08F + 0.32F * glowLife * glowLife) * pulse);
 		}
 	}
 }
