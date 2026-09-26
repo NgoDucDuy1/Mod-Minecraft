@@ -4,7 +4,7 @@
 		"subtitle": "subtitles.celestialarts.item.learn_skill",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/item/learn_skill",
+				"name": "celestialarts:real/item/learn_skill",
 				"stream": false
 			}
 		]
@@ -24,7 +24,7 @@
 		"subtitle": "subtitles.celestialarts.skill.beam_loop",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/beam_loop",
+				"name": "celestialarts:real/skill/beam_loop",
 				"stream": false
 			}
 		]
@@ -34,7 +34,7 @@
 		"subtitle": "subtitles.celestialarts.skill.breakthrough",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/breakthrough",
+				"name": "celestialarts:real/skill/breakthrough",
 				"stream": false
 			}
 		]
@@ -58,11 +58,11 @@
 		"subtitle": "subtitles.celestialarts.skill.earth_quake",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/earth_quake_1",
+				"name": "celestialarts:real/skill/earth_quake_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/earth_quake_2",
+				"name": "celestialarts:real/skill/earth_quake_2",
 				"stream": false
 			}
 		]
@@ -72,7 +72,11 @@
 		"subtitle": "subtitles.celestialarts.skill.fire_explosion",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/fire_explosion",
+				"name": "celestialarts:real/skill/fire_explosion_1",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:real/skill/fire_explosion_2",
 				"stream": false
 			}
 		]
@@ -82,15 +86,15 @@
 		"subtitle": "subtitles.celestialarts.skill.fire_whoosh",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/fire_whoosh_1",
+				"name": "celestialarts:real/skill/fire_whoosh_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/fire_whoosh_2",
+				"name": "celestialarts:real/skill/fire_whoosh_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/fire_whoosh_3",
+				"name": "celestialarts:real/skill/fire_whoosh_3",
 				"stream": false
 			}
 		]
@@ -100,7 +104,7 @@
 		"subtitle": "subtitles.celestialarts.skill.formation",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/formation",
+				"name": "celestialarts:real/skill/formation",
 				"stream": false
 			}
 		]
@@ -110,7 +114,7 @@
 		"subtitle": "subtitles.celestialarts.skill.freeze_field",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/freeze_field",
+				"name": "celestialarts:real/skill/freeze_field",
 				"stream": false
 			}
 		]
@@ -130,7 +134,7 @@
 		"subtitle": "subtitles.celestialarts.skill.heaven_sword_fall",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/heaven_sword_fall",
+				"name": "celestialarts:real/skill/heaven_sword_fall",
 				"stream": false
 			}
 		]
@@ -140,7 +144,7 @@
 		"subtitle": "subtitles.celestialarts.skill.heaven_sword_impact",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/heaven_sword_impact",
+				"name": "celestialarts:real/skill/heaven_sword_impact",
 				"stream": false
 			}
 		]
@@ -150,7 +154,7 @@
 		"subtitle": "subtitles.celestialarts.skill.ice_cast",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/ice_cast",
+				"name": "celestialarts:real/skill/ice_cast",
 				"stream": false
 			}
 		]
@@ -160,11 +164,11 @@
 		"subtitle": "subtitles.celestialarts.skill.ice_shatter",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/ice_shatter_1",
+				"name": "celestialarts:real/skill/ice_shatter_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/ice_shatter_2",
+				"name": "celestialarts:real/skill/ice_shatter_2",
 				"stream": false
 			}
 		]
@@ -174,7 +178,7 @@
 		"subtitle": "subtitles.celestialarts.skill.lightning_step",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/lightning_step",
+				"name": "celestialarts:real/skill/lightning_step",
 				"stream": false
 			}
 		]
@@ -232,7 +236,7 @@
 		"subtitle": "subtitles.celestialarts.skill.sword_flight",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/sword_flight",
+				"name": "celestialarts:real/skill/sword_flight",
 				"stream": false
 			}
 		]
@@ -252,15 +256,15 @@
 		"subtitle": "subtitles.celestialarts.skill.sword_launch",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/sword_launch_1",
+				"name": "celestialarts:real/skill/sword_launch_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/sword_launch_2",
+				"name": "celestialarts:real/skill/sword_launch_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/sword_launch_3",
+				"name": "celestialarts:real/skill/sword_launch_3",
 				"stream": false
 			}
 		]
@@ -270,15 +274,15 @@
 		"subtitle": "subtitles.celestialarts.skill.sword_qi",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/sword_qi_1",
+				"name": "celestialarts:real/skill/sword_qi_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/sword_qi_2",
+				"name": "celestialarts:real/skill/sword_qi_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/sword_qi_3",
+				"name": "celestialarts:real/skill/sword_qi_3",
 				"stream": false
 			}
 		]
@@ -288,7 +292,7 @@
 		"subtitle": "subtitles.celestialarts.skill.thunder_charge",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/thunder_charge",
+				"name": "celestialarts:real/skill/thunder_charge",
 				"stream": false
 			}
 		]
@@ -298,11 +302,19 @@
 		"subtitle": "subtitles.celestialarts.skill.thunder_strike",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/thunder_strike_1",
+				"name": "celestialarts:real/skill/thunder_strike_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/thunder_strike_2",
+				"name": "celestialarts:real/skill/thunder_strike_2",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:real/skill/thunder_strike_3",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:real/skill/thunder_strike_4",
 				"stream": false
 			}
 		]
@@ -332,15 +344,19 @@
 		"subtitle": "subtitles.celestialarts.skill.wind_slash",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/wind_slash_1",
+				"name": "celestialarts:real/skill/wind_slash_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/wind_slash_2",
+				"name": "celestialarts:real/skill/wind_slash_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/wind_slash_3",
+				"name": "celestialarts:real/skill/wind_slash_3",
+				"stream": false
+			},
+			{
+				"name": "celestialarts:real/skill/wind_slash_4",
 				"stream": false
 			}
 		]
