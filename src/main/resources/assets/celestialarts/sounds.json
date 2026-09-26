@@ -44,15 +44,15 @@
 		"subtitle": "subtitles.celestialarts.skill.cast_qi",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/cast_qi_1",
+				"name": "celestialarts:real/skill/cast_qi_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/cast_qi_2",
+				"name": "celestialarts:real/skill/cast_qi_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/cast_qi_3",
+				"name": "celestialarts:real/skill/cast_qi_3",
 				"stream": false
 			}
 		]
@@ -62,11 +62,11 @@
 		"subtitle": "subtitles.celestialarts.skill.dragon_flyby",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/dragon_flyby_1",
+				"name": "celestialarts:real/skill/dragon_flyby_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/dragon_flyby_2",
+				"name": "celestialarts:real/skill/dragon_flyby_2",
 				"stream": false
 			}
 		]
@@ -76,11 +76,11 @@
 		"subtitle": "subtitles.celestialarts.skill.dragon_roar",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/dragon_roar_1",
+				"name": "celestialarts:real/skill/dragon_roar_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/dragon_roar_2",
+				"name": "celestialarts:real/skill/dragon_roar_2",
 				"stream": false
 			}
 		]
@@ -156,7 +156,7 @@
 		"subtitle": "subtitles.celestialarts.skill.golden_body",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/golden_body",
+				"name": "celestialarts:real/skill/golden_body",
 				"stream": false
 			}
 		]
@@ -186,15 +186,15 @@
 		"subtitle": "subtitles.celestialarts.skill.hit_blunt",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/hit_blunt_1",
+				"name": "celestialarts:real/skill/hit_blunt_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_blunt_2",
+				"name": "celestialarts:real/skill/hit_blunt_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_blunt_3",
+				"name": "celestialarts:real/skill/hit_blunt_3",
 				"stream": false
 			}
 		]
@@ -204,11 +204,11 @@
 		"subtitle": "subtitles.celestialarts.skill.hit_fire",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/hit_fire_1",
+				"name": "celestialarts:real/skill/hit_fire_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_fire_2",
+				"name": "celestialarts:real/skill/hit_fire_2",
 				"stream": false
 			}
 		]
@@ -218,11 +218,11 @@
 		"subtitle": "subtitles.celestialarts.skill.hit_ice",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/hit_ice_1",
+				"name": "celestialarts:real/skill/hit_ice_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_ice_2",
+				"name": "celestialarts:real/skill/hit_ice_2",
 				"stream": false
 			}
 		]
@@ -232,11 +232,11 @@
 		"subtitle": "subtitles.celestialarts.skill.hit_shock",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/hit_shock_1",
+				"name": "celestialarts:real/skill/hit_shock_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_shock_2",
+				"name": "celestialarts:real/skill/hit_shock_2",
 				"stream": false
 			}
 		]
@@ -246,15 +246,15 @@
 		"subtitle": "subtitles.celestialarts.skill.hit_slash",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/hit_slash_1",
+				"name": "celestialarts:real/skill/hit_slash_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_slash_2",
+				"name": "celestialarts:real/skill/hit_slash_2",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/hit_slash_3",
+				"name": "celestialarts:real/skill/hit_slash_3",
 				"stream": false
 			}
 		]
@@ -298,11 +298,11 @@
 		"subtitle": "subtitles.celestialarts.skill.palm_strike",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/palm_strike_1",
+				"name": "celestialarts:real/skill/palm_strike_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/palm_strike_2",
+				"name": "celestialarts:real/skill/palm_strike_2",
 				"stream": false
 			}
 		]
@@ -312,7 +312,7 @@
 		"subtitle": "subtitles.celestialarts.skill.qi_gather",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/qi_gather",
+				"name": "celestialarts:real/skill/qi_gather",
 				"stream": false
 			}
 		]
@@ -322,7 +322,7 @@
 		"subtitle": "subtitles.celestialarts.skill.riser",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/riser",
+				"name": "celestialarts:real/skill/riser",
 				"stream": false
 			}
 		]
@@ -332,11 +332,11 @@
 		"subtitle": "subtitles.celestialarts.skill.shield_hit",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/shield_hit_1",
+				"name": "celestialarts:real/skill/shield_hit_1",
 				"stream": false
 			},
 			{
-				"name": "celestialarts:synth/skill/shield_hit_2",
+				"name": "celestialarts:real/skill/shield_hit_2",
 				"stream": false
 			}
 		]
@@ -356,7 +356,7 @@
 		"subtitle": "subtitles.celestialarts.skill.sub_drop",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/sub_drop",
+				"name": "celestialarts:real/skill/sub_drop",
 				"stream": false
 			}
 		]
@@ -454,7 +454,7 @@
 		"subtitle": "subtitles.celestialarts.skill.void_collapse",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/void_collapse",
+				"name": "celestialarts:real/skill/void_collapse",
 				"stream": false
 			}
 		]
@@ -464,7 +464,7 @@
 		"subtitle": "subtitles.celestialarts.skill.void_drain",
 		"sounds": [
 			{
-				"name": "celestialarts:synth/skill/void_drain",
+				"name": "celestialarts:real/skill/void_drain",
 				"stream": false
 			}
 		]

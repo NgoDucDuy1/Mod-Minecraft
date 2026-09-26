@@ -1,4 +1,65 @@
 {
+	"skill/hit_slash": [
+		"real/skill/hit_slash_1",
+		"real/skill/hit_slash_2",
+		"real/skill/hit_slash_3"
+	],
+	"skill/hit_blunt": [
+		"real/skill/hit_blunt_1",
+		"real/skill/hit_blunt_2",
+		"real/skill/hit_blunt_3"
+	],
+	"skill/hit_fire": [
+		"real/skill/hit_fire_1",
+		"real/skill/hit_fire_2"
+	],
+	"skill/hit_ice": [
+		"real/skill/hit_ice_1",
+		"real/skill/hit_ice_2"
+	],
+	"skill/hit_shock": [
+		"real/skill/hit_shock_1",
+		"real/skill/hit_shock_2"
+	],
+	"skill/dragon_flyby": [
+		"real/skill/dragon_flyby_1",
+		"real/skill/dragon_flyby_2"
+	],
+	"skill/cast_qi": [
+		"real/skill/cast_qi_1",
+		"real/skill/cast_qi_2",
+		"real/skill/cast_qi_3"
+	],
+	"skill/riser": [
+		"real/skill/riser"
+	],
+	"skill/sub_drop": [
+		"real/skill/sub_drop"
+	],
+	"skill/palm_strike": [
+		"real/skill/palm_strike_1",
+		"real/skill/palm_strike_2"
+	],
+	"skill/shield_hit": [
+		"real/skill/shield_hit_1",
+		"real/skill/shield_hit_2"
+	],
+	"skill/dragon_roar": [
+		"real/skill/dragon_roar_1",
+		"real/skill/dragon_roar_2"
+	],
+	"skill/qi_gather": [
+		"real/skill/qi_gather"
+	],
+	"skill/void_drain": [
+		"real/skill/void_drain"
+	],
+	"skill/void_collapse": [
+		"real/skill/void_collapse"
+	],
+	"skill/golden_body": [
+		"real/skill/golden_body"
+	],
 	"skill/thunder_strike": [
 		"real/skill/thunder_strike_1",
 		"real/skill/thunder_strike_2",
