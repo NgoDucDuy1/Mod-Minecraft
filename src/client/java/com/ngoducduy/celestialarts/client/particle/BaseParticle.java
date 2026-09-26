@@ -62,13 +62,13 @@ public abstract class BaseParticle extends SpriteBillboardParticle {
 	}
 
 	/** Particles closer than this to the camera fade out instead of filling the screen as a blob. */
-	protected static final double NEAR_FADE = 1.8;
+	protected static final double NEAR_FADE = 3.5;
 
 	/**
 	 * Own-body particles (the golden light around a channelling caster, sword glints, embers) end up
 	 * centimetres from a first-person camera, where a 0.3-block sprite covers a quarter of the
-	 * screen. They fade to nothing inside {@link #NEAR_FADE} blocks; the remaining alpha handling
-	 * is untouched.
+	 * screen – and, being additive, grows a bloom halo several times its size. They fade to nothing
+	 * inside {@link #NEAR_FADE} blocks; the remaining alpha handling is untouched.
 	 */
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {

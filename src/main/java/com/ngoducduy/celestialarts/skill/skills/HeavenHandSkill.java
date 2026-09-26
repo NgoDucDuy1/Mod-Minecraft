@@ -140,7 +140,8 @@ public class HeavenHandSkill extends Skill {
 				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 45, 3, false, false, false), caster);
 				caster.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 45, 6, false, false, false), caster);
 			}
-			if (age % 5 == 0) SkillFx.goldenLight(world, caster.getEyePos().add(0, 0.6, 0), 4, 1.2);
+			// Golden light rises around the caster's body (not the eyes – it would sit on the lens in first person).
+			if (age % 5 == 0) SkillFx.goldenLight(world, caster.getPos().add(0, 0.9, 0), 4, 1.4);
 
 			if (age >= T_SUMMON && age < T_SLAM) {
 				if ((age - T_SUMMON) % 10 == 0) suppress(age);
