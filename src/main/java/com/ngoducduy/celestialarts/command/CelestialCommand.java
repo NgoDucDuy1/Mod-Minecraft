@@ -10,6 +10,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.ngoducduy.celestialarts.cultivation.Awakening;
 import com.ngoducduy.celestialarts.cultivation.Breakthrough;
 import com.ngoducduy.celestialarts.cultivation.CultivationStats;
+import com.ngoducduy.celestialarts.cultivation.FireVein;
 import com.ngoducduy.celestialarts.cultivation.Meditation;
 import com.ngoducduy.celestialarts.cultivation.RealmPassives;
 import com.ngoducduy.celestialarts.cultivation.SpiritQi;
@@ -56,6 +57,7 @@ import java.util.List;
  * /celestial reroll [player]                – roll root + talent again (with the ceremony)
  * /celestial meditate                       – toggle meditation
  * /celestial spiritqi                       – spiritual qi density here and the nearest vein
+ * /celestial firevein                       – nearest Hỏa Nguyên (wild flame vein) and its tier
  * /celestial chance                         – odds of the next breakthrough / tribulation preview
  * </pre>
  */
@@ -145,6 +147,8 @@ public final class CelestialCommand {
 						}))
 				.then(CommandManager.literal("spiritqi")
 						.executes(ctx -> spiritQi(ctx)))
+				.then(CommandManager.literal("firevein")
+						.executes(ctx -> fireVein(ctx)))
 				.then(CommandManager.literal("chance")
 						.executes(ctx -> chance(ctx))));
 	}
@@ -244,6 +248,21 @@ public final class CelestialCommand {
 		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.spiritqi",
 				String.format("%.2f", density), Text.translatable("spiritqi.celestialarts." + SpiritQi.label(density)),
 				String.format("%.2f", biome), String.format("%.2f", vein), (int) veinDist).formatted(Formatting.AQUA), false);
+		return 1;
+	}
+
+	private static int fireVein(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+		ServerPlayerEntity p = ctx.getSource().getPlayerOrThrow();
+		ServerWorld world = p.getServerWorld();
+		BlockPos at = p.getBlockPos();
+		java.util.Optional<FireVein.Site> site = FireVein.nearestSite(world, at.getX(), at.getZ());
+		if (site.isEmpty()) {
+			ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.firevein_none").formatted(Formatting.GRAY), false);
+			return 1;
+		}
+		FireVein.Site s = site.get();
+		int dist = (int) Math.hypot(s.x() - at.getX(), s.z() - at.getZ());
+		ctx.getSource().sendFeedback(() -> Text.translatable("command.celestialarts.firevein", s.tier().getName(), dist).formatted(Formatting.GOLD), false);
 		return 1;
 	}
 

@@ -7,6 +7,7 @@ import com.ngoducduy.celestialarts.alchemy.FlameTier;
 import com.ngoducduy.celestialarts.alchemy.Pill;
 import com.ngoducduy.celestialarts.alchemy.Pills;
 import com.ngoducduy.celestialarts.block.AlchemyFurnaceBlock;
+import com.ngoducduy.celestialarts.item.FlameCaptureBottleItem;
 import com.ngoducduy.celestialarts.item.FlameItem;
 import com.ngoducduy.celestialarts.item.PillItem;
 import com.ngoducduy.celestialarts.item.PillSlagItem;
@@ -48,6 +49,9 @@ public final class ModItems {
 	public static final Item QI_PILL = register("qi_pill", new SpiritStoneItem(200f, 0, 0x50DCC8, new Item.Settings().maxCount(16).rarity(Rarity.UNCOMMON)));
 	/** End-game pill: fills a Tribulation cultivator's qi and grants a large chunk of experience. */
 	public static final Item HEAVEN_PILL = register("heaven_pill", new SpiritStoneItem(620f, 6000, 0xFFD75A, new Item.Settings().maxCount(16).rarity(Rarity.EPIC)));
+
+	/** Bình Hỏa Phách – khống chế lửa: binds a weakened Hỏa Linh's flame; see B3. */
+	public static final Item FLAME_CAPTURE_BOTTLE = register("flame_capture_bottle", new FlameCaptureBottleItem(new Item.Settings().maxCount(16)));
 
 	static {
 		// One manual per skill, registered in skill order.
@@ -98,6 +102,11 @@ public final class ModItems {
 
 	public static List<FlameItem> flames() {
 		return Collections.unmodifiableList(FLAMES);
+	}
+
+	/** The vessel item for a given hỏa chủng (flames are declared in {@link FlameTier} enum order). */
+	public static FlameItem flameFor(FlameTier tier) {
+		return FLAMES.get(tier.ordinal());
 	}
 
 	public static List<HerbItem> herbs() {

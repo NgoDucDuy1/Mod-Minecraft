@@ -23,9 +23,11 @@ import com.ngoducduy.celestialarts.cultivation.Realm;
 import com.ngoducduy.celestialarts.network.FxData;
 import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.client.render.post.ScreenOverlay;
+import com.ngoducduy.celestialarts.entity.FireSpiritEntity;
 import com.ngoducduy.celestialarts.registry.GlowParticleEffect;
 import com.ngoducduy.celestialarts.registry.ModEffects;
 import com.ngoducduy.celestialarts.registry.ModEntities;
+import com.ngoducduy.celestialarts.registry.ModItems;
 import com.ngoducduy.celestialarts.registry.ModParticles;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillRegistry;
@@ -43,6 +45,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -277,6 +280,7 @@ public final class CelestialAutoTest {
 		cultivationSequence();
 		herbGarden();
 		alchemySequence();
+		fireSpiritSequence();
 
 		// Breakthrough packet at the very top of cultivation: the server must refuse gracefully, no crash.
 		command("celestial realm 6");
@@ -694,6 +698,64 @@ public final class CelestialAutoTest {
 			c.player.closeHandledScreen();
 			return null;
 		});
+		waitTicks(5);
+	}
+
+	/**
+	 * B3: a Hỏa Linh is summoned near the player (real spawn packet, real renderer/model),
+	 * photographed, then weakened and bound with a real interact-entity packet – exactly the
+	 * "khống chế" flow a player performs – to confirm the whole client/server round trip works
+	 * without exceptions.
+	 */
+	private static void fireSpiritSequence() {
+		Vec3d home = submitAndWait(c -> Objects.requireNonNull(c.player).getPos());
+		double sx = home.x + 15.0;
+		double sy = home.y;
+		double sz = home.z;
+		Box area = new Box(sx - 4, sy - 2, sz - 4, sx + 4, sy + 4, sz + 4);
+		command(String.format(Locale.ROOT, "summon celestialarts:fire_spirit %.2f %.2f %.2f", sx, sy, sz));
+		waitTicks(10);
+		boolean present = submitAndWait(c -> !c.world.getEntitiesByClass(FireSpiritEntity.class, area, e -> true).isEmpty());
+		check(present, "fire spirit visible on the client after /summon");
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f -90 5", sx - 4.5, sy + 1.6, sz));
+		waitTicks(30);
+		screenshot("20_fire_spirit");
+
+		// Weaken it (a real player would have fought it down) and hand ourselves a Bình Hỏa Phách.
+		command("execute as @e[type=celestialarts:fire_spirit,limit=1,sort=nearest] run data merge entity @s {Health:2.0f}");
+		command("give @s celestialarts:flame_capture_bottle 16");
+		waitTicks(5);
+		int slot = submitAndWait(c -> {
+			for (int i = 0; i < 9; i++) {
+				if (c.player.getInventory().getStack(i).isOf(ModItems.FLAME_CAPTURE_BOTTLE)) return i;
+			}
+			return -1;
+		});
+		check(slot >= 0, "capture bottle received in the hotbar");
+		if (slot >= 0) {
+			int finalSlot = slot;
+			submitAndWait(c -> {
+				c.player.getInventory().selectedSlot = finalSlot;
+				return null;
+			});
+		}
+		FireSpiritEntity spirit = submitAndWait(c -> c.world.getEntitiesByClass(FireSpiritEntity.class, area, e -> true).stream().findFirst().orElse(null));
+		boolean captured = false;
+		if (spirit != null) {
+			for (int i = 0; i < 20 && !captured; i++) {
+				submitAndWait(c -> {
+					c.interactionManager.interactEntity(c.player, spirit, Hand.MAIN_HAND);
+					return null;
+				});
+				waitTicks(2);
+				captured = submitAndWait(c -> spirit.isRemoved());
+				if (!captured) command("give @s celestialarts:flame_capture_bottle 16");
+			}
+		}
+		check(captured, "the weakened fire spirit was bound through a real interact-entity packet");
+		waitTicks(10);
+		screenshot("21_flame_captured");
+		command(String.format(Locale.ROOT, "tp @s %.2f %.2f %.2f 0 4", home.x, home.y, home.z));
 		waitTicks(5);
 	}
 

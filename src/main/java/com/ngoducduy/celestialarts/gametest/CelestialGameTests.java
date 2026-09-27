@@ -31,6 +31,12 @@ import com.ngoducduy.celestialarts.network.FxType;
 import com.ngoducduy.celestialarts.registry.ModDamageTypes;
 import com.ngoducduy.celestialarts.registry.ModEntities;
 import com.ngoducduy.celestialarts.registry.ModItems;
+import com.ngoducduy.celestialarts.alchemy.FlameTier;
+import com.ngoducduy.celestialarts.cultivation.FireVein;
+import com.ngoducduy.celestialarts.entity.FireSpiritEntity;
+import com.ngoducduy.celestialarts.item.FlameCapture;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import com.ngoducduy.celestialarts.skill.Element;
 import com.ngoducduy.celestialarts.skill.Skill;
 import com.ngoducduy.celestialarts.skill.SkillManager;
@@ -584,14 +590,14 @@ public final class CelestialGameTests implements FabricGameTest {
 		String[] recipes = {"spirit_stone", "high_spirit_stone", "dao_manual", "foundation_pill", "nascent_pill",
 				"immortal_sword", "scroll_sword_qi_slash", "scroll_flame_claw", "scroll_ice_arrows", "scroll_lightning_step",
 				"scroll_wind_blade_dance", "scroll_tortoise_shield", "scroll_earth_shatter", "scroll_vajra_palm", "scroll_wind_dragon",
-				"qi_pill", "heaven_pill"};
+				"qi_pill", "heaven_pill", "flame_capture_bottle"};
 		for (String r : recipes) {
 			Identifier id = CelestialArts.id(r);
 			ctx.assertTrue(server.getRecipeManager().get(id).isPresent(), "recipe present: " + id);
 		}
 		String[] advancements = {"root", "learn_first_skill", "learn_all_skills", "realm/foundation", "realm/golden_core",
 				"realm/nascent_soul", "realm/spirit_transformation", "realm/tribulation", "skills/sword_flight",
-				"skills/nine_tribulations", "skills/heaven_sword", "skills/heaven_hand"};
+				"skills/nine_tribulations", "skills/heaven_sword", "skills/heaven_hand", "capture_first_flame", "capture_strange_flame"};
 		for (String a : advancements) {
 			Identifier id = CelestialArts.id(a);
 			ctx.assertTrue(server.getAdvancementLoader().get(id) != null, "advancement present: " + id);
@@ -712,5 +718,49 @@ public final class CelestialGameTests implements FabricGameTest {
 			}
 			ctx.complete();
 		});
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE)
+	public void fireVeinIsDeterministicAndDoesNotCrash(TestContext ctx) {
+		ServerWorld world = ctx.getWorld();
+		// Same seed/coords must always roll the same site (or lack of one).
+		for (int i = 0; i < 6; i++) {
+			int x = i * 500 - 1200;
+			int z = i * 337 - 800;
+			ctx.assertTrue(FireVein.nearestSite(world, x, z).equals(FireVein.nearestSite(world, x, z)), "firevein lookup is deterministic at " + x + "," + z);
+		}
+		BlockPos here = ctx.getAbsolutePos(new BlockPos(0, 2, 0));
+		// Must not throw regardless of whether a vein happens to be near the test structure.
+		FireVein.tierNear(world, here);
+		ctx.complete();
+	}
+
+	@GameTest(templateName = EMPTY_STRUCTURE, tickLimit = 400)
+	public void fireSpiritCaptureBindsFlame(TestContext ctx) {
+		ServerWorld world = ctx.getWorld();
+		ServerPlayerEntity player = spawnPlayer(ctx, Realm.GOLDEN_CORE);
+		QiHolder.get(player).setRoot(new SpiritRoot(List.of(SpiritRoot.Kind.FIRE), 5));
+
+		FireSpiritEntity spirit = ctx.spawnEntity(ModEntities.FIRE_SPIRIT, 2.5F, 2.0F, 2.5F);
+		spirit.setFlameTier(FlameTier.SPIRIT);
+		ctx.assertTrue(!spirit.isWeakened(), "a fresh spirit is not weakened yet");
+		spirit.setHealth(spirit.getMaxHealth() * 0.2F);
+		ctx.assertTrue(spirit.isWeakened(), "a spirit under 1/4 health is weakened");
+
+		int before = player.getInventory().count(ModItems.flameFor(FlameTier.SPIRIT));
+		ItemStack bottle = new ItemStack(ModItems.FLAME_CAPTURE_BOTTLE, 4);
+		boolean captured = false;
+		// High realm + a matching fire root pushes the odds well past even; a handful of tries is
+		// enough to make an eventual success overwhelmingly likely without the test being flaky.
+		for (int i = 0; i < 60 && !captured; i++) {
+			if (bottle.isEmpty()) bottle = new ItemStack(ModItems.FLAME_CAPTURE_BOTTLE, 4);
+			ActionResult result = FlameCapture.attempt(world, player, spirit, bottle, Hand.MAIN_HAND);
+			ctx.assertTrue(result == ActionResult.SUCCESS || result == ActionResult.FAIL, "capture attempt resolves to success or fail");
+			captured = spirit.isRemoved();
+		}
+		ctx.assertTrue(captured, "the weakened spirit is eventually bound");
+		int after = player.getInventory().count(ModItems.flameFor(FlameTier.SPIRIT));
+		ctx.assertTrue(after > before, "the matching flame item was granted on capture");
+		ctx.complete();
 	}
 }

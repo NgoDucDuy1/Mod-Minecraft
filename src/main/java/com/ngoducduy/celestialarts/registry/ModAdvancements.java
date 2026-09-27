@@ -1,6 +1,7 @@
 package com.ngoducduy.celestialarts.registry;
 
 import com.ngoducduy.celestialarts.CelestialArts;
+import com.ngoducduy.celestialarts.alchemy.FlameTier;
 import com.ngoducduy.celestialarts.cultivation.Realm;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.server.MinecraftServer;
@@ -37,5 +38,11 @@ public final class ModAdvancements {
 
 	public static void onAllSkillsLearned(ServerPlayerEntity player) {
 		grant(player, "learn_all_skills");
+	}
+
+	/** A Hỏa Linh was bound into its flame with a Bình Hỏa Phách. */
+	public static void onFlameCaptured(ServerPlayerEntity player, FlameTier tier) {
+		grant(player, "capture_first_flame");
+		if (tier == FlameTier.STRANGE) grant(player, "capture_strange_flame");
 	}
 }

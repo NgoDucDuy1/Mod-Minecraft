@@ -2,6 +2,7 @@ package com.ngoducduy.celestialarts.registry;
 
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.entity.FireLotusEntity;
+import com.ngoducduy.celestialarts.entity.FireSpiritEntity;
 import com.ngoducduy.celestialarts.entity.FlyingSwordEntity;
 import com.ngoducduy.celestialarts.entity.HeavenSwordEntity;
 import com.ngoducduy.celestialarts.entity.MeditationSeatEntity;
@@ -11,12 +12,15 @@ import com.ngoducduy.celestialarts.entity.IceShardEntity;
 import com.ngoducduy.celestialarts.entity.RockSpikeEntity;
 import com.ngoducduy.celestialarts.entity.SpiritSwordEntity;
 import com.ngoducduy.celestialarts.entity.SwordQiEntity;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.world.Heightmap;
 
 public final class ModEntities {
 	public static final EntityType<SwordQiEntity> SWORD_QI = register("sword_qi",
@@ -82,6 +86,13 @@ public final class ModEntities {
 					.fireImmune().disableSaving().disableSummon()
 					.build());
 
+	/** Hỏa Linh – a wild fire spirit born of a Hỏa Nguyên; see {@link com.ngoducduy.celestialarts.cultivation.FireVein}. */
+	public static final EntityType<FireSpiritEntity> FIRE_SPIRIT = register("fire_spirit",
+			FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, FireSpiritEntity::new)
+					.dimensions(EntityDimensions.fixed(0.75f, 1.05f))
+					.trackRangeBlocks(64).trackedUpdateRate(3)
+					.build());
+
 	public static final EntityType<MeditationSeatEntity> MEDITATION_SEAT = register("meditation_seat",
 			FabricEntityTypeBuilder.<MeditationSeatEntity>create(SpawnGroup.MISC, MeditationSeatEntity::new)
 					.dimensions(EntityDimensions.fixed(0.9f, 0.15f))
@@ -97,5 +108,7 @@ public final class ModEntities {
 	}
 
 	public static void register() {
+		FabricDefaultAttributeRegistry.register(FIRE_SPIRIT, FireSpiritEntity.createFireSpiritAttributes());
+		SpawnRestriction.register(FIRE_SPIRIT, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FireSpiritEntity::canSpawn);
 	}
 }

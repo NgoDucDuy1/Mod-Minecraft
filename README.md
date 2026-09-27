@@ -22,7 +22,9 @@ hiệu ứng có sẵn của vanilla), model riêng cho mọi thực thể, âm 
 
 **Đan dược (75 loại = 15 đan × 5 phẩm, 300 đan phương)** – Hồi Khí, Tụ Khí, Trúc Cơ (tăng tỉ lệ đột phá – hiệu ứng *Đan Vận*), Hồi Xuân, Giải Độc, Kim Cương, Liệt Hỏa, Băng Tâm (chữa tẩu hỏa nhập ma), Thần Hành, Kim Thân, Ngưng Thần (tăng uy lực công pháp – hiệu ứng *Linh Lực*), Tẩy Tủy (cơ hội nâng phẩm linh căn), Ngộ Đạo, Độ Kiếp, Bồi Nguyên. Mỗi đan có 4 đan phương với tổ hợp dược liệu khác nhau; dược liệu nóng/lạnh đẩy đường hỏa hầu lên/xuống.
 
-**Hỏa chủng (8 bậc)** – Phàm Hỏa (chế tạo được: than + đá lửa + kính), Địa Hỏa, Linh Hỏa, Quỷ Hỏa, Nghiệp Hỏa, Dị Hỏa, Tam Muội Chân Hỏa, Thiên Hỏa. Bậc lửa quyết định phẩm đan luyện được; các bậc trên Phàm Hỏa sẽ xuất hiện trong tự nhiên ở phần B3 (Hỏa Nguyên + cơ chế khống chế).
+**Hỏa chủng (8 bậc)** – Phàm Hỏa (chế tạo được: than + đá lửa + kính), Địa Hỏa, Linh Hỏa, Quỷ Hỏa, Nghiệp Hỏa, Dị Hỏa, Tam Muội Chân Hỏa, Thiên Hỏa. Bậc lửa quyết định phẩm đan luyện được.
+
+**Hỏa Nguyên & Hỏa Linh (B3)** – 7 bậc lửa trên Phàm Hỏa xuất hiện ngoài tự nhiên qua các "Hỏa Nguyên" (mạch hỏa khí ảo, một điểm mỗi ~320 khối, vị trí/bậc tính tất định từ seed + toạ độ, không tốn dữ liệu lưu): Địa Hỏa ở badlands/sa mạc/savanna, Linh Hỏa ở nơi linh khí dồi dào (anh đào, hang rêu, hoa, đồng cỏ hoa), Quỷ Hỏa ở nơi âm u (deep dark, hang thạch nhũ, đầm lầy), Nghiệp Hỏa ở Soul Sand Valley, Tam Muội Chân Hỏa quanh basalt/crimson/warped forest, Thiên Hỏa ở The End, Dị Hỏa cực hiếm ở bất kỳ đâu. Mỗi Hỏa Nguyên sinh một **Hỏa Linh** (tinh linh lửa, model + texture riêng, 6 lưỡi lửa dao động quanh lõi phát sáng, đổi màu theo bậc) tự vệ bằng cách đốt cháy mục tiêu. Đánh Hỏa Linh xuống dưới 1/4 máu rồi dùng **Bình Hỏa Phách** (chế từ bình thuỷ tinh + bột lửa + nước mắt ghast) để **khống chế**: tỉ lệ thành công tăng theo cảnh giới và linh căn Hỏa, giảm theo bậc lửa; thành công thu được hỏa chủng tương ứng, thất bại tốn bình và khiến Hỏa Linh nổi giận. Lệnh `/celestial firevein` báo Hỏa Nguyên gần nhất và khoảng cách.
 
 ### Hệ thống tu luyện (1.4.0)
 | Cảnh giới | Linh lực cơ bản | Hồi phục / tick | Tu vi mỗi tiểu cảnh giới |
@@ -111,13 +113,14 @@ Khi thiền định, quanh người xuất hiện **hào quang tụ khí** và c
 
 ### Vật phẩm & lệnh
 * **Bí tịch công pháp** (20 cuộn) – chuột phải để lĩnh ngộ, **Linh thạch / Linh thạch thượng phẩm** – hồi linh lực + kinh nghiệm,
-  **Trúc Cơ Đan / Nguyên Anh Đan / Hồi Linh Đan / Thăng Thiên Đan**, **Đạo Thư** (mở màn hình kỹ năng, có lật trang), **Tiên Kiếm**.
-* Lệnh `/celestial info|learn|forget|realm|stage|root|talent|reroll|qi|exp|breakthrough|meditate|spiritqi|chance` (đa số cần quyền OP).
+  **Trúc Cơ Đan / Nguyên Anh Đan / Hồi Linh Đan / Thăng Thiên Đan**, **Đạo Thư** (mở màn hình kỹ năng, có lật trang), **Tiên Kiếm**,
+  **Bình Hỏa Phách** (khống chế Hỏa Linh trong tự nhiên để lấy hỏa chủng bậc cao).
+* Lệnh `/celestial info|learn|forget|realm|stage|root|talent|reroll|qi|exp|breakthrough|meditate|spiritqi|firevein|chance` (đa số cần quyền OP).
 * **Công thức chế tạo**: linh thạch (thạch anh tím + lapis), linh thạch thượng phẩm, đạo thư, đan dược, tiên kiếm và
   9 bí tịch cảnh giới thấp (Luyện Khí / Trúc Cơ). Bí tịch cảnh giới cao chỉ tìm thấy trong **rương công trình**
   (stronghold, mansion, bastion, ancient city, end city…) – độ hiếm tăng theo cảnh giới yêu cầu.
 * **Thành tựu** riêng (tab *Tiên Lộ*): nhặt linh thạch, lĩnh ngộ công pháp đầu tiên, từng lần đột phá cảnh giới,
-  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, và lĩnh ngộ đủ 21 công pháp.
+  học Ngự Kiếm / Cửu Thiên Lôi Kiếp / Thiên Kiếm, lĩnh ngộ đủ 21 công pháp, khống chế Hỏa Linh lần đầu và khống chế được Dị Hỏa.
 
 ### Phím mặc định
 `R F V G C Z` – 6 ô kỹ năng · `K` – mở Đạo Thư · `N` – bảng Đạo Cơ · `X` – thiền định (nhấn một lần) · `B` – đột phá / độ kiếp.
@@ -130,6 +133,7 @@ Kỹ năng kênh (chùm tia, xoáy) giữ phím / bấm lại để ngắt.
 ### 1.5.0 – Luyện đan (phần B, đang làm)
 - B1: 78 linh dược (block 3 giai đoạn, item, texture 32×32 ×3, loot, 22 feature sinh thế giới theo 14 môi trường, gametest + ảnh autotest).
 - B2: 12 lò luyện đan (3 loại × 4 phẩm, model 3D riêng, texture sáng khi đốt), GUI luyện đan với đồ thị hỏa hầu và minigame cân bằng, 75 đan dược, 300 đan phương JSON (`data/celestialarts/recipes/alchemy`, sinh bằng `tools/gen_alchemy.py`), 8 hỏa chủng, hiệu ứng Đan Vận / Linh Lực, gametest chạy trọn một lượt luyện đan, autotest mở GUI và luyện thật bằng nút bấm.
+- B3: hỏa chủng trong tự nhiên. `FireVein` sinh "Hỏa Nguyên" ảo tất định (seed + toạ độ, ~1 điểm/320 khối, không lưu state) theo biome phù hợp cho 7 bậc lửa trên Phàm Hỏa (Địa/Linh/Quỷ Hỏa ở Overworld, Nghiệp/Tam Muội Chân Hỏa ở Nether, Thiên Hỏa ở End, Dị Hỏa hiếm ở mọi nơi). `FireSpiritEntity` (Hỏa Linh) là mob thù địch thật đầu tiên của mod (kế thừa `HostileEntity`, AI cận chiến/né/truy đuổi chuẩn vanilla, đốt cháy khi đánh trúng, chỉ sinh gần Hỏa Nguyên phù hợp), model + renderer tự dựng (lõi phát sáng + 6 lưỡi lửa xoay quanh dao động theo `age`, dữ dội hơn khi nổi giận), texture 32×32 sinh bằng `tools/gen_fire_spirit_assets.py`. Cơ chế khống chế: đánh Hỏa Linh xuống dưới 1/4 máu rồi dùng vật phẩm mới **Bình Hỏa Phách** (`FlameCaptureBottleItem`, chế từ bình thuỷ tinh + bột lửa + nước mắt ghast) – `FlameCapture` tính tỉ lệ thành công theo cảnh giới, linh căn Hỏa và bậc lửa, thành công trả thẳng hỏa chủng tương ứng và cấp thành tựu, thất bại tốn bình và Hỏa Linh nổi giận (tái dùng các âm thanh lửa/khống chế sẵn có, không tạo sound event mới). Thêm lệnh `/celestial firevein`, 2 thành tựu mới, gametest (`fireVeinIsDeterministicAndDoesNotCrash`, `fireSpiritCaptureBindsFlame`) và bước autotest ảnh (`20_fire_spirit`, `21_flame_captured`) triệu hồi – làm yếu – khống chế thật qua packet.
 
 ### 1.4.0 – Đại tu hệ thống tu luyện (phần A)
 - **24 bậc cảnh giới**: mỗi đại cảnh giới chia Sơ / Trung / Hậu Kỳ / Viên Mãn; mỗi bậc tăng linh lực, hồi phục, sát thương.
@@ -319,9 +323,9 @@ artifact `client-screenshots`.
 
 ```
 src/main/java/com/ngoducduy/celestialarts
-├── cultivation/   Realm, PlayerQi, QiHolder, Breakthrough (thiên kiếp), CultivationEvents
+├── cultivation/   Realm, PlayerQi, QiHolder, Breakthrough (thiên kiếp), CultivationEvents, FireVein (Hỏa Nguyên)
 ├── skill/         Skill, SkillRegistry, SkillManager, SkillContext, cast/ (kỹ năng kéo dài), skills/ (16 công pháp)
-├── entity/        7 thực thể kỹ năng (đạn, phi kiếm, gai đá, thiên kiếm)
+├── entity/        7 thực thể kỹ năng (đạn, phi kiếm, gai đá, thiên kiếm) + FireSpiritEntity (Hỏa Linh, mob thù địch thật)
 ├── network/       FxType, FxData, ModPackets (C2S cast/release/slot/breakthrough, S2C sync/fx/shake)
 ├── registry/      ModEntities, ModItems, ModParticles, ModSounds, ModEffects, ModDamageTypes, ModLootTables, ModAdvancements
 ├── effect/        Hiệu ứng trạng thái (Đóng băng, Linh hỏa thiêu đốt, Kiếm ý)
@@ -336,7 +340,7 @@ src/client/java/com/ngoducduy/celestialarts/client
 ├── gui/           SkillHud, SkillBookScreen
 └── mixin/         Camera (rung), BipedEntityModel (đứng trên kiếm), ParticleManager (sheet riêng)
 
-tools/  gen_fx_textures.py · gen_entity_textures.py · gen_gui_textures.py · gen_sounds.py (Pillow, numpy, scipy, soundfile)
+tools/  gen_fx_textures.py · gen_entity_textures.py · gen_gui_textures.py · gen_fire_spirit_assets.py · gen_sounds.py (Pillow, numpy, scipy, soundfile)
 ```
 
 Tất cả texture và âm thanh được sinh bằng các script trong `tools/`, có thể chỉnh sửa và chạy lại bất cứ lúc nào.

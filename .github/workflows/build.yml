@@ -156,7 +156,7 @@ jobs:
           import base64, glob, io, os
           from PIL import Image
           wanted = ["02_in_game", "03_skill_book", "04_fx_types", "05_particles", "06_sword_flight_third_person",
-                    "08_meditation", "09_cultivation_screen", "10_tribulation_cloud", "11_tribulation_bolt", "12_tribulation_success", "13_qi_deviation", "14_herb_garden", "15_herb_closeup", "16_alchemy_furnace_block", "17_alchemy_gui_idle", "18_alchemy_refining", "19_alchemy_result",
+                    "08_meditation", "09_cultivation_screen", "10_tribulation_cloud", "11_tribulation_bolt", "12_tribulation_success", "13_qi_deviation", "14_herb_garden", "15_herb_closeup", "16_alchemy_furnace_block", "17_alchemy_gui_idle", "18_alchemy_refining", "19_alchemy_result", "20_fire_spirit", "21_flame_captured",
                     "skill_sword_qi_slash", "skill_fire_lotus", "skill_taiji_formation", "skill_frozen_domain",
                     "skill_thousand_swords", "skill_purple_thunder_beam", "skill_purple_thunder_beam_fp", "skill_tortoise_shield_fp",
                     "skill_nine_tribulations", "skill_heaven_sword", "skill_earth_shatter", "skill_devouring_vortex",

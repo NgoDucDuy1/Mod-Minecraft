@@ -19,5 +19,6 @@ public final class ModEntityRenderers {
 		EntityRendererRegistry.register(ModEntities.WIND_DRAGON, WindDragonRenderer::new);
 		EntityRendererRegistry.register(ModEntities.THUNDER_DRAGON, ThunderDragonRenderer::new);
 		EntityRendererRegistry.register(ModEntities.MEDITATION_SEAT, MeditationSeatRenderer::new);
+		EntityRendererRegistry.register(ModEntities.FIRE_SPIRIT, FireSpiritRenderer::new);
 	}
 }

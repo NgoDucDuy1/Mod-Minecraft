@@ -3,9 +3,11 @@ package com.ngoducduy.celestialarts.worldgen;
 import com.ngoducduy.celestialarts.CelestialArts;
 import com.ngoducduy.celestialarts.alchemy.Herb;
 import com.ngoducduy.celestialarts.alchemy.Herbs;
+import com.ngoducduy.celestialarts.registry.ModEntities;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BiomeTags;
@@ -34,6 +36,12 @@ public final class ModWorldGen {
 			if (hasCommon) add(selector, "herbs_" + habitat.getKey() + "_common");
 			if (hasRare) add(selector, "herbs_" + habitat.getKey() + "_rare");
 		}
+
+		// Hỏa Linh (B3): the actual spawn tick is standard vanilla monster spawning, gated down to
+		// a trickle by FireSpiritEntity#canSpawn requiring a nearby Hỏa Nguyên (see FireVein).
+		BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(), SpawnGroup.MONSTER, ModEntities.FIRE_SPIRIT, 6, 1, 1);
+		BiomeModifications.addSpawn(BiomeSelectors.foundInTheNether(), SpawnGroup.MONSTER, ModEntities.FIRE_SPIRIT, 8, 1, 1);
+		BiomeModifications.addSpawn(BiomeSelectors.foundInTheEnd(), SpawnGroup.MONSTER, ModEntities.FIRE_SPIRIT, 8, 1, 1);
 	}
 
 	private static void add(Predicate<BiomeSelectionContext> selector, String name) {
